@@ -1,0 +1,28 @@
+# base_style
+--style=google
+
+# indent_preferences
+--indent=spaces=2
+--indent-switches
+--indent-cases
+--indent-namespaces
+--indent-labels
+--indent-preproc-block
+--indent-col1-comments
+--max-continuation-indent=80
+
+# more_preferences
+--delete-empty-lines
+--break-blocks
+--pad-oper
+--pad-comma
+--pad-header
+--align-pointer=name
+--align-reference=name
+--break-one-line-headers
+--add-braces
+--attach-return-type
+--convert-tabs
+--close-templates
+--max-code-length=100
+--mode=c

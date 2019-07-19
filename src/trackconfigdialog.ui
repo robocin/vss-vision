@@ -1,0 +1,855 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TrackConfigDialog</class>
+ <widget class="QDialog" name="TrackConfigDialog">
+  <property name="geometry">
+   <rect>
+  <x>0</x>
+  <y>0</y>
+  <width>1201</width>
+  <height>711</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+  <rect>
+   <x>850</x>
+   <y>671</y>
+   <width>341</width>
+   <height>41</height>
+  </rect>
+   </property>
+   <property name="orientation">
+  <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+  <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="videoLabel">
+   <property name="geometry">
+  <rect>
+   <x>420</x>
+   <y>20</y>
+   <width>640</width>
+   <height>480</height>
+  </rect>
+   </property>
+   <property name="text">
+  <string/>
+   </property>
+  </widget>
+  <widget class="QTreeWidget" name="treeWidget">
+   <property name="geometry">
+  <rect>
+   <x>0</x>
+   <y>0</y>
+   <width>261</width>
+   <height>251</height>
+  </rect>
+   </property>
+   <column>
+  <property name="text">
+   <string>Track N Detection</string>
+  </property>
+   </column>
+   <item>
+  <property name="text">
+   <string>Detection</string>
+  </property>
+  <item>
+   <property name="text">
+    <string>WhereAreThose</string>
+   </property>
+  </item>
+  <item>
+   <property name="text">
+    <string>None</string>
+   </property>
+  </item>
+   </item>
+   <item>
+  <property name="text">
+   <string>Tracking</string>
+  </property>
+  <item>
+   <property name="text">
+    <string>SimpleTracking</string>
+   </property>
+  </item>
+  <item>
+   <property name="text">
+    <string>None</string>
+   </property>
+  </item>
+   </item>
+  </widget>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+  <rect>
+   <x>10</x>
+   <y>260</y>
+   <width>261</width>
+   <height>411</height>
+  </rect>
+   </property>
+   <property name="frameShape">
+  <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+  <enum>QFrame::Sunken</enum>
+   </property>
+   <widget class="QLabel" name="label_2">
+  <property name="geometry">
+   <rect>
+    <x>10</x>
+    <y>10</y>
+    <width>67</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>MinSize</string>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider__MinSize">
+  <property name="geometry">
+   <rect>
+    <x>30</x>
+    <y>70</y>
+    <width>16</width>
+    <height>311</height>
+   </rect>
+  </property>
+  <property name="minimum">
+   <number>1</number>
+  </property>
+  <property name="maximum">
+   <number>1000</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label">
+  <property name="geometry">
+   <rect>
+    <x>70</x>
+    <y>10</y>
+    <width>71</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>MaxSize</string>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider__MaxSize">
+  <property name="geometry">
+   <rect>
+    <x>90</x>
+    <y>70</y>
+    <width>16</width>
+    <height>311</height>
+   </rect>
+  </property>
+  <property name="minimum">
+   <number>1</number>
+  </property>
+  <property name="maximum">
+   <number>1000</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+  <property name="geometry">
+   <rect>
+    <x>130</x>
+    <y>10</y>
+    <width>61</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>MinBall</string>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider__MinSizeBall">
+  <property name="geometry">
+   <rect>
+    <x>150</x>
+    <y>70</y>
+    <width>16</width>
+    <height>311</height>
+   </rect>
+  </property>
+  <property name="minimum">
+   <number>1</number>
+  </property>
+  <property name="maximum">
+   <number>1000</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider__MaxSizeBall">
+  <property name="geometry">
+   <rect>
+    <x>210</x>
+    <y>70</y>
+    <width>16</width>
+    <height>311</height>
+   </rect>
+  </property>
+  <property name="minimum">
+   <number>1</number>
+  </property>
+  <property name="maximum">
+   <number>1000</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+  <property name="geometry">
+   <rect>
+    <x>190</x>
+    <y>10</y>
+    <width>61</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>MaxBall</string>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_MinSize">
+  <property name="geometry">
+   <rect>
+    <x>20</x>
+    <y>40</y>
+    <width>31</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>000</string>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_MaxSize">
+  <property name="geometry">
+   <rect>
+    <x>80</x>
+    <y>40</y>
+    <width>31</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>000</string>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_MinBall">
+  <property name="geometry">
+   <rect>
+    <x>140</x>
+    <y>40</y>
+    <width>31</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>000</string>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_MaxBall">
+  <property name="geometry">
+   <rect>
+    <x>200</x>
+    <y>40</y>
+    <width>31</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>000</string>
+  </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_EnemySearch">
+  <property name="geometry">
+   <rect>
+    <x>80</x>
+    <y>385</y>
+    <width>86</width>
+    <height>20</height>
+   </rect>
+  </property>
+  <item>
+   <property name="text">
+    <string>Nothing</string>
+   </property>
+  </item>
+  <item>
+   <property name="text">
+    <string>Primary</string>
+   </property>
+  </item>
+  <item>
+   <property name="text">
+    <string>Secondary</string>
+   </property>
+  </item>
+  <item>
+   <property name="text">
+    <string>Both</string>
+   </property>
+  </item>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="pushButton_Reset">
+   <property name="geometry">
+  <rect>
+   <x>0</x>
+   <y>680</y>
+   <width>261</width>
+   <height>25</height>
+  </rect>
+   </property>
+   <property name="text">
+  <string>Reset</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="frame_KMeans">
+   <property name="geometry">
+  <rect>
+   <x>270</x>
+   <y>520</y>
+   <width>921</width>
+   <height>151</height>
+  </rect>
+   </property>
+   <property name="frameShape">
+  <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+  <enum>QFrame::Raised</enum>
+   </property>
+   <property name="lineWidth">
+  <number>0</number>
+   </property>
+   <widget class="QSlider" name="verticalSlider_orange">
+  <property name="geometry">
+   <rect>
+    <x>70</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+  <property name="geometry">
+   <rect>
+    <x>430</x>
+    <y>10</y>
+    <width>67</width>
+    <height>17</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>KMeans</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_orange">
+  <property name="geometry">
+   <rect>
+    <x>30</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_orange">
+  <property name="geometry">
+   <rect>
+    <x>30</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_blue">
+  <property name="geometry">
+   <rect>
+    <x>130</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_blue">
+  <property name="geometry">
+   <rect>
+    <x>130</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_blue">
+  <property name="geometry">
+   <rect>
+    <x>170</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_yellow">
+  <property name="geometry">
+   <rect>
+    <x>230</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_yellow">
+  <property name="geometry">
+   <rect>
+    <x>230</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_yellow">
+  <property name="geometry">
+   <rect>
+    <x>270</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_red">
+  <property name="geometry">
+   <rect>
+    <x>330</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_red">
+  <property name="geometry">
+   <rect>
+    <x>330</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_red">
+  <property name="geometry">
+   <rect>
+    <x>370</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_green">
+  <property name="geometry">
+   <rect>
+    <x>430</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_green">
+  <property name="geometry">
+   <rect>
+    <x>430</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_green">
+  <property name="geometry">
+   <rect>
+    <x>470</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_pink">
+  <property name="geometry">
+   <rect>
+    <x>530</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_pink">
+  <property name="geometry">
+   <rect>
+    <x>530</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_pink">
+  <property name="geometry">
+   <rect>
+    <x>570</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_light_blue">
+  <property name="geometry">
+   <rect>
+    <x>630</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_light_blue">
+  <property name="geometry">
+   <rect>
+    <x>630</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_light_blue">
+  <property name="geometry">
+   <rect>
+    <x>670</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_purple">
+  <property name="geometry">
+   <rect>
+    <x>730</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_purple">
+  <property name="geometry">
+   <rect>
+    <x>730</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_purple">
+  <property name="geometry">
+   <rect>
+    <x>770</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+   <widget class="QFrame" name="frame_unknown">
+  <property name="geometry">
+   <rect>
+    <x>830</x>
+    <y>50</y>
+    <width>31</width>
+    <height>31</height>
+   </rect>
+  </property>
+  <property name="frameShape">
+   <enum>QFrame::StyledPanel</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+   </widget>
+   <widget class="QLabel" name="label_unknown">
+  <property name="geometry">
+   <rect>
+    <x>830</x>
+    <y>100</y>
+    <width>31</width>
+    <height>21</height>
+   </rect>
+  </property>
+  <property name="text">
+   <string>0</string>
+  </property>
+  <property name="alignment">
+   <set>Qt::AlignCenter</set>
+  </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_unknown">
+  <property name="geometry">
+   <rect>
+    <x>870</x>
+    <y>40</y>
+    <width>20</width>
+    <height>101</height>
+   </rect>
+  </property>
+  <property name="maximum">
+   <number>5</number>
+  </property>
+  <property name="orientation">
+   <enum>Qt::Vertical</enum>
+  </property>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="frame_default">
+   <property name="geometry">
+  <rect>
+   <x>270</x>
+   <y>520</y>
+   <width>921</width>
+   <height>151</height>
+  </rect>
+   </property>
+   <property name="frameShape">
+  <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+  <enum>QFrame::Raised</enum>
+   </property>
+  </widget>
+  <zorder>frame_default</zorder>
+  <zorder>buttonBox</zorder>
+  <zorder>videoLabel</zorder>
+  <zorder>treeWidget</zorder>
+  <zorder>frame</zorder>
+  <zorder>pushButton_Reset</zorder>
+  <zorder>frame_KMeans</zorder>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>TrackConfigDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+  <hint type="sourcelabel">
+   <x>1020</x>
+   <y>691</y>
+  </hint>
+  <hint type="destinationlabel">
+   <x>600</x>
+   <y>355</y>
+  </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>TrackConfigDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+  <hint type="sourcelabel">
+   <x>1020</x>
+   <y>691</y>
+  </hint>
+  <hint type="destinationlabel">
+   <x>600</x>
+   <y>355</y>
+  </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

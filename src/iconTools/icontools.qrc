@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/image/icon">
+        <file>001-rec-button.png</file>
+        <file>002-crop-symbol.png</file>
+        <file>003-football-field-in-perspective.png</file>
+        <file>004-pause.png</file>
+        <file>005-power-button.png</file>
+        <file>006-video-camera.png</file>
+        <file>007-one.png</file>
+        <file>008-two.png</file>
+        <file>009-reset.png</file>
+        <file>010-stop.png</file>
+        <file>011-play-button.png</file>
+        <file>012-settings-work-tool.png</file>
+        <file>013-blueFlag.png</file>
+        <file>014-yellowFlag.png</file>
+        <file>015-FirstHalf.png</file>
+        <file>016-eye.png</file>
+        <file>017-strategy.png</file>
+        <file>018-radio-alarm.png</file>
+        <file>019-bee.png</file>
+        <file>020-difussion.png</file>
+        <file>021-keyboard-key-1.png</file>
+        <file>022-number-3-key-on-keyboard.png</file>
+        <file>023-keyboard-key-with-number-2.png</file>
+        <file>024-attacker.png</file>
+        <file>025-defender.png</file>
+        <file>026-goalkeeper.png</file>
+        <file>027-distance-to-travel-between-two-points.png</file>
+        <file>028-invisibleIcon.png</file>
+        <file>029-keyboard-key-of-number-4.png</file>
+        <file>030-wand.png</file>
+        <file>35-turn-visibility-off-button.png</file>
+        <file>border.png</file>
+        <file>numbers.png</file>
+    </qresource>
+</RCC>

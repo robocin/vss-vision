@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/image/icon">
+        <file>001-rec-button.png</file>
+    </qresource>
+</RCC>

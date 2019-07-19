@@ -1,0 +1,12 @@
+{
+    "blacklight": 0,
+    "brightness": 100,
+    "contrast": 50,
+    "exposure_absolute": 0,
+    "exposure_auto": 1,
+    "exposure_auto_priority": 1,
+    "focus_auto": 0,
+    "gain": 0,
+    "saturation": 50,
+    "white_balance_temperature": 4500
+}

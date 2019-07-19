@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<NoCOL>
+  <YMAX>0</YMAX>
+  <UMAX>0</UMAX>
+  <VMAX>0</VMAX>
+  <YMIN>0</YMIN>
+  <UMIN>0</UMIN>
+  <VMIN>0</VMIN></NoCOL>
+<Orange>
+  <YMAX>255</YMAX>
+  <UMAX>95</UMAX>
+  <VMAX>255</VMAX>
+  <YMIN>0</YMIN>
+  <UMIN>0</UMIN>
+  <VMIN>158</VMIN></Orange>
+<Blue>
+  <YMAX>231</YMAX>
+  <UMAX>222</UMAX>
+  <VMAX>142</VMAX>
+  <YMIN>12</YMIN>
+  <UMIN>148</UMIN>
+  <VMIN>62</VMIN></Blue>
+<Yellow>
+  <YMAX>255</YMAX>
+  <UMAX>104</UMAX>
+  <VMAX>170</VMAX>
+  <YMIN>68</YMIN>
+  <UMIN>56</UMIN>
+  <VMIN>111</VMIN></Yellow>
+<Red>
+  <YMAX>111</YMAX>
+  <UMAX>127</UMAX>
+  <VMAX>207</VMAX>
+  <YMIN>49</YMIN>
+  <UMIN>90</UMIN>
+  <VMIN>169</VMIN></Red>
+<Green>
+  <YMAX>144</YMAX>
+  <UMAX>151</UMAX>
+  <VMAX>113</VMAX>
+  <YMIN>76</YMIN>
+  <UMIN>77</UMIN>
+  <VMIN>54</VMIN></Green>
+<Pink>
+  <YMAX>163</YMAX>
+  <UMAX>182</UMAX>
+  <VMAX>247</VMAX>
+  <YMIN>40</YMIN>
+  <UMIN>126</UMIN>
+  <VMIN>150</VMIN></Pink>
+<LightBlue>
+  <YMAX>0</YMAX>
+  <UMAX>0</UMAX>
+  <VMAX>0</VMAX>
+  <YMIN>0</YMIN>
+  <UMIN>0</UMIN>
+  <VMIN>0</VMIN></LightBlue>
+<Purple>
+  <YMAX>7</YMAX>
+  <UMAX>1</UMAX>
+  <VMAX>3</VMAX>
+  <YMIN>3</YMIN>
+  <UMIN>1</UMIN>
+  <VMIN>1</VMIN></Purple>
+<Brown>
+  <YMAX>0</YMAX>
+  <UMAX>0</UMAX>
+  <VMAX>0</VMAX>
+  <YMIN>0</YMIN>
+  <UMIN>0</UMIN>
+  <VMIN>0</VMIN></Brown>
+<ColorStrange>
+  <YMAX>0</YMAX>
+  <UMAX>0</UMAX>
+  <VMAX>0</VMAX>
+  <YMIN>0</YMIN>
+  <UMIN>0</UMIN>
+  <VMIN>0</VMIN></ColorStrange>
+<GrayScale>50</GrayScale>
+</opencv_storage>

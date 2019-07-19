@@ -1,0 +1,41 @@
+#ifndef VISIONTHREAD_H
+#define VISIONTHREAD_H
+
+#include <QThread>
+#include <QMutex>
+#include <iostream>
+#include <QWaitCondition>
+#include <mainwindow.h>
+#include <QElapsedTimer>
+
+class MainWindow;
+
+class VisionThread: public QThread
+{
+  Q_OBJECT
+public:
+  VisionThread();
+  ~VisionThread();
+
+public slots:
+  void pause();
+  void startWork();
+  void finish();
+  void enableResultSignal(bool enable);
+
+signals:
+  void resultReady();
+
+private:
+  QMutex _threadMutex;
+  QWaitCondition _threadController;
+
+  bool _isRunning;
+  bool _hasFinished;
+  bool _resultSignalEnabled;
+
+
+  void run() override;
+};
+
+#endif // VISIONTHREAD_H

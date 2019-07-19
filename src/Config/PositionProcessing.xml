@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Default>
+  <minSize>18</minSize>
+  <maxSize>760</maxSize>
+  <minSizeBall>52</minSizeBall>
+  <maxSizeBall>733</maxSizeBall>
+  <blobMaxDist>500</blobMaxDist>
+  <myTeam>2</myTeam>
+  <enemyTeam>3</enemyTeam>
+  <enemySearch>0</enemySearch>
+  <showElement>0</showElement></Default>
+</opencv_storage>

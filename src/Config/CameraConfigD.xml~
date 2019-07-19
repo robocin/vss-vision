@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Default>
+  <white_balance_temperature>5300</white_balance_temperature>
+  <white_balance_temperature_auto>0</white_balance_temperature_auto>
+  <blacklight>0</blacklight>
+  <exposure_auto>3</exposure_auto>
+  <focus_auto>1</focus_auto>
+  <gain>0</gain>
+  <brightness>128</brightness>
+  <exposure_absolute>143</exposure_absolute>
+  <saturation>128</saturation>
+  
+  <contrast>128</contrast>
+
+  <gamma>0</gamma>
+
+</Default>
+</opencv_storage>
