@@ -1,0 +1,32 @@
+# Qt build forlders
+build-*
+src/build-*
+src/*.o
+src/moc*
+src/VSSL
+src/VSSL.pro.user
+src/Makefile
+src/\.qmake\.stash
+src/moc_mainwindow\.cpp
+src/ui_mainwindow\.h
+src/VSSL\.app/Contents/Info\.plist
+src/VSSL\.app/Contents/MacOS/VSSL
+src/VSSL\.app/Contents/PkgInfo
+src/VSSL\.app/Contents/Resources/empty\.lproj
+src/Utils/dest.txt
+\.DS_Store
+
+
+
+#All logging files (including rotative)
+src/Log/*
+
+#Only executions logs
+#src/Log/vision/executions/*
+#src/Log/strategy/executions/*
+#src/Log/others/executions/*
+#src/Log/general/executions/*
+
+src/qrc_image.cpp
+src/qrc_icontools.cpp
+
