@@ -37,6 +37,15 @@ namespace Constants {
 
   BETTER_ENUM(Fields, int, INVALID = -1, size3x3, size5x5);
 
+  BETTER_ENUM(Actions, int, INVALID = -1, STOP, SPIN, MOVE, FOLLOW_BALL, CARRY_BALL);
+
+  BETTER_ENUM(Behaviors, int, INVALID = -1, ATTACKER2018, DEFENDER2018, ATTACKERIRONCUP2019,
+              DEFENDERIRONCUP2019, GKINSIDEIRONCUP2019, GKOUTSIDEIRONCUP2019);
+
+  BETTER_ENUM(Plannings, int, INVALID = -1, BEZIER, UNIVECTOR_POSTURE, UNIVECTOR);
+
+  BETTER_ENUM(Navigations, int, INVALID = -1, DEFENDER, GOALIE, ATTACKER);
+
   BETTER_ENUM(Color, int,
     INVALID = -1,
     ORANGE,
@@ -85,6 +94,40 @@ namespace Constants {
     Color::CYAN,
     Color::PURPLE,
     Color::BROWN
+  };
+
+  /*
+    enum NewColor {
+      INVALID_COLOR = -1,
+      COLOR_ORANGE,
+      COLOR_BLUE,
+      COLOR_YELLOW,
+      COLOR_RED,
+      COLOR_GREEN,
+      COLOR_PINK,
+      COLOR_CYAN,
+      COLOR_PURPLE,
+      COLOR_BROWN,
+      MAX_COLORS
+    };
+  */
+
+  // VAI SUMIR DAQUI PRA BAIXO... /////////////////////////////////
+  enum Ccolor {
+    NoCOL,
+    OrangeCOL,
+    BlueCOL,
+    YellowCOL,
+    COLORS_ID_BEGIN,
+    RedCOL = COLORS_ID_BEGIN,
+    GreenCOL,
+    PinkCOL,
+    LightBlueCOL,
+    PurpleCOL,
+    BrownCOL,
+    COLORS_ID_END = BrownCOL,
+    ColorStrange,
+    NUMBEROFCOLOR
   };
 
   enum BallArea {
