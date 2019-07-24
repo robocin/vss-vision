@@ -6,40 +6,13 @@
 // Comentar o uso das funcoes
 
 class Entity {
-  Bool m_active;
-
-  Float m_time;
-
-  Float m_accumulateTime;
-  Point m_accumulatePosition;
-  Point m_accumulateSpeed;
-
+  Bool m_updated;
   Point m_position;
-  Point m_speed;
-  Point m_acceleration;
-
-  Deque<Float> m_lastTimes;
-  Deque<Point> m_lastPositions;
-  Deque<Point> m_lastSpeeds;
-  Deque<Point> m_lastAccelerations;
-
-  Void updateTime(const Float &t_time);
-  Void updatePosition(const Point &t_position);
-  Void updateSpeed();
-  Void updateAcceleration();
 
 public:
   Entity();
 
   Void update(const Float &t_time, const Point &t_position);
-
-  Void setActive(const Bool &t_active = true);
-
-  const Bool &isActive();
-
-  const Float &accumulateTime();
-  const Point &accumulatePosition();
-  const Point &accumulateSpeed();
 
   /**
    * Get entity position
