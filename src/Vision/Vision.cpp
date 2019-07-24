@@ -126,7 +126,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
         this->_deepLogInitialTime = ini;
 
         fprintf(this->_deepLogFile,"ID_VIDEO;TIMESTAMP_INITIAL;ID_ROBO1;ID_ROBO2;ID_ROBO3\n");
-        fprintf(this->_deepLogFile,"%s;%d;%d;%d;%d\n",this->_deepLogFileName.c_str(),this->_deepLogInitialTime, entities[ROBOT1].getColor(), entities[ROBOT2].getColor(), entities[ROBOT3].getColor());
+        fprintf(this->_deepLogFile,"%s;%d;%d;%d;%d\n",this->_deepLogFileName.c_str(),this->_deepLogInitialTime, entities[ROBOT1].id(), entities[ROBOT2].id(), entities[ROBOT3].id());
         fprintf(this->_deepLogFile,"R1X;R1Y;R1T;R2X;R2Y;R2T;R3X;R3Y;R3T;A1X;A1Y;A1T;A2X;A2Y;A2T;A3X;A3Y;A3T;BX;BY;TIMESTAMP_FRAME\n");
 
       }
@@ -135,31 +135,21 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
 
     if (this->_deepLogFile) {
       // any other frame
-      fprintf(this->_deepLogFile,"%d;%d;%lf;",entities[ROBOT1].getPositionMatrix().x, entities[ROBOT1].getPositionMatrix().y, entities[ROBOT1].getAngle());
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ROBOT2].getPositionMatrix().x, entities[ROBOT2].getPositionMatrix().y, entities[ROBOT2].getAngle());
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ROBOT3].getPositionMatrix().x, entities[ROBOT3].getPositionMatrix().y, entities[ROBOT3].getAngle());
+      fprintf(this->_deepLogFile,"%d;%d;%lf;",entities[ROBOT1].position().x, entities[ROBOT1].position().y, entities[ROBOT1].angle());
+      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ROBOT2].position().x, entities[ROBOT2].position().y, entities[ROBOT2].angle());
+      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ROBOT3].position().x, entities[ROBOT3].position().y, entities[ROBOT3].angle());
 
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV1].getPositionMatrix().x, entities[ADV1].getPositionMatrix().y, entities[ADV1].getAngle());
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV2].getPositionMatrix().x, entities[ADV2].getPositionMatrix().y, entities[ADV2].getAngle());
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV3].getPositionMatrix().x, entities[ADV3].getPositionMatrix().y, entities[ADV3].getAngle());
+      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV1].position().x, entities[ADV1].position().y, entities[ADV1].angle());
+      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV2].position().x, entities[ADV2].position().y, entities[ADV2].angle());
+      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV3].position().x, entities[ADV3].position().y, entities[ADV3].angle());
 
-      fprintf(this->_deepLogFile,"%d;%d;", entities[BALL].getPositionMatrix().x, entities[BALL].getPositionMatrix().y, entities[BALL].getAngle());
+      fprintf(this->_deepLogFile,"%d;%d;", entities[BALL].position().x, entities[BALL].position().y, entities[BALL].angle());
       fprintf(this->_deepLogFile,"%d\n", actualTime - this->_deepLogInitialTime);
     }
 
    }
    this->_visionTimer.stop();
    this->_visionRunTime = static_cast<double> (this->_visionTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
-}
-
-void Vision::setObjectsSpeed(QTime timeStamp, std::vector<Entity>& currentPositions)
-{
-  for(int i=0; i<=BALL; i++) {
-     this->_lastPositions[i].push(std::make_pair(currentPositions[i].getPositionCartesian(),
-                           timeStamp));
-     while(this->_lastPositions[i].size() > MAX_FRAMES) this->_lastPositions[i].pop();
-     currentPositions[i].setObjectSpeed(this->_lastPositions[i]);
-   }
 }
 
 cv::Mat Vision::getSegmentationDebugFrame(cv::Mat frame)
@@ -278,14 +268,6 @@ cv::Mat Vision::getSegmentationFrame()
 cv::Mat Vision::getDetectionFrame()
 {
   return this->_detection->getDebugFrame();
-}
-
-void Vision::setConvertAll(std::vector<Entity>& entities)
-{
-  for(int i = ROBOT1 ; i <= BALL ; i++)
-  {
-    entities[i].setConvert(this->_convert.x,this->_convert.y);
-  }
 }
 
 bool  Vision::isCorrectionEnabled()
