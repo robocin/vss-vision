@@ -66,7 +66,6 @@ SOURCES += main.cpp\
   cameraconfigurationdialog.cpp \
   Logging/logging.cpp \
   Vision/ColorSpace.cpp \
-  potentialfieldviewer.cpp \
   maggicsegmentationdialog.cpp \
   Timer/Timer.cpp \
   visionthread.cpp \
