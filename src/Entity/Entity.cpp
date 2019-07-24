@@ -93,46 +93,26 @@ Void Entity::setActive(const Bool &t_active) {
     m_active = t_active;
 }
 
-const Bool &Entity::isActive() {
-    return m_active;
-}
-
-const Float &Entity::accumulateTime() {
-    return m_accumulateTime;
-}
-
-const Point &Entity::accumulatePosition() {
-    return m_accumulatePosition;
-}
-
-const Point &Entity::accumulateSpeed() {
-    return m_accumulateSpeed;
-}
-
 const Point &Entity::position() {
     return m_position;
 }
 
-const Point &Entity::speed() {
-  return m_speed;
+void Entity::setUpdated(const Bool &t_updated)
+{
+  m_updated = t_updated;
 }
 
-const Point &Entity::acceleration() {
-  return m_acceleration;
+const Bool &Entity::isUpdated()
+{
+  return m_updated;
 }
 
-const Deque<Float> &Entity::lastTimes() {
-  return m_lastTimes;
+void Entity::setAngle(const Float &t_angle)
+{
+  m_angle = t_angle;
 }
 
-const Deque<Point> &Entity::lastPositions() {
-  return m_lastPositions;
-}
-
-const Deque<Point> &Entity::lastSpeeds() {
-  return m_lastSpeeds;
-}
-
-const Deque<Point> &Entity::lastAccelerations() {
-  return m_lastAccelerations;
+const Float &Entity::getAngle()
+{
+  return m_angle;
 }

@@ -52,31 +52,23 @@ public:
    */
   const Point &speed();
   /**
-   * Get entity acceleration
-   * @return Point with the value of acceleration in each axis
+   * Set if this entity is updated
    */
-  const Point &acceleration();
-
+  void setUpdated(const Bool &t_updated);
   /**
-   * Get last times
-   * @return Deque of floating points, where the index 0 is the most recent value
+   * Get if entity is updated or not
+   * @return Boolean that is true if entity is updated or false if entity is not updated
    */
-  const Deque<Float> &lastTimes();
+  const Bool &isUpdated();
   /**
-   * Get last positions
-   * @return Deque of points, where the index 0 is the most recent value
+   * Set entity's angle
    */
-  const Deque<Point> &lastPositions();
+  void setAngle(const Float &t_angle);
   /**
-   * Get last speeds
-   * @return Deque of points, where the index 0 is the most recent value
+   * Get entity's angle
+   * @return Float with the entity's angle in radians
    */
-  const Deque<Point> &lastSpeeds();
-  /**
-   * Get last accelerations
-   * @return Deque of points, where the index 0 is the most recent value
-   */
-  const Deque<Point> &lastAccelerations();
+  const Float &getAngle();
 };
 
 #endif // Entity_H
