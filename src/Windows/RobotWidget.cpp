@@ -20,12 +20,6 @@ RobotWidget::RobotWidget(const size_t &t_index, QWidget *parent)
   // atualizar posicao, velocidade e aceleracao
 }
 
-// Esse construtor chama o construtor acima para setar as partes
-// que seriam em comum para os dois, evitando replicação de código
-RobotWidget::RobotWidget(const size_t &t_index, QWidget *parent)
-  : RobotWidget(t_index, parent) {
-}
-
 RobotWidget::~RobotWidget() {
   delete m_ui;
 }
@@ -73,9 +67,9 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
 void RobotWidget::update() {
   int offset_x = static_cast<int>(m_index) * 50;
   int offset_y = 0;
-  if (m_index < vss.allies().size()) {
+  if (m_index < vss.players().size()) {
     m_ui->idRobot->setPixmap(getRobotId());
-    Ally &ally = vss.allies()[m_index];
+    Ally &ally = vss.players()[m_index];
     std::stringstream ss;
     std::string str;
     QString value;
@@ -84,7 +78,7 @@ void RobotWidget::update() {
     ss.clear();
     value = str.c_str();
     m_ui->positionValueRobot->setText(value);
-    ss << std::fixed << std::setprecision(2) << ally.speed();
+    //ss << std::fixed << std::setprecision(2) << ally.speed();
     getline(ss, str);
     ss.clear();
     value = str.c_str();
