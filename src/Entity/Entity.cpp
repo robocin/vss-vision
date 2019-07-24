@@ -116,3 +116,13 @@ const Float &Entity::getAngle()
 {
   return m_angle;
 }
+
+void Entity::setColor(const Int &t_color)
+{
+  m_color = t_color;
+}
+
+Int &Entity::getColor()
+{
+  return m_color;
+}

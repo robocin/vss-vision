@@ -42,6 +42,15 @@ public:
    * @return Float with the entity's angle in radians
    */
   const Float &getAngle();
+  /**
+   * Set entity's color
+   */
+  void setColor(const Int &t_color);
+  /**
+   * Get entity's color
+   * @return Integer with the color index
+   */
+  Int &getColor();
 };
 
 #endif // Entity_H
