@@ -210,7 +210,7 @@ void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugF
     Entity &ball = vss.ball();
     // Desativar, so ativar quando encontrar
     // a bola no frame atual
-    ball.setActive(false);
+    ball.outdate();
     Blob blobBall;
     Int maxArea = -1;
     blobBall.valid = false;
@@ -246,8 +246,7 @@ void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugF
     }
 
     Float newTime = vss.time().getMilliseconds();
-    vss.ball().update(newTime, newPosition);
-    vss.ball().setActive(true);
+    vss.ball().update(newPosition);
   };
   newFindBall(vss);
 

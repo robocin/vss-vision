@@ -18,7 +18,7 @@ public:
   /**
    * Update entity's position and angle
    */
-  Void update(const Point &t_position, const Float &t_angle);
+  Void update(const Point &t_position, const Float &t_angle = 0);
   /**
    * Get entity position
    * @return Point with the value of position in each axis
@@ -29,6 +29,10 @@ public:
    * @return Boolean that is true if entity is updated or false if entity is not updated
    */
   const Bool &updated();
+  /**
+   * Set updated as false, invalidating values
+   */
+  Void outdate();
   /**
    * Get entity's angle
    * @return Float with the entity's angle in radians
