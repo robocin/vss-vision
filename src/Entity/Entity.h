@@ -45,8 +45,4 @@ public:
   const Int &id();
 };
 
-typedef Entity Player;
-typedef Player Ally;
-typedef Player Enemy;
-
 #endif // Entity_H

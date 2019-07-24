@@ -10,6 +10,9 @@
 
 struct Parameters;
 class Entity;
+typedef Entity Player;
+typedef Player Ally;
+typedef Player Enemy;
 // Namespace que contem os tipos comuns utilizados no programa fora as classes,
 // criado para facilitar a busca por tipos
 namespace Types {
