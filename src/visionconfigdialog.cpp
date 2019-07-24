@@ -80,17 +80,17 @@ void VisionConfigDialog::updateLabels() {
   }
 
   for (int i = 0; i < 7; i++) {
-    if (this->_robotPositions[i].isUpdated()) {
-      x = this->_robotPositions[i].getPositionCartesian().x;
-      y = this->_robotPositions[i].getPositionCartesian().y;
+    if (this->_robotPositions[i].updated()) {
+      x = this->_robotPositions[i].position().x;
+      y = this->_robotPositions[i].position().y;
       //velx = this->_robotPositions[i].getObjectSpeed().x;
       //vely = this->_robotPositions[i].getObjectSpeed().y;
-      angle = this->_robotPositions[i].getAngle();
+      angle = this->_robotPositions[i].angle();
       p1.setX(std::floor(x * 3));
       p1.setY(std::floor(390 - y * 3));
       p2.setX(p1.x() + velx);
       p2.setY(p1.y() - vely);
-      colorIndex = this->_robotPositions[i].getColor();
+      colorIndex = this->_robotPositions[i].id();
       currentColor = QColor((int)ColorSpace::markerColors[colorIndex].red,
                             (int)ColorSpace::markerColors[colorIndex].green,
                             (int)ColorSpace::markerColors[colorIndex].blue);
