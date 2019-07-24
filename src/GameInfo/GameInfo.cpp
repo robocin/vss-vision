@@ -66,29 +66,6 @@ References<Enemy> &GameInfo::enemies() {
   return m_enemies;
 }
 
-AlliesTable &GameInfo::alliesTable() {
-  return m_alliesTable;
-}
-
-EnemiesTable &GameInfo::enemiesTable() {
-  return m_enemiesTable;
-}
-
-ParametersTable &GameInfo::parametersTable() {
-    return m_parametersTable;
-}
-
-BehaviorsTable &GameInfo::behaviorsTable() {
-    return m_behaviorsTable;
-}
-
-NavigationsTable &GameInfo::navigationsTable() {
-    return m_navigationsTable;
-}
-
-PlanningsTable &GameInfo::planningsTable() {
-    return m_planningsTable;
-}
 
 Timer &GameInfo::time() {
   return m_time;
