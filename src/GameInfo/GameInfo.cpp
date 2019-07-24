@@ -58,6 +58,10 @@ Entity &GameInfo::ball() {
   return m_ball;
 }
 
+Players &GameInfo::players() {
+    return m_players;
+}
+
 Timer &GameInfo::time() {
   return m_time;
 }

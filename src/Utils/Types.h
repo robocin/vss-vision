@@ -40,6 +40,7 @@ namespace Types {
 
     template <class T>
     using Deque        = std::deque<T>;
+    using Entities      = Vector<Entity>;
     using Players       = Vector<Player>;
     using Point          = cv::Point_<Float>;
     using Polygon        = Vector<Point>;

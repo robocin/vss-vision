@@ -22,12 +22,8 @@ RobotWidget::RobotWidget(const size_t &t_index, QWidget *parent)
 
 // Esse construtor chama o construtor acima para setar as partes
 // que seriam em comum para os dois, evitando replicação de código
-RobotWidget::RobotWidget(const size_t &t_index, String behaviour,
-                         String navigation, String planning, QWidget *parent)
+RobotWidget::RobotWidget(const size_t &t_index, QWidget *parent)
   : RobotWidget(t_index, parent) {
-  m_parametersWindow.setBehaviourComboBoxIndex(behaviour);
-  m_parametersWindow.setNavigationComboBoxIndex(navigation);
-  m_parametersWindow.setPlanningComboBoxIndex(planning);
 }
 
 RobotWidget::~RobotWidget() {
@@ -56,13 +52,13 @@ void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
 
 void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   QPainter paint(&t_robotId);
-  Ally &ally = vss.allies()[m_index];
+  Ally &ally = vss.players()[m_index];
 
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
   for (const char *str : Color::_names()) {
-    if (ally.index() == Color::_from_string(str)) {
+    if (ally.id() == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
         color = QColor(correctColor);
