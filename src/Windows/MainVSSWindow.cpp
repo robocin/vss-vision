@@ -426,7 +426,6 @@ void MainVSSWindow::on_maggicSegmentationButton_clicked() {
 
 void MainVSSWindow::on_communicationPushButton_clicked() {
   if (!m_ui->communicationPushButton->isChecked()) {
-    Coach::singleton().stopCommunication();
     this->m_ui->communicationPushButton->setChecked(false);
     this->m_ui->communicationModeComboBox->setEnabled(true);
     // this->_communicationRunning = false;
@@ -434,10 +433,6 @@ void MainVSSWindow::on_communicationPushButton_clicked() {
     // Deep Log
     Vision::singleton().closeDeepLog();
   } else {
-    std::string currentText =
-      this->m_ui->communicationModeComboBox->currentText().toStdString();
-    Coach::singleton().startCommunicationWithNet(
-      static_cast<int>(currentText[currentText.length() - 1] - '0'));
     this->m_ui->communicationPushButton->setChecked(true);
     this->m_ui->communicationModeComboBox->setEnabled(false);
 
