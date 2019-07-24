@@ -83,7 +83,6 @@ SOURCES += main.cpp\
     Utils/Draw.cpp \
     Utils/EnumsAndConstants.cpp \
     Windows/RobotWidget.cpp \
-    Windows/ParameterOption.cpp \
     trackconfigdialog.cpp
 
 HEADERS  += mainwindow.h \
@@ -121,9 +120,7 @@ HEADERS  += mainwindow.h \
     Windows/MainVSSWindow.h \
     Utils/Geometry.h \
     Utils/Draw.h \
-    Windows/ParametersWindow.h \
     Windows/RobotWidget.h \
-    Windows/ParameterOption.h \
     Utils/SmartEnum.h \
     Utils/BetterEnum.h \
     trackconfigdialog.h \
