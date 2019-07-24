@@ -136,9 +136,7 @@ FORMS  += mainwindow.ui \
   cameraconfigurationdialog.ui \
   maggicsegmentationdialog.ui \
     Windows/MainVSSWindow.ui \
-    Windows/ParametersWindow.ui \
     Windows/RobotWidget.ui \
-    Windows/ParameterOption.ui \
     trackconfigdialog.ui
 
 unix:!macx{
