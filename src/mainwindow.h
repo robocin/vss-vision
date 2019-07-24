@@ -8,7 +8,7 @@
 #include <QFileDialog>
 #include <QMutex>
 #include <CameraManager/CameraManager.h>
-#include <Entity/Player.h>
+#include <Entity/Entity.h>
 #include <Utils/Utils.h>
 #include <Vision/Vision.h>
 #include <QAbstractListModel>

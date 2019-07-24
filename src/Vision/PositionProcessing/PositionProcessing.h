@@ -15,7 +15,7 @@
 #include "Utils/Utils.h"
 #include <map>
 #include <string>
-#include "Entity/Player.h"
+#include "Entity/Entity.h"
 #include <QReadWriteLock>
 #include "runlengthencoding.h"
 #include "GameInfo/GameInfo.h"

@@ -10,7 +10,6 @@
 
 struct Parameters;
 class Entity;
-class Player;
 // Namespace que contem os tipos comuns utilizados no programa fora as classes,
 // criado para facilitar a busca por tipos
 namespace Types {

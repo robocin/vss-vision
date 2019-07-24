@@ -76,7 +76,6 @@ SOURCES += main.cpp\
   TBBThreadManager.cpp \
   Entity/Entity.cpp \
     Field/Field.cpp \
-    Entity/Player.cpp \
     GameInfo/GameInfo.cpp \
     Utils/Global.cpp \
     Windows/MainVSSWindow.cpp \
@@ -116,7 +115,6 @@ HEADERS  += mainwindow.h \
   Utils/Types.h \
     Field/Field.h \
     Utils/EnumsAndConstants.h \
-    Entity/Player.h \
     GameInfo/GameInfo.h \
     Utils/Defines.h \
     Utils/Global.h \
