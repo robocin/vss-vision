@@ -13,6 +13,7 @@
 
 namespace Ui {
   class MaggicSegmentationDialog;
+  class FieldPointsCalibrateDialog;
 }
 
 class MaggicSegmentationDialog : public QDialog
@@ -64,7 +65,7 @@ private:
   bool paused;
 
   MaggicSegmentation *maggicSegmentation;
-  FieldPointsCalibrateDialog *_fieldDialog;
+  Ui::FieldPointsCalibrateDialog *_fieldDialog;
 
   QPushButton *entities[8];
 

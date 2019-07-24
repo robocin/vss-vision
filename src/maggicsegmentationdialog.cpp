@@ -1,5 +1,6 @@
 #include "maggicsegmentationdialog.h"
 #include "ui_maggicsegmentationdialog.h"
+#include <QMouseEvent>
 #include <chrono>
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM 17
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM 45
