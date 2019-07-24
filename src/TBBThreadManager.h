@@ -57,9 +57,6 @@ public slots:
   void visionPause();
   void visionStart();
 
-  void strategyPause();
-  void strategyStart();
-
   void startAll();
   void pauseAll();
 
