@@ -58,15 +58,6 @@ Entity &GameInfo::ball() {
   return m_ball;
 }
 
-References<Ally> &GameInfo::allies() {
-  return m_allies;
-}
-
-References<Enemy> &GameInfo::enemies() {
-  return m_enemies;
-}
-
-
 Timer &GameInfo::time() {
   return m_time;
 }
