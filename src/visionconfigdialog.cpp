@@ -83,8 +83,8 @@ void VisionConfigDialog::updateLabels() {
     if (this->_robotPositions[i].isUpdated()) {
       x = this->_robotPositions[i].getPositionCartesian().x;
       y = this->_robotPositions[i].getPositionCartesian().y;
-      velx = this->_robotPositions[i].getObjectSpeed().x;
-      vely = this->_robotPositions[i].getObjectSpeed().y;
+      //velx = this->_robotPositions[i].getObjectSpeed().x;
+      //vely = this->_robotPositions[i].getObjectSpeed().y;
       angle = this->_robotPositions[i].getAngle();
       p1.setX(std::floor(x * 3));
       p1.setY(std::floor(390 - y * 3));
