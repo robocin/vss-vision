@@ -3,54 +3,42 @@
 
 #include "Utils/Utils.h"
 
-// Comentar o uso das funcoes
-
 class Entity {
+  Int m_id;
   Bool m_updated;
   Point m_position;
+  Float m_angle;
 
 public:
-  Entity();
-
-  Void update(const Float &t_time, const Point &t_position);
-
+  /**
+   * Constructor of Entity's class that uses an default '-1' id.
+   * @return An Entity object
+   */
+  Entity(const Int &t_id = -1);
+  /**
+   * Update entity's position and angle
+   */
+  Void update(const Point &t_position, const Float &t_angle);
   /**
    * Get entity position
    * @return Point with the value of position in each axis
    */
   const Point &position();
   /**
-   * Get entity speed
-   * @return Point with the value of speed in each axis
-   */
-  const Point &speed();
-  /**
-   * Set if this entity is updated
-   */
-  void setUpdated(const Bool &t_updated);
-  /**
    * Get if entity is updated or not
    * @return Boolean that is true if entity is updated or false if entity is not updated
    */
-  const Bool &isUpdated();
-  /**
-   * Set entity's angle
-   */
-  void setAngle(const Float &t_angle);
+  const Bool &updated();
   /**
    * Get entity's angle
    * @return Float with the entity's angle in radians
    */
-  const Float &getAngle();
+  const Float &angle();
   /**
-   * Set entity's color
+   * Get entity's id number
+   * @return Integer with the entity's id number
    */
-  void setColor(const Int &t_color);
-  /**
-   * Get entity's color
-   * @return Integer with the color index
-   */
-  Int &getColor();
+  const Int &id();
 };
 
 #endif // Entity_H
