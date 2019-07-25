@@ -8,7 +8,6 @@
 #include "Field/Field.h"
 #include "Windows/MainVSSWindow.h"
 #include "maggicsegmentationdialog.h"
-#include "mainwindow.h"
 
 int main(int argc, char *argv[]) {
   TBBThreadManager Graph;

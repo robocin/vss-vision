@@ -69,7 +69,7 @@ void Vision::update(std::vector<Entity> &currentPositions)
 
   if (this->_isCorrectionEnabled) {
     Global::setConvertRatio(_convert);
-    this->setConvertAll(currentPositions); // apagar depois, field possui
+    //this->setConvertAll(currentPositions); // apagar depois, field possui
     // as taxas de conversao
   }
 
@@ -96,7 +96,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   std::vector<Entity> &currentPositions = this->_robotPositions;
   this->setFrame(frame);
   this->update(currentPositions);
-  this->setObjectsSpeed(timeStamp, currentPositions);
+  //this->setObjectsSpeed(timeStamp, currentPositions);
   this->_robotPositions = currentPositions;
 
   int actualTime = timeStamp.msecsSinceStartOfDay();

@@ -5,8 +5,9 @@
 #include <QMutex>
 #include <iostream>
 #include <QWaitCondition>
-#include <mainwindow.h>
 #include <QElapsedTimer>
+#include <Vision/Vision.h>
+#include <CameraManager/CameraManager.h>
 
 class MainWindow;
 

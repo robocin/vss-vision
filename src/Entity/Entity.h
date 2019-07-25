@@ -1,7 +1,7 @@
 #ifndef Entity_H
 #define Entity_H
 
-#include "Utils/Utils.h"
+#include "Utils/Types.h"
 
 class Entity {
   Int m_id;
@@ -44,5 +44,12 @@ public:
    */
   const Int &id();
 };
+
+typedef Entity Player;
+typedef Player Ally;
+typedef Player Enemy;
+
+using Entities      = Vector<Entity>;
+using Players       = Vector<Player>;
 
 #endif // Entity_H

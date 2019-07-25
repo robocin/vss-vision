@@ -50,7 +50,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-  mainwindow.cpp \
   Utils/Utils.cpp \
   Entity/Entity.cpp \
   Vision/Vision.cpp \
@@ -74,7 +73,6 @@ SOURCES += main.cpp\
   Vision/PositionProcessing/runlengthencoding.cpp \
   Vision/PositionProcessing/BlobDetection.cpp \
   TBBThreadManager.cpp \
-  Entity/Entity.cpp \
     Field/Field.cpp \
     GameInfo/GameInfo.cpp \
     Utils/Global.cpp \
@@ -85,7 +83,7 @@ SOURCES += main.cpp\
     Windows/RobotWidget.cpp \
     trackconfigdialog.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
   Entity/Entity.h \
     Planning/PUnivector.h \
   Utils/Utils.h \
@@ -126,7 +124,7 @@ HEADERS  += mainwindow.h \
     trackconfigdialog.h \
     Windows/FileConstants.h
 
-FORMS  += mainwindow.ui \
+FORMS  += \
   visionconfigdialog.ui \
   fieldpointscalibratedialog.ui \
   segmentationconfigdialog.ui \

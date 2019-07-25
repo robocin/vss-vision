@@ -9,10 +9,6 @@
 #include <opencv2/opencv.hpp>
 
 struct Parameters;
-class Entity;
-typedef Entity Player;
-typedef Player Ally;
-typedef Player Enemy;
 // Namespace que contem os tipos comuns utilizados no programa fora as classes,
 // criado para facilitar a busca por tipos
 namespace Types {
@@ -40,8 +36,6 @@ namespace Types {
 
     template <class T>
     using Deque        = std::deque<T>;
-    using Entities      = Vector<Entity>;
-    using Players       = Vector<Player>;
     using Point          = cv::Point_<Float>;
     using Polygon        = Vector<Point>;
     using Points         = Vector<Point>;
