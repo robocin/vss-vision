@@ -7,7 +7,6 @@
 #include "Entity/Entity.h"
 #include "Field/Field.h"
 #include "Windows/MainVSSWindow.h"
-#include "Windows/ParametersWindow.h"
 #include "maggicsegmentationdialog.h"
 #include "mainwindow.h"
 

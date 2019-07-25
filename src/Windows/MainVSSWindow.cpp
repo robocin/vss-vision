@@ -15,8 +15,7 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
     auto &widget = m_robotWidgets[i];
 
     if (i == 0) {
-      widget = new RobotWidget(i, "GKOUTSIDEIRONCUP2019", "GOALIE", "BEZIER",
-                               m_ui->scrollAreaWidgetContents);
+      widget = new RobotWidget(i, m_ui->scrollAreaWidgetContents);
     } else {
       widget = new RobotWidget(i, m_ui->scrollAreaWidgetContents);
     }

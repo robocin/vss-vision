@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QPainter>
-#include "ParametersWindow.h"
 
 namespace Ui {
   class RobotWidget;
@@ -15,9 +14,6 @@ class RobotWidget : public QWidget {
 
  public:
   explicit RobotWidget(const size_t &t_index, QWidget *parent = nullptr);
-
-  RobotWidget(const size_t &t_index, String behaviour, String navigation,
-              String planning, QWidget *parent = nullptr);
 
   ~RobotWidget();
 
@@ -34,7 +30,6 @@ class RobotWidget : public QWidget {
   size_t m_index;
   QPixmap m_borderImage;
   QPixmap m_numbersImage;
-  ParametersWindow m_parametersWindow;
 };
 
 #endif  // ROBOTWIDGET_H

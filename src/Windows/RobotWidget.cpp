@@ -8,8 +8,7 @@ RobotWidget::RobotWidget(const size_t &t_index, QWidget *parent)
     m_ui(new Ui::RobotWidget),
     m_index(t_index),
     m_borderImage(":/image/icon/border.png"),
-    m_numbersImage(":/image/icon/numbers.png"),
-    m_parametersWindow(t_index, parent) {
+    m_numbersImage(":/image/icon/numbers.png") {
   m_ui->setupUi(this);
   QRect region(static_cast<int>(t_index) * 50, 0, 50, 50);
   m_ui->numberRobot->setPixmap(m_numbersImage.copy(region));
@@ -95,4 +94,4 @@ void RobotWidget::update() {
   m_ui->numberRobot->setPixmap(m_numbersImage.copy(region));
 }
 
-void RobotWidget::on_toolsButtonRobot_clicked() { m_parametersWindow.show(); }
+void RobotWidget::on_toolsButtonRobot_clicked() { }
