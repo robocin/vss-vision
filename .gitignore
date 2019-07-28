@@ -3,7 +3,7 @@ build-*
 src/build-*
 src/*.o
 src/moc*
-src/VSSL
+src/VSSL-VISION
 src/VSSL.pro.user
 src/Makefile
 src/\.qmake\.stash
