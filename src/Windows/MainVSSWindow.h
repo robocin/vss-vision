@@ -130,7 +130,7 @@ protected:
   void startCameraUpdate();
   void pauseCameraUpdate();
   void enableVisionThread(bool);
-  void enableStrategyThread(bool enabled);
+  void finishVisionThread();
 };
 
 #endif  // MAINVSSWINDOW_H

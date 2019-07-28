@@ -343,12 +343,10 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
 
 void MainVSSWindow::on_strategyInitPushButton_clicked() {
   if (!this->m_ui->strategyInitPushButton->isChecked()) {
-    emit this->enableStrategyThread(false);
     m_ui->strategyInitPushButton->setChecked(false);
     m_ui->startAllPushButton->setChecked(false);
     // this->_hasStrategyStarted = false;
   } else {
-    emit this->enableStrategyThread(true);
     m_ui->strategyInitPushButton->setChecked(true);
     // this->_hasStrategyStarted = true;
   }

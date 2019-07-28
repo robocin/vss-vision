@@ -25,8 +25,6 @@ int main(int argc, char *argv[]) {
                    SLOT(visionStart()));
   QObject::connect(&vsswindow, SIGNAL(finishVisionThread()), &Graph,
                    SLOT(visionPause()));
-  QObject::connect(&vsswindow, SIGNAL(enableStrategyThread(bool)), &Graph,
-                   SLOT(strategyStart()));
 
   vsswindow.showMaximized();
   return app.exec();
