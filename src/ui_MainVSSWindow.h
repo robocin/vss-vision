@@ -13,7 +13,6 @@
 #include <QtGui/QIcon>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QFrame>
@@ -55,7 +54,6 @@ public:
     QWidget *viewOptionsWidget;
     QVBoxLayout *verticalLayout_5;
     QComboBox *visualizationComboBox;
-    QCheckBox *planning;
     QWidget *simulationTab;
     QGridLayout *gridLayout_3;
     QFrame *simulationFrame;
@@ -197,12 +195,6 @@ public:
         visualizationComboBox->setFrame(false);
 
         verticalLayout_5->addWidget(visualizationComboBox);
-
-        planning = new QCheckBox(viewOptionsWidget);
-        planning->setObjectName(QString::fromUtf8("planning"));
-        planning->setLayoutDirection(Qt::RightToLeft);
-
-        verticalLayout_5->addWidget(planning);
 
 
         horizontalLayout_5->addWidget(viewOptionsWidget);
@@ -439,7 +431,7 @@ public:
         robotsScrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 268, 284));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 268, 285));
         scrollAreaWidgetContents->setAutoFillBackground(true);
         verticalLayout_3 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
@@ -630,7 +622,6 @@ public:
         viewOptionsGroupBox->setTitle(QApplication::translate("MainVSSWindow", "View Options", nullptr));
         visualizationComboBox->setItemText(0, QApplication::translate("MainVSSWindow", "Original", nullptr));
 
-        planning->setText(QApplication::translate("MainVSSWindow", "Planning", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(cameraTab), QApplication::translate("MainVSSWindow", "Camera", nullptr));
         simulationLabel->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(simulationTab), QApplication::translate("MainVSSWindow", "Simulation", nullptr));

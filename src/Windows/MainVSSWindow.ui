@@ -151,16 +151,6 @@
                    </item>
                   </widget>
                  </item>
-                 <item>
-                  <widget class="QCheckBox" name="planning">
-                   <property name="layoutDirection">
-                    <enum>Qt::RightToLeft</enum>
-                   </property>
-                   <property name="text">
-                    <string>Planning</string>
-                   </property>
-                  </widget>
-                 </item>
                 </layout>
                </widget>
               </item>
@@ -642,7 +632,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>268</width>
-                <height>284</height>
+                <height>285</height>
                </rect>
               </property>
               <property name="autoFillBackground">

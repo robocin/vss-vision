@@ -1,4 +1,5 @@
 #include "Vision.h"
+#include "Network/Network.h"
 #include <algorithm>
 
 Vision::Vision()
@@ -101,6 +102,8 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
 
   int actualTime = timeStamp.msecsSinceStartOfDay();
   std::vector<Entity> &entities = currentPositions;
+
+  Network::sendFrame(entities);
 
   if (this->_deepLogRecord) {
     // put to deep log

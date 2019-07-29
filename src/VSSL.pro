@@ -81,7 +81,8 @@ SOURCES += main.cpp\
     Utils/Draw.cpp \
     Utils/EnumsAndConstants.cpp \
     Windows/RobotWidget.cpp \
-    trackconfigdialog.cpp
+    trackconfigdialog.cpp \
+    Network/Network.cpp
 
 HEADERS  += \
   Entity/Entity.h \
@@ -122,7 +123,8 @@ HEADERS  += \
     Utils/SmartEnum.h \
     Utils/BetterEnum.h \
     trackconfigdialog.h \
-    Windows/FileConstants.h
+    Windows/FileConstants.h\
+    Network/Network.h
 
 FORMS  += \
   visionconfigdialog.ui \
@@ -145,6 +147,7 @@ unix:!macx{
     LIBS += -lcudart
   }
   LIBS += -ltbb
+  LIBS += -lsfml-system -lsfml-network
 
 }
 
@@ -162,6 +165,7 @@ macx{
     LIBS += -lcudart
   }
   LIBS += -ltbb
+  LIBS += -lsfml-system -lsfml-network
 }
 
 RESOURCES += \
