@@ -16,7 +16,7 @@ class Network {
     static sf::UdpSocket socket;
     static sf::IpAddress recipient;
 public:
-	static sf::Uint8 port;
+    static sf::Uint32 port;
 	/*
 	*	@brief	Method to send entities for a frame.
 	*	@param[in]  entities  The entities to be sent for a frame.
