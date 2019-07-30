@@ -1,6 +1,6 @@
 #include "Network/Network.h"
 
-sf::Uint32 Network::port = static_cast<sf::Uint32>(54000);
+sf::Uint16 Network::port = static_cast<sf::Uint16>(54000);
 sf::IpAddress Network::recipient = "0.0.0.0";
 sf::UdpSocket Network::socket;
 
