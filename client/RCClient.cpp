@@ -1,6 +1,16 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 #include <iostream>
+#include <vector>
+
+typedef struct s_Entity {
+    int id;
+    float x,y,theta;
+} Entity;
+
+typedef std::vector<Entity> Entities;
+
+Entities entities;
 
 int main()
 {
@@ -13,6 +23,21 @@ int main()
     if (socket.bind(port) != sf::Socket::Done)
     {
         fprintf(stderr,"Error trying to bind socket on port %d\n", port);
+    }
+    while (true) {
+        sf::Packet packet;
+        port = oport;
+        if (socket.receive(packet, sender, port) != sf::Socket::Done)
+        {
+            // error...
+        }
+        std::cout << "Received from " << sender << " on port " << port << std::endl;
+        sf::Uint8 entitiesSize;
+        if (packet >> entitiesSize) {
+            std::cout << "entities : " << static_cast<int>(entitiesSize) << std::endl;
+        } else {
+            std::cout << "Error on retrieving data" << std::endl;
+        }
     }
     /*
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
@@ -36,21 +61,6 @@ int main()
 
     
 
-    while (true) {
-        sf::Packet packet;
-        port = oport;
-        if (socket.receive(packet, sender, port) != sf::Socket::Done)
-        {
-            // error...
-        }
-        std::cout << "Received from " << sender << " on port " << port << std::endl;
-        sf::Uint8 entitiesSize;
-        if (packet >> entitiesSize) {
-            std::cout << "entities : " << static_cast<int>(entitiesSize) << std::endl;
-        } else {
-            std::cout << "Error on retrieving data" << std::endl;
-        }
-    }
 
     return 0;
 }
