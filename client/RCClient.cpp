@@ -42,23 +42,38 @@ int main()
                     // error...
                 }
                 std::cout << "Received from " << sender << " on port " << port << std::endl;
-                sf::Uint8 entitiesSize;
+                sf::Uint8 entitiesSize, id;
+                float posX, posY, angle;
                 if (packet >> entitiesSize) {
                     std::cout << "entities : " << static_cast<int>(entitiesSize) << std::endl;
                     mtx.lock();
                     entities.resize(static_cast<int>(entitiesSize));
+                    for (int i=0; i < entitiesSize; ++i) {
+                        if (packet >> id >> posX >> posY >> angle) {
+                            entities[i].id = id;
+                            entities[i].x = posX;
+                            entities[i].y = posY;
+                            entities[i].theta = angle;
+                        } else {
+                            entities.resize(i);
+                            std::cerr << "Error on retrieving entity data" << std::endl;
+                            break;
+                        }
+                    }
                     mtx.unlock();
                 } else {
-                    std::cout << "Error on retrieving data" << std::endl;
+                    std::cerr << "Error on retrieving data" << std::endl;
                 }
             }
         }
 
         #pragma omp section 
         {
-            sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-            sf::CircleShape shape(100.f);
-            shape.setFillColor(sf::Color::Green);
+            sf::RenderWindow window(sf::VideoMode(640, 480), "Game Window");
+            sf::CircleShape ballShape(10);
+            sf::RectangleShape robotShape(sf::Vector2f(10,10));
+            ballShape.setFillColor(sf::Color(222,120,31)); // Orange
+            robotShape.setFillColor(sf::Color::Green);
 
             while (window.isOpen())
             {
@@ -72,7 +87,15 @@ int main()
                 }
 
                 window.clear();
-                window.draw(shape);
+                mtx.lock();
+                for (auto &entity : entities) {
+                    if (entity.id < 1) window.draw(ballShape);
+                    else {
+                        robotShape.setPosition(entity.x,entity.y);
+                        window.draw(robotShape);
+                    }
+                }
+                mtx.unlock();
                 window.display();
             }
         }
