@@ -89,8 +89,11 @@ int main()
                 window.clear();
                 mtx.lock();
                 for (auto &entity : entities) {
-                    if (entity.id < 1) window.draw(ballShape);
-                    else {
+                    if (entity.id == 0) {
+                        ballShape.setPosition(entity.x,entity.y);
+                        window.draw(ballShape);
+                        printf("entity %d (%f %f %f)\n", entity.id, entity.x, entity.y, entity.theta);
+                    } else {
                         robotShape.setPosition(entity.x,entity.y);
                         window.draw(robotShape);
                     }
