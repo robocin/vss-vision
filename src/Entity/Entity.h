@@ -43,6 +43,10 @@ public:
    * @return Integer with the entity's id number
    */
   const Int &id();
+  /**
+   * Set entity's id number
+   */
+  void id(const Int&);
 };
 
 typedef Entity Player;

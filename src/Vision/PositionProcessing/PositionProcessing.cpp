@@ -249,6 +249,7 @@ void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugF
     vss.ball().update(newPosition);
   };
   newFindBall(vss);
+  return;
 
   Blob ball;
   ball.valid = false;
@@ -259,6 +260,7 @@ void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugF
     if (blob[OrangeCOL][i].area > maxArea && blob[OrangeCOL][i].valid) {
       maxArea = blob[OrangeCOL][i].area;
       ball = blob[OrangeCOL][i];
+      ball.valid = true;
     }
   }
 
@@ -268,8 +270,8 @@ void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugF
   }
 
   cv::Point currentPos = ball.position, lastPos;
-  //lastPos.x = entities[BALL_INDEX].getPositionPixel().x;
-  //lastPos.y = entities[BALL_INDEX].getPositionPixel().y;
+  //lastPos.x = entities[BALL_INDEX].position().x;
+  //lastPos.y = entities[BALL_INDEX].position().y;
 
   //with pos does not change so much, dont change position ( prevent position noise )
   if(abs(lastPos.x-currentPos.x) < 2 && abs(lastPos.y-currentPos.y) < 2) {
@@ -301,12 +303,10 @@ void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugF
   //draw bal in frame
   cv::circle(debugFrame, currentPos, 9, this->_colorCar[OrangeCOL], 1, CV_AA);
 
-  /*
-  entities[BALL_INDEX].setPosition(currentPos.x, currentPos.y);
-  entities[BALL_INDEX].setAngle(0);
-  entities[BALL_INDEX].setUpdated(true);
-  entities[BALL_INDEX].setColor(OrangeCOL);
-  */
+
+  //entities[BALL_INDEX] = Entity(0);
+  //entities[BALL_INDEX].update(cv::Point2f(currentPos.x, currentPos.y),0);
+
 }
 
 std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> PositionProcessing::getNearestPrimary(Blob current) {

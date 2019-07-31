@@ -27,6 +27,10 @@ const Float &Entity::angle()
   return m_angle;
 }
 
+void Entity::id(const Int& t_id) {
+    m_id = t_id;
+}
+
 const Int &Entity::id()
 {
   return m_id;

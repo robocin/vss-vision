@@ -102,6 +102,13 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
 
   int actualTime = timeStamp.msecsSinceStartOfDay();
   std::vector<Entity> &entities = currentPositions;
+  //entities.resize(1 + vss.players().size());
+  entities.resize(1);
+  entities[0] = vss.ball();
+  entities.insert(entities.end(),vss.players().begin(),vss.players().end());
+  for(int i=0; i < entities.size(); ++i) {
+    entities[i].id(i);
+  }
 
   Network::sendFrame(entities);
 
