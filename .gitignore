@@ -30,3 +30,5 @@ src/Log/*
 src/qrc_image.cpp
 src/qrc_icontools.cpp
 
+# RCClient
+client/RCClient
