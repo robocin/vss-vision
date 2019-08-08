@@ -7,7 +7,7 @@
 #include <omp.h>
 #include <unistd.h>
 
-int frameRateLimit = 30;
+int frameRateLimit = 120;
 
 typedef struct s_Entity {
     int id;
@@ -21,6 +21,7 @@ std::mutex mtx;
 std::atomic<bool> Exit;
 sf::Font font;
 sf::Text text;
+char fps_str[128];
 
 void loadFont() {
 
@@ -31,16 +32,16 @@ void loadFont() {
     }
 
     text.setFont(font);
-    text.setString("MANNERS OF ALL THINGS");
+    text.setString("Waiting...");
     text.setColor(sf::Color::White);
     text.setCharacterSize(25);
-    text.setPosition(150, 300);
+    text.setPosition(0, 0);
 }
 sf::Vector2f cvtPosToScreen(const float x, const float y, const sf::Window &window) {
     const float xFactor = 1.0f/170.0f;
     const float yFactor = 1.0f/130.0f;
-    return sf::Vector2f((1.f-x*xFactor)*window.getSize().x,
-                        y*yFactor*window.getSize().y);
+    return sf::Vector2f(x*xFactor*window.getSize().x,
+                        (1.f-y*yFactor)*window.getSize().y);
 }
 
 int main()
@@ -56,6 +57,8 @@ int main()
             sf::UdpSocket socket;
             sf::IpAddress sender = "0.0.0.0";
             sf::Uint16 oport = 54000, port = oport;
+            sf::Clock clock;
+            sf::Time time;
 
             // bind the socket to a port
             if (socket.bind(port) != sf::Socket::Done)
@@ -102,7 +105,7 @@ int main()
 
         #pragma omp section 
         {
-            sf::RenderWindow window(sf::VideoMode(640, 480), "Game Window");
+            sf::RenderWindow window(sf::VideoMode(640, 480), "VSS-Vision");
             if (frameRateLimit > 0) window.setFramerateLimit(frameRateLimit);
             sf::CircleShape ballShape(10);
             sf::RectangleShape robotShape(sf::Vector2f(10,10));
@@ -128,21 +131,24 @@ int main()
                 mtx.lock();
                 for (auto &entity : entities) {
                     if (entity.id == 0) {
-                        ballShape.setPosition(entity.x,entity.y);
+                        sf::Vector2f v = cvtPosToScreen(entity.x,entity.y,window);
+                        ballShape.setPosition(v.x,v.y);
                         window.draw(ballShape);
                         printf("entity %d (%f %f %f)\n", entity.id, entity.x, entity.y, entity.theta);
                     } else {
-                        robotShape.setPosition(entity.x,entity.y);
+                        sf::Vector2f v = cvtPosToScreen(entity.x,entity.y,window);
+                        robotShape.setPosition(v.x,v.y);
                         window.draw(robotShape);
                     }
                 }
                 mtx.unlock();
+                time = clock.getElapsedTime();
+                sprintf(fps_str, "FPS: %04.0f", 1.0f/time.asSeconds());
+                if (entities.size() > 0) text.setString(fps_str);
+                else text.setString("Waiting...");
                 window.draw(text);
                 window.display();
                 //usleep(1000);
-                time = clock.getElapsedTime();
-
-                //printf("frame %d (%.2f fps)\n",++frameId, 1.0f/time.asSeconds());
                 clock.restart().asSeconds();
                 //sf::sleep(sf::milliseconds(10));
             }
