@@ -5,7 +5,9 @@
 #include <mutex>
 #include <atomic>
 #include <omp.h>
+#include <unistd.h>
 
+int frameRateLimit = 30;
 
 typedef struct s_Entity {
     int id;
@@ -17,11 +19,31 @@ typedef std::vector<Entity> Entities;
 Entities entities;
 std::mutex mtx;
 std::atomic<bool> Exit;
+sf::Font font;
+sf::Text text;
+
+void loadFont() {
+
+    if (!font.loadFromFile("font/UbuntuMono-R.ttf"))
+    {
+        fprintf(stderr,"Error loading font\n");
+        exit(1);
+    }
+
+    text.setFont(font);
+    text.setString("MANNERS OF ALL THINGS");
+    text.setColor(sf::Color::White);
+    text.setCharacterSize(25);
+    text.setPosition(150, 300);
+}
 
 int main()
 {
+    loadFont();
+    int frameId = 0;
     #pragma omp parallel sections
     {
+        /*
         #pragma omp section 
         {
             // UDP socket:
@@ -33,13 +55,15 @@ int main()
             if (socket.bind(port) != sf::Socket::Done)
             {
                 fprintf(stderr,"Error trying to bind socket on port %d\n", port);
+                exit(2);
             }
             while (!Exit) {
                 sf::Packet packet;
                 port = oport;
                 if (socket.receive(packet, sender, port) != sf::Socket::Done)
                 {
-                    // error...
+                    fprintf(stderr,"Error trying to receive data from socket.");
+                    continue;
                 }
                 std::cout << "Received from " << sender << " on port " << port << std::endl;
                 sf::Uint8 entitiesSize, id;
@@ -64,16 +88,24 @@ int main()
                 } else {
                     std::cerr << "Error on retrieving data" << std::endl;
                 }
+                usleep(100000);
+                printf("ke");
             }
         }
+        */
 
         #pragma omp section 
         {
             sf::RenderWindow window(sf::VideoMode(640, 480), "Game Window");
+            if (frameRateLimit > 0) window.setFramerateLimit(frameRateLimit);
             sf::CircleShape ballShape(10);
             sf::RectangleShape robotShape(sf::Vector2f(10,10));
             ballShape.setFillColor(sf::Color(222,120,31)); // Orange
             robotShape.setFillColor(sf::Color::Green);
+
+            sf::Clock clock;
+            sf::Time time;
+            time = clock.getElapsedTime();
 
             while (window.isOpen())
             {
@@ -99,8 +131,16 @@ int main()
                     }
                 }
                 mtx.unlock();
+                window.draw(text);
                 window.display();
+                //usleep(1000);
+                time = clock.getElapsedTime();
+
+                //printf("frame %d (%.2f fps)\n",++frameId, 1.0f/time.asSeconds());
+                clock.restart().asSeconds();
+                //sf::sleep(sf::milliseconds(10));
             }
+            exit(0);
         }
     }
     
