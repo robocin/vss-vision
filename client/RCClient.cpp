@@ -128,24 +128,29 @@ int main()
                 }
 
                 window.clear();
+                Entities tmp_entities;
                 mtx.lock();
-                for (auto &entity : entities) {
-                    if (entity.id == 0) {
-                        sf::Vector2f v = cvtPosToScreen(entity.x,entity.y,window);
-                        ballShape.setPosition(v.x,v.y);
-                        window.draw(ballShape);
-                        printf("entity %d (%f %f %f)\n", entity.id, entity.x, entity.y, entity.theta);
-                    } else {
-                        sf::Vector2f v = cvtPosToScreen(entity.x,entity.y,window);
-                        robotShape.setPosition(v.x,v.y);
-                        window.draw(robotShape);
-                    }
-                }
+                tmp_entities.assign(entities.begin(),entities.end());
                 mtx.unlock();
-                time = clock.getElapsedTime();
-                sprintf(fps_str, "FPS: %04.0f", 1.0f/time.asSeconds());
-                if (entities.size() > 0) text.setString(fps_str);
-                else text.setString("Waiting...");
+
+                if (tmp_entities.size() > 0) {
+                    text.setString(fps_str);
+                    for (auto &entity : tmp_entities) {
+                        if (entity.id == 0) {
+                            sf::Vector2f v = cvtPosToScreen(entity.x,entity.y,window);
+                            ballShape.setPosition(v.x,v.y);
+                            window.draw(ballShape);
+                        } else {
+                            sf::Vector2f v = cvtPosToScreen(entity.x,entity.y,window);
+                            robotShape.setPosition(v.x,v.y);
+                            window.draw(robotShape);
+                            printf("entity %d (%f %f %f)\n", entity.id, entity.x, entity.y, entity.theta);
+                        }
+                    }
+                    time = clock.getElapsedTime();
+                    sprintf(fps_str, "FPS: %04.0f", 1.0f/time.asSeconds());
+                } else text.setString("Waiting...");
+                
                 window.draw(text);
                 window.display();
                 //usleep(1000);
