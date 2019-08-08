@@ -36,6 +36,12 @@ void loadFont() {
     text.setCharacterSize(25);
     text.setPosition(150, 300);
 }
+sf::Vector2f cvtPosToScreen(const float x, const float y, const sf::Window &window) {
+    const float xFactor = 1.0f/170.0f;
+    const float yFactor = 1.0f/130.0f;
+    return sf::Vector2f((1.f-x*xFactor)*window.getSize().x,
+                        y*yFactor*window.getSize().y);
+}
 
 int main()
 {
@@ -43,7 +49,7 @@ int main()
     int frameId = 0;
     #pragma omp parallel sections
     {
-        /*
+        ///*
         #pragma omp section 
         {
             // UDP socket:
@@ -67,7 +73,7 @@ int main()
                 }
                 std::cout << "Received from " << sender << " on port " << port << std::endl;
                 sf::Uint8 entitiesSize, id;
-                float posX, posY, angle;
+                double posX, posY, angle;
                 if (packet >> entitiesSize) {
                     std::cout << "entities : " << static_cast<int>(entitiesSize) << std::endl;
                     mtx.lock();
@@ -88,11 +94,11 @@ int main()
                 } else {
                     std::cerr << "Error on retrieving data" << std::endl;
                 }
-                usleep(100000);
-                printf("ke");
+                //usleep(100000);
+                //printf("ke");
             }
         }
-        */
+        //*/
 
         #pragma omp section 
         {
