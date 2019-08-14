@@ -33,8 +33,8 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
   findTeam(entities, debugFrame, groupedBlobs.team);
 
   // Falta criar essa parte ainda!
-  if (this->_enemySearch != Nothing) findEnemys(entities,debugFrame,groupedBlobs.enemys);
-  else findEnemysWithPrimary(entities, debugFrame);
+  //if (this->_enemySearch != Nothing) findEnemys(entities,debugFrame,groupedBlobs.enemys);
+  //else findEnemysWithPrimary(entities, debugFrame);
 
   // feito!
   findBall(entities, debugFrame);
@@ -51,28 +51,34 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
 
 void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
   // depois substituir por essa funcao
-  /*std::function<void(GameInfo &, Vector<Region> &)> FindAllies = [&](GameInfo &vss, Vector<Region> &teamRegions) -> void {
-    // desativar todos os jogadores para identificar
-    // somente os ativos no frame atual
-    AlliesTable &alliesTable = vss.alliesTable();
-
+  std::function<void(GameInfo &, Vector<Region> &)> FindAllies = [&](GameInfo &vss, Vector<Region> &teamRegions) -> void {
     // Os jogadores ativos serao salvos em uma tabela
     // de referencias
-    References<Ally> &allies = vss.allies();
-    allies.clear();
-    for (Ally &ally : alliesTable) {
-      ally.setActive(false);
+    Entities &players = vss.players();
+    players.resize(12); // temporary fix for running
+    for (Entity &player : players) {
+      player.outdate();
     }
+
+    std::bitset<MAX_PLAYERS> markedColors;
+
     for (Region &region : teamRegions) {
       if (region.distance < blobMaxDist()) {
-        int colorIndex = Utils::convertOldColorToNewColor(region.color);
+        //int colorIndex = Utils::convertOldColorToNewColor(region.color);
+        int colorIndex = region.color;
         if (!Utils::isRobotColor(colorIndex)) {
           // cor invalida
           continue;
         }
+
+        if (markedColors[size_t(colorIndex)]){
+          continue;
+        }
+
+        markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player &robot = alliesTable[static_cast<size_t>(colorIndex)];
+        Player robot = players[size_t(colorIndex)];
         Point lastPosition = robot.position();
         Point newPositionInPixels = (b1.position + b2.position) / 2.0;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
@@ -90,16 +96,16 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
 
         Float newTime = vss.time().getMilliseconds();
         Float newAngle = Utils::angle(b1.position, b2.position);
-        robot.update(newTime, newPosition, newAngle);
-        robot.setIndex(colorIndex);
-        robot.setActive(true);
-        allies.push_back(robot);
+        robot.update(newPosition, newAngle);
+        //robot.setIndex(colorIndex);
+        //robot.setActive(true);
+        //allies.push_back(robot);
+        //players.push_back(robot);
       }
     }
   };
 
   FindAllies(vss, teamRegions);
-*/
 
 }
 
