@@ -15,6 +15,7 @@
 class Network {
     static sf::UdpSocket socket;
     static sf::IpAddress recipient;
+    static sf::Int32 frameId;
 public:
     static sf::Uint16 port;
 	/*

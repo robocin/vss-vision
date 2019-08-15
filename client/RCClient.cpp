@@ -49,7 +49,7 @@ sf::Vector2f cvtPosToScreen(const float x, const float y, const sf::Window &wind
 int main()
 {
     loadFont();
-    int frameId = 0;
+    sf::Int32 frameId = 0;
     #pragma omp parallel sections
     {
         ///*
@@ -61,7 +61,9 @@ int main()
             sf::Uint16 oport = 54000, port = oport;
             sf::Clock clock;
             sf::Time time;
+            float fps = 0;
             time = clock.getElapsedTime();
+            sf::Int32 lastFrameId = -1;
 
             // bind the socket to a port
             if (socket.bind(port) != sf::Socket::Done)
@@ -80,6 +82,12 @@ int main()
                 std::cout << "Received from " << sender << " on port " << port << std::endl;
                 sf::Uint8 entitiesSize, id;
                 double posX, posY, angle;
+
+                // Extract frameId from packet and verify if receveid packed has outdated frame
+                packet >> frameId;
+                if (frameId < lastFrameId) continue; // ignore older frames
+                lastFrameId = frameId;
+
                 if (packet >> entitiesSize) {
                     std::cout << "entities : " << static_cast<int>(entitiesSize) << std::endl;
                     mtx.lock();
@@ -98,7 +106,9 @@ int main()
                     }
                     mtx.unlock();
                     time = clock.getElapsedTime();
-                    sprintf(fps_str, "FPS: %04.0f", 1.0f/time.asSeconds());
+                    fps = fps*0.9 + 1.0f/time.asSeconds()*0.1;
+                    sprintf(fps_str, "FPS: %04.0f", fps);
+                    clock.restart().asSeconds();
                 } else {
                     std::cerr << "Error on retrieving data" << std::endl;
                 }

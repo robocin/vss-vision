@@ -3,6 +3,7 @@
 sf::Uint16 Network::port = static_cast<sf::Uint16>(54000);
 sf::IpAddress Network::recipient = "0.0.0.0";
 sf::UdpSocket Network::socket;
+sf::Int32 Network::frameId = 0;
 
 void Network::sendFrame(std::vector<Entity> &entities) {
     if (!entities.size()) return;
@@ -13,6 +14,8 @@ void Network::sendFrame(std::vector<Entity> &entities) {
 
     sf::Packet packet;
 
+    packet << static_cast<sf::Int32>(Network::frameId);
+    ++frameId;
     packet << static_cast<sf::Uint8>(entities.size());
 
     for (int i=0; i < entities.size(); ++i) {
