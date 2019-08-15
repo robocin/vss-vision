@@ -32,7 +32,9 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
   // Settting team positions
   // ainda falta!
   findTeam(entities, debugFrame, groupedBlobs.team);
+  setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
   findTeam(entities, debugFrame, groupedBlobs.enemys);
+  setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
   // Falta criar essa parte ainda!
   //if (this->_enemySearch != Nothing) findEnemys(entities,debugFrame,groupedBlobs.enemys);
@@ -80,7 +82,7 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
         markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player robot((getTeamColor()-1)*10 + teamCounter++);
+        Player robot((static_cast<int>(getTeamColor()))*10 + teamCounter++);
         Point lastPosition = robot.position();
         Point newPositionInPixels = (b1.position + b2.position) / 2.0;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
