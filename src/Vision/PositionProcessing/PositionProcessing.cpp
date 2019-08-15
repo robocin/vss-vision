@@ -28,9 +28,11 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
   // ajustar
   FieldRegions groupedBlobs = pairBlobs();
 
+  vss.players().clear();
   // Settting team positions
   // ainda falta!
   findTeam(entities, debugFrame, groupedBlobs.team);
+  findTeam(entities, debugFrame, groupedBlobs.enemys);
 
   // Falta criar essa parte ainda!
   //if (this->_enemySearch != Nothing) findEnemys(entities,debugFrame,groupedBlobs.enemys);
@@ -55,12 +57,12 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
     // Os jogadores ativos serao salvos em uma tabela
     // de referencias
     Entities &players = vss.players();
-    players.resize(12); // temporary fix for running
-    for (Entity &player : players) {
-      player.outdate();
-    }
+    //for (Entity &player : players) {
+    //  player.outdate();
+    //}
 
     std::bitset<MAX_PLAYERS> markedColors;
+    int teamCounter = 0;
 
     for (Region &region : teamRegions) {
       if (region.distance < blobMaxDist()) {
@@ -78,7 +80,7 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
         markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player robot = players[size_t(colorIndex)];
+        Player robot((getTeamColor()-1)*10 + teamCounter++);
         Point lastPosition = robot.position();
         Point newPositionInPixels = (b1.position + b2.position) / 2.0;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
@@ -100,7 +102,7 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
         //robot.setIndex(colorIndex);
         //robot.setActive(true);
         //allies.push_back(robot);
-        //players.push_back(robot);
+        players.push_back(robot);
       }
     }
   };
