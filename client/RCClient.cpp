@@ -165,6 +165,13 @@ int main()
                             sf::Vector2f v = cvtPosToScreen(entity.x,entity.y,window);
                             robotShape.setPosition(v.x,v.y);
                             robotShape.rotate(entity.theta*RAD_TO_DEG);
+                            sf::Int32 teamId = static_cast<int>(entity.id)/10;
+                            if (teamId == 1) {
+                                robotShape.setFillColor(sf::Color::Yellow);
+                            } else if (teamId == 2) {
+                                robotShape.setFillColor(sf::Color::Blue);
+                            }
+
                             window.draw(robotShape);
                             robotShape.rotate(-entity.theta*RAD_TO_DEG);
                             printf("entity %d (%f %f %f)\n", entity.id, entity.x, entity.y, entity.theta);
