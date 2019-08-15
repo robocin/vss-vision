@@ -6,6 +6,8 @@
 #include <atomic>
 #include <omp.h>
 #include <unistd.h>
+#include <math.h>
+#define RAD_TO_DEG 180.0/M_PI
 
 int frameRateLimit = 120;
 
@@ -59,6 +61,7 @@ int main()
             sf::Uint16 oport = 54000, port = oport;
             sf::Clock clock;
             sf::Time time;
+            time = clock.getElapsedTime();
 
             // bind the socket to a port
             if (socket.bind(port) != sf::Socket::Done)
@@ -94,6 +97,8 @@ int main()
                         }
                     }
                     mtx.unlock();
+                    time = clock.getElapsedTime();
+                    sprintf(fps_str, "FPS: %04.0f", 1.0f/time.asSeconds());
                 } else {
                     std::cerr << "Error on retrieving data" << std::endl;
                 }
@@ -108,7 +113,13 @@ int main()
             sf::RenderWindow window(sf::VideoMode(640, 480), "VSS-Vision");
             if (frameRateLimit > 0) window.setFramerateLimit(frameRateLimit);
             sf::CircleShape ballShape(10);
-            sf::RectangleShape robotShape(sf::Vector2f(10,10));
+            //sf::RectangleShape robotShape(sf::Vector2f(10,10));
+            sf::RectangleShape robotShape(sf::Vector2f(
+                                    7.5/170.0*window.getSize().x,
+                                    7.5/130.0*window.getSize().y));
+            robotShape.setOrigin(sf::Vector2f(
+                                    7.5/170.0*window.getSize().x*0.5,
+                                    7.5/130.0*window.getSize().y*0.5));
             ballShape.setFillColor(sf::Color(222,120,31)); // Orange
             robotShape.setFillColor(sf::Color::Green);
 
@@ -143,13 +154,15 @@ int main()
                         } else {
                             sf::Vector2f v = cvtPosToScreen(entity.x,entity.y,window);
                             robotShape.setPosition(v.x,v.y);
+                            robotShape.rotate(entity.theta*RAD_TO_DEG);
                             window.draw(robotShape);
+                            robotShape.rotate(-entity.theta*RAD_TO_DEG);
                             printf("entity %d (%f %f %f)\n", entity.id, entity.x, entity.y, entity.theta);
                         }
                     }
                     time = clock.getElapsedTime();
-                    sprintf(fps_str, "FPS: %04.0f", 1.0f/time.asSeconds());
-                } else text.setString("Waiting...");
+                    //sprintf(fps_str, "FPS: %04.0f", 1.0f/time.asSeconds());
+                }// else text.setString("Waiting...");
                 
                 window.draw(text);
                 window.display();
