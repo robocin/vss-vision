@@ -4,7 +4,7 @@ src/build-*
 src/*.o
 src/moc*
 src/VSSL-VISION
-src/VSSL.pro.user
+src/VSSL-VISION.pro.user
 src/Makefile
 src/\.qmake\.stash
 src/moc_mainwindow\.cpp
