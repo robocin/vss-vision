@@ -16,7 +16,7 @@
 ```bash
 ./InstallQt
 ```
-ii.  Select (only) the packages below:
+    ii.  Select (only) the packages below:
 ```bash
 . Qt
 │
