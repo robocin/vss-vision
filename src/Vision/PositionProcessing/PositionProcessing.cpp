@@ -21,36 +21,18 @@ void PositionProcessing::saveXML()
 }
 
 void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debugFrame){
-  // vai sumir
-  for (unsigned int i = 0; i < entities.size(); i++) {
-    //entities[i].setUpdated(false);
-  }
-  // ajustar
+
   FieldRegions groupedBlobs = pairBlobs();
 
   vss.players().clear();
+
   // Settting team positions
-  // ainda falta!
   findTeam(entities, debugFrame, groupedBlobs.team);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
   findTeam(entities, debugFrame, groupedBlobs.enemys);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
-  // Falta criar essa parte ainda!
-  //if (this->_enemySearch != Nothing) findEnemys(entities,debugFrame,groupedBlobs.enemys);
-  //else findEnemysWithPrimary(entities, debugFrame);
-
-  // feito!
   findBall(entities, debugFrame);
-  //std::cout << std::endl;
-  //printf("BallPosition (%+4.2lf, %+4.2lf)", vss.ball().speed().x, vss.ball().speed().y);
-  //std::cout << std::endl;
-  /*std::cout << "accumulateTime      = " << vss.ball().accumulateTime() << std::endl;
-  std::cout << "accumulatePosition  = " << vss.ball().accumulatePosition() << std::endl;
-  std::cout << "accumulateSpeed     = " << vss.ball().accumulateSpeed() << std::endl;
-  std::cout << "BallPosition        = " << vss.ball().position() << std::endl;
-  std::cout << "BallSpeed           = " << vss.ball().speed() << std::endl;
-  std::cout << "BallAcceleration    = " << vss.ball().acceleration() << std::endl;*/
 }
 
 void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
@@ -59,9 +41,6 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
     // Os jogadores ativos serao salvos em uma tabela
     // de referencias
     Entities &players = vss.players();
-    //for (Entity &player : players) {
-    //  player.outdate();
-    //}
 
     std::bitset<MAX_PLAYERS> markedColors;
     int teamCounter = 0;
@@ -101,9 +80,6 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
         Float newTime = vss.time().getMilliseconds();
         Float newAngle = Utils::angle(b1.position, b2.position);
         robot.update(newPosition, newAngle);
-        //robot.setIndex(colorIndex);
-        //robot.setActive(true);
-        //allies.push_back(robot);
         players.push_back(robot);
       }
     }
