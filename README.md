@@ -12,12 +12,11 @@
 ./InstallDependencies
 ```
 
-2. 1. Install Qt Creator (5.12.0) using the maintanance tool of Qt from linorg.usp.br repository. Use this script to make this simpler.
+2. i. Install Qt Creator (5.12.0) using the maintanance tool of Qt from linorg.usp.br repository. Use this script to make this simpler.
 ```bash
 ./InstallQt
 ```
-
-2. 2.  Select (only) the packages below:
+ii.  Select (only) the packages below:
 ```bash
 . Qt
 │
