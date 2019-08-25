@@ -1,0 +1,5 @@
+#!/bin/bash
+
+wget http://linorg.usp.br/Qt/archive/online_installers/3.1/qt-unified-linux-x64-3.1.1-online.run
+
+./qt-unified-linux-x64-3.1.1-online.run

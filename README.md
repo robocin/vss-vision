@@ -1,9 +1,34 @@
 ## Git RoboCIn - Very Small Size League Vision Software
-====
+---
 
 #### Content of this repository:
 
 > Implementation of Very Small Size League Vision Software
+
+## Installing the Dependencies
+
+1. Install the needed dependencies beyond Qt Creator.
+```bash
+./InstallDependencies
+```
+
+2. 1. Install Qt Creator (5.12.0) using the maintanance tool of Qt from linorg.usp.br repository. Use this script to make this simpler.
+```bash
+./InstallQt
+```
+
+2. 2.  Select (only) the packages below:
+```bash
+. Qt
+│
+.
+.
+.
+└── Qt 5.12.0
+    ├── Desktop gcc 64-bit
+    ├── Qt Charts
+    └── Qt Data Visualization
+```
 
 ## Repository Tree
 
