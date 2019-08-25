@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Install SFML
+sudo apt install libsfml-dev -y
+
+# Install OpenCV
+sudo apt install libopencv-dev -y
+
+# Install OpenGL + FreeGLUT3
+sudo apt install freeglut3-dev -y
+
+# Update packages
+sudo apt update -y
+sudo apt upgrade -y
