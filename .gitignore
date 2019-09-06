@@ -3,8 +3,8 @@ build-*
 src/build-*
 src/*.o
 src/moc*
-src/VSSL-VISION
-src/VSSL-VISION.pro.user
+src/VSS-VISION
+src/VSS-VISION.pro.user
 src/Makefile
 src/\.qmake\.stash
 src/moc_mainwindow\.cpp
