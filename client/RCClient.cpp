@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <math.h>
 #define RAD_TO_DEG 180.0/M_PI
+#define APP_NAME "RCCLIENT"
 
 int frameRateLimit = 120;
 
@@ -68,7 +69,7 @@ int main()
             // bind the socket to a port
             if (socket.bind(port) != sf::Socket::Done)
             {
-                fprintf(stderr,"Error trying to bind socket on port %d\n", port);
+                fprintf(stderr,"[%s] Error trying to bind socket on port %d\n", APP_NAME, port);
                 exit(2);
             }
             while (!Exit) {
@@ -76,10 +77,10 @@ int main()
                 port = oport;
                 if (socket.receive(packet, sender, port) != sf::Socket::Done)
                 {
-                    fprintf(stderr,"Error trying to receive data from socket.");
+                    fprintf(stderr,"[%s] Error trying to receive data from socket.", APP_NAME);
                     continue;
                 }
-                std::cout << "Received from " << sender << " on port " << port << std::endl;
+                std::cout << "[" << APP_NAME << "] Received from " << sender << " on port " << port << std::endl;
                 sf::Uint8 entitiesSize, id;
                 double posX, posY, angle;
 
@@ -89,7 +90,7 @@ int main()
                 lastFrameId = frameId;
 
                 if (packet >> entitiesSize) {
-                    std::cout << "entities : " << static_cast<int>(entitiesSize) << std::endl;
+                    std::cout << "[" << APP_NAME << "] entities : " << static_cast<int>(entitiesSize) << std::endl;
                     mtx.lock();
                     entities.resize(static_cast<int>(entitiesSize));
                     for (int i=0; i < entitiesSize; ++i) {
@@ -100,7 +101,7 @@ int main()
                             entities[i].theta = angle;
                         } else {
                             entities.resize(i);
-                            std::cerr << "Error on retrieving entity data" << std::endl;
+                            std::cerr << "[" << APP_NAME << "] Error on retrieving entity data" << std::endl;
                             break;
                         }
                     }
@@ -110,7 +111,7 @@ int main()
                     sprintf(fps_str, "FPS: %04.0f", fps);
                     clock.restart().asSeconds();
                 } else {
-                    std::cerr << "Error on retrieving data" << std::endl;
+                    std::cerr << "[" << APP_NAME << "] Error on retrieving data" << std::endl;
                 }
                 //usleep(100000);
                 //printf("ke");
@@ -174,7 +175,7 @@ int main()
 
                             window.draw(robotShape);
                             robotShape.rotate(-entity.theta*RAD_TO_DEG);
-                            printf("entity %d (%f %f %f)\n", entity.id, entity.x, entity.y, entity.theta);
+                            printf("[%s] entity %d (%f %f %f)\n", APP_NAME, entity.id, entity.x, entity.y, entity.theta);
                         }
                     }
                     time = clock.getElapsedTime();
