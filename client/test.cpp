@@ -6,37 +6,15 @@
 #include <omp.h>
 #include <unistd.h>
 #include <math.h>
+#include "Network.hpp"
 
 #define RAD_TO_DEG 180.0/M_PI
 
+#define APP_NAME "test"
+
 int frameRateLimit = 120;
-class Vec2 {
-public:
-    float x,y;
-    Vec2(float t_x = 0.f, float t_y = 0.f):x(t_x), y(t_y) {
-    }
-};
 
-class Entity {
-    int m_id;
-    Vec2 m_position;
-    float m_angle;
 
-public:
-    int &id() {
-        return m_id;
-    }
-    Vec2 &position() {
-        return m_position;
-    }
-    float &angle() {
-        return m_angle;
-    }
-};
-
-typedef std::vector<Entity> Entities;
-#define EXTERNAL_COMPILATION
-#include "../src/Network/Network.h"
 
 Entities entities;
 std::mutex mtx;
@@ -64,7 +42,7 @@ int main()
             // bind the socket to a port
             if (socket.bind(port) != sf::Socket::Done)
             {
-                fprintf(stderr,"Error trying to bind socket on port %d\n", port);
+                fprintf(stderr,"[%s] Error trying to bind socket on port %d\n", APP_NAME, port);
                 exit(2);
             }
             while (!Exit) {
@@ -72,10 +50,10 @@ int main()
                 port = oport;
                 if (socket.receive(packet, sender, port) != sf::Socket::Done)
                 {
-                    fprintf(stderr,"Error trying to receive data from socket.");
+                    fprintf(stderr,"[%s] Error trying to receive data from socket.", APP_NAME);
                     continue;
                 }
-                std::cout << "Received from " << sender << " on port " << port << std::endl;
+                std::cout << "[" << APP_NAME << "] Received from " << sender << " on port " << port << std::endl;
                 sf::Uint8 entitiesSize, id;
                 double posX, posY, angle;
 
@@ -85,7 +63,7 @@ int main()
                 lastFrameId = frameId;
 
                 if (packet >> entitiesSize) {
-                    std::cout << "entities : " << static_cast<int>(entitiesSize) << std::endl;
+                    std::cout << "[" << APP_NAME << "] entities : " << static_cast<int>(entitiesSize) << std::endl;
                     mtx.lock();
                     entities.resize(static_cast<int>(entitiesSize));
                     for (int i=0; i < entitiesSize; ++i) {
@@ -96,7 +74,7 @@ int main()
                             entities[i].angle() = angle;
                         } else {
                             entities.resize(i);
-                            std::cerr << "Error on retrieving entity data" << std::endl;
+                            std::cerr << "[" << APP_NAME << "] Error on retrieving entity data" << std::endl;
                             break;
                         }
                     }
@@ -106,7 +84,7 @@ int main()
                     sprintf(fps_str, "FPS: %04.0f", fps);
                     clock.restart().asSeconds();
                 } else {
-                    std::cerr << "Error on retrieving data" << std::endl;
+                    std::cerr << "[" << APP_NAME << "] Error on retrieving data" << std::endl;
                 }
                 //usleep(100000);
                 //printf("ke");
