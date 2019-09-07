@@ -1,18 +1,31 @@
 #PIPE_OPTION=-pipe
+
+MAIN_EXECUTABLE=RCClient
+MAIN_SRC_FOLDER=src/main
+MAIN_SRC=$(MAIN_SRC_FOLDER)/*.cpp
+MAIN_LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -std=c++11 -fopenmp
+MAIN_OHTER_FLAGS=-Wno-deprecated-declarations
+
+TEST_EXECUTABLE=test
+TEST_SRC_FOLDER=src/test
+TEST_LIBS=-lsfml-system -lsfml-network -std=c++11
+TEST_INC=-Iinclude -I../include
+
+
 compile:
-	g++ RCClient.cpp -o RCClient -lsfml-graphics -lsfml-window -lsfml-system -lsfml-network -std=c++11 -fopenmp -Wno-deprecated-declarations $(PIPE_OPTION)
+	g++ $(MAIN_SRC) -o $(MAIN_EXECUTABLE) $(MAIN_LIBS) $(MAIN_OHTER_FLAGS) $(PIPE_OPTION)
 
 run:
-	./RCClient
+	./$(MAIN_EXECUTABLE)
 
 run_async:
-	./RCClient &
+	./$(MAIN_EXECUTABLE) &
 
 testc:
-	g++ test.cpp Network.cpp -Iinclude -I../include -o test -lsfml-system -lsfml-network -std=c++11 $(PIPE_OPTION)
+	g++ $(TEST_SRC_FOLDER)/*.cpp $(TEST_INC) -o $(TEST_EXECUTABLE) $(TEST_LIBS) $(PIPE_OPTION)
 
 testr:
-	./test
+	./$(TEST_EXECUTABLE)
 
 test: compile testc run_async testr
 
