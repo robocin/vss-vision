@@ -9,11 +9,29 @@
 #define RAD_TO_DEG 180.0/M_PI
 
 int frameRateLimit = 120;
+class Vec2 {
+public:
+    float x,y;
+    Vec2(float t_x, float t_y):x(t_x), y(t_y) {
+    }
+};
 
-typedef struct s_Entity {
-    int id;
-    float x,y,theta;
-} Entity;
+class Entity {
+    int m_id;
+    Vec2 m_position;
+    float m_angle;
+
+public:
+    int id() {
+        return m_id;
+    }
+    Vec2 &position() {
+        return m_position;
+    }
+    float &angle() {
+        return m_angle;
+    }
+};
 
 typedef std::vector<Entity> Entities;
 
@@ -24,7 +42,6 @@ char fps_str[128];
 
 int main()
 {
-    loadFont();
     sf::Int32 frameId = 0;
     #pragma omp parallel sections
     {
@@ -71,9 +88,9 @@ int main()
                     for (int i=0; i < entitiesSize; ++i) {
                         if (packet >> id >> posX >> posY >> angle) {
                             entities[i].id = id;
-                            entities[i].x = posX;
-                            entities[i].y = posY;
-                            entities[i].theta = angle;
+                            entities[i].position().x = posX;
+                            entities[i].position().y = posY;
+                            entities[i].angle() = angle;
                         } else {
                             entities.resize(i);
                             std::cerr << "Error on retrieving entity data" << std::endl;
