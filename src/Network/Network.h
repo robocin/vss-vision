@@ -8,8 +8,10 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-#include "Entity/Entity.h"
-#include "Utils/Utils.h"
+#ifndef EXTERNAL_COMPILATION
+    #include "Entity/Entity.h"
+    #include "Utils/Utils.h"
+#endif
 #include "SFML/Network.hpp"
 
 class Network {

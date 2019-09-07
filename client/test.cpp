@@ -6,13 +6,14 @@
 #include <omp.h>
 #include <unistd.h>
 #include <math.h>
+
 #define RAD_TO_DEG 180.0/M_PI
 
 int frameRateLimit = 120;
 class Vec2 {
 public:
     float x,y;
-    Vec2(float t_x, float t_y):x(t_x), y(t_y) {
+    Vec2(float t_x = 0.f, float t_y = 0.f):x(t_x), y(t_y) {
     }
 };
 
@@ -22,7 +23,7 @@ class Entity {
     float m_angle;
 
 public:
-    int id() {
+    int &id() {
         return m_id;
     }
     Vec2 &position() {
@@ -34,6 +35,8 @@ public:
 };
 
 typedef std::vector<Entity> Entities;
+#define EXTERNAL_COMPILATION
+#include "../src/Network/Network.h"
 
 Entities entities;
 std::mutex mtx;
@@ -87,7 +90,7 @@ int main()
                     entities.resize(static_cast<int>(entitiesSize));
                     for (int i=0; i < entitiesSize; ++i) {
                         if (packet >> id >> posX >> posY >> angle) {
-                            entities[i].id = id;
+                            entities[i].id() = id;
                             entities[i].position().x = posX;
                             entities[i].position().y = posY;
                             entities[i].angle() = angle;
