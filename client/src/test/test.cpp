@@ -12,34 +12,33 @@
 
 #define APP_NAME "test"
 
-int frameRateLimit = 120;
-
-
-
 Entities entities;
 std::mutex mtx;
 std::atomic<bool> Exit;
-char fps_str[128];
+
+int manyEntities = 22;
+int waitTime = 5;
 
 int main()
 {
     sf::Int32 frameId = 0;
-        #pragma omp section
-        {
 
-            sf::Clock clock;
-            sf::Time time;
-            time = clock.getElapsedTime();
+    sf::Clock clock;
+    sf::Time time;
+    time = clock.getElapsedTime();
 
-            while (!Exit)
-            {
-                time = clock.getElapsedTime();
-                //usleep(1000);
-                clock.restart().asSeconds();
-                //sf::sleep(sf::milliseconds(10));
-            }
-            exit(0);
-        }
+    entities.resize(manyEntities);
+    for(int i=0; i < entities.size(); ++i) {
+        entities[i].id() = i;
+    }
+
+    while (!Exit)
+    {
+        Network::sendFrame(entities);
+        time = clock.getElapsedTime();
+        clock.restart().asSeconds();
+        sf::sleep(sf::milliseconds(waitTime));
+    }
 
     return 0;
 }

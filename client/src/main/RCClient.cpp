@@ -7,8 +7,12 @@
 #include <omp.h>
 #include <unistd.h>
 #include <math.h>
+#include <set>
+#include <cstring>
 #define RAD_TO_DEG 180.0/M_PI
 #define APP_NAME "RCCLIENT"
+
+int IS_TESTING = false;
 
 int frameRateLimit = 120;
 
@@ -47,8 +51,30 @@ sf::Vector2f cvtPosToScreen(const float x, const float y, const sf::Window &wind
                         (1.f-y*yFactor)*window.getSize().y);
 }
 
-int main()
+std::set<int> received_frames;
+
+void evaluateLostFrames() {
+    int received_frames_qnt = received_frames.size();
+    std::set<int>::reverse_iterator rit = received_frames.rbegin();
+    int lost_frames_qnt = *rit - received_frames_qnt;
+    printf("received frames : %d\n", received_frames_qnt);
+    printf("lost frames : %d\n", lost_frames_qnt);
+    printf("biggest frame id: %d\n", *rit);
+    printf("received %.2f%% of packages\n", 100*(received_frames_qnt/(float)*rit));
+    printf("lost %.2f%% of packages\n", 100*(lost_frames_qnt/(float)*rit));
+}
+
+void processArgv(int argc, char**argv) {
+    for (int i = 0; i < argc; ++i) {
+        if (strcmp(argv[i], "--testing") == 0) {
+            IS_TESTING = true;
+        }
+    }
+}
+
+int main(int argc, char **argv)
 {
+    processArgv(argc,argv);
     loadFont();
     sf::Int32 frameId = 0;
     #pragma omp parallel sections
@@ -80,17 +106,18 @@ int main()
                     fprintf(stderr,"[%s] Error trying to receive data from socket.", APP_NAME);
                     continue;
                 }
-                std::cout << "[" << APP_NAME << "] Received from " << sender << " on port " << port << std::endl;
+                //std::cout << "[" << APP_NAME << "] Received from " << sender << " on port " << port << std::endl;
                 sf::Uint8 entitiesSize, id;
                 double posX, posY, angle;
 
                 // Extract frameId from packet and verify if receveid packed has outdated frame
                 packet >> frameId;
+                if (IS_TESTING) received_frames.insert(frameId);
                 if (frameId < lastFrameId) continue; // ignore older frames
                 lastFrameId = frameId;
 
                 if (packet >> entitiesSize) {
-                    std::cout << "[" << APP_NAME << "] entities : " << static_cast<int>(entitiesSize) << std::endl;
+                    //std::cout << "[" << APP_NAME << "] entities : " << static_cast<int>(entitiesSize) << std::endl;
                     mtx.lock();
                     entities.resize(static_cast<int>(entitiesSize));
                     for (int i=0; i < entitiesSize; ++i) {
@@ -146,6 +173,7 @@ int main()
                     if (event.type == sf::Event::Closed) {
                         window.close();
                         Exit = true;
+                        if (IS_TESTING) evaluateLostFrames();
                     }
                 }
 
@@ -175,7 +203,7 @@ int main()
 
                             window.draw(robotShape);
                             robotShape.rotate(-entity.theta*RAD_TO_DEG);
-                            printf("[%s] entity %d (%f %f %f)\n", APP_NAME, entity.id, entity.x, entity.y, entity.theta);
+                            //printf("[%s] entity %d (%f %f %f)\n", APP_NAME, entity.id, entity.x, entity.y, entity.theta);
                         }
                     }
                     time = clock.getElapsedTime();

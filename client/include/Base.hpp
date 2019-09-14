@@ -3,9 +3,7 @@
 #include "spdlog/spdlog.h"
 #include <vector>
 
-
 typedef double Float;
-
 
 class Vec2 {
 public:
