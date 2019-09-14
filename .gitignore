@@ -32,3 +32,6 @@ src/qrc_icontools.cpp
 
 # RCClient
 client/RCClient
+
+# Visual Studio Code
+*.vscode/
