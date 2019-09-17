@@ -17,7 +17,9 @@ std::mutex mtx;
 std::atomic<bool> Exit;
 
 int manyEntities = 22;
-int waitTime = 5;
+int waitTime = 10;
+
+int messages_to_send = 1000;
 
 int main()
 {
@@ -32,12 +34,16 @@ int main()
         entities[i].id() = i;
     }
 
+    sf::sleep(sf::seconds(2));
     while (!Exit)
     {
-        Network::sendFrame(entities);
-        time = clock.getElapsedTime();
-        clock.restart().asSeconds();
-        sf::sleep(sf::milliseconds(waitTime));
+        if (frameId < messages_to_send) {
+            Network::sendFrame(entities);
+            time = clock.getElapsedTime();
+            clock.restart().asSeconds();
+            sf::sleep(sf::milliseconds(waitTime));
+            ++frameId;
+        } else Exit = true;
     }
 
     return 0;

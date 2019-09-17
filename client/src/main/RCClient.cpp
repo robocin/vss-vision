@@ -54,14 +54,15 @@ sf::Vector2f cvtPosToScreen(const float x, const float y, const sf::Window &wind
 std::set<int> received_frames;
 
 void evaluateLostFrames() {
+    int messages_to_receive = 1000;
     int received_frames_qnt = received_frames.size();
     std::set<int>::reverse_iterator rit = received_frames.rbegin();
-    int lost_frames_qnt = *rit - received_frames_qnt;
+    int lost_frames_qnt = messages_to_receive - received_frames_qnt;
     printf("received frames : %d\n", received_frames_qnt);
     printf("lost frames : %d\n", lost_frames_qnt);
     printf("biggest frame id: %d\n", *rit);
-    printf("received %.2f%% of packages\n", 100*(received_frames_qnt/(float)*rit));
-    printf("lost %.2f%% of packages\n", 100*(lost_frames_qnt/(float)*rit));
+    printf("received %.2f%% of packages\n", 100*(received_frames_qnt/(float)messages_to_receive));
+    printf("lost %.2f%% of packages\n", 100*(lost_frames_qnt/(float)messages_to_receive));
 }
 
 void processArgv(int argc, char**argv) {
