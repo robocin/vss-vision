@@ -1,3 +1,9 @@
+/* RCClient made by the RoboCIn for the project IEEE - VSS
+ * @author Lucas Oliveira Maggi
+ *
+ * This class contains a minimum visual client for VSS.
+ *
+ */
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 #include <iostream>

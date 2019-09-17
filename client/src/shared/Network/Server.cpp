@@ -1,3 +1,9 @@
+/* Server classes made by the RoboCIn for the project IEEE - VSS
+ * @author Lucas Oliveira Maggi
+ *
+ * This class contains all the SERVER network interface we use.
+ *
+ */
 #include "Network/Server.hpp"
 
 sf::Uint16 Server::port = static_cast<sf::Uint16>(54000);
