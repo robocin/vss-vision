@@ -36,29 +36,13 @@ void Network::Server::_sendFrame(Frame &t_frame) {
                 << static_cast<Float>(entities[i].angle());
     }
     
-
     
 }
 
-void Network::Server::_sendPacketToSubscriber(sf::UdpSocket &socket, Subscriber &subscriber, sf::Packet &packet) {
-    sf::IpAddress recipient = subscriber.first;
-    sf::Uin16 port = subscriber.second;
-
-    if (socket.send(packet, recipient, port) != sf::Socket::Done)
-    {
-        spdlog::get("Server")->info("sendFrame:: Something went wrong when trying to send the frame to {}.\n", subscriber.ip().c_str());
-    }
-}
-
-void Network::Server::_subscriberMain(Subscriber &subscriber) {
-    sf::UdpSocket socket;
-    while(!Exit) {
-
-    }
-}
-
 void _addSubscriber(Subscriber &t_subscriber) {
-    connections.insert(SubscriberConnection(t_subscriber));
+    std:string subscriptionId = Network::to_string(t_subscriber);
+    connections[subscriptionId] = SubscriberConnection(t_subscriber);
+    connections[subscriptionId].start();
 }
 
 void Network::Server::sendFrame(Frame &t_frame) {
