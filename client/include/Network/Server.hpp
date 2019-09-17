@@ -9,6 +9,7 @@
 #define SERVER_H
 #include "Frame.hpp"
 #include "SFML/Network.hpp"
+#include <atomic>
 
 class Server {
     static sf::Uint16 m_port;
@@ -17,6 +18,7 @@ class Server {
     static sf::Int32 frameId;
     static FramesQueue framesQueue;
     static SubscribersSet subscribersSet;
+    static std::atomic<bool> Exit;
 
     static void _sendFrame(Frame &t_frame);
     static void _addSubscriber(Subscriber &t_subscriber);
@@ -37,6 +39,12 @@ public:
 	*	@param[in]  t_frame  The frame that should be sent.
 	*/
     static void sendFrame(Frame &t_frame);
+
+    /*
+	*	@brief	Method to be called by a thread. This is thread blocking.
+	*/
+    static void run();
+
 };
 
 #endif // SERVER_H

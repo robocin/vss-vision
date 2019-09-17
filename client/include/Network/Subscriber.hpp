@@ -23,7 +23,7 @@ class Subscriber {
     std::string &ip() {
         return m_ip;
     }
-    sf::Uin16 &port() {
+    sf::Uint16 &port() {
         return m_port;
     }
 }

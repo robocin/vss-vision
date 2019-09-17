@@ -7,11 +7,10 @@
 #include "Network/Server.hpp"
 
 sf::Uint16 Server::m_port = static_cast<sf::Uint16>(54000);
-sf::IpAddress Server::recipient = "0.0.0.0";
-sf::UdpSocket Server::socket;
 sf::Int32 Server::frameId = 0;
 FramesQueue Server::framesQueue;
 SubscribersSet Server::subscribersSet;
+std::atomic<bool> Server::Exit;
 
 
 void Server::_sendFrame(Frame &t_frame) {
@@ -36,13 +35,22 @@ void Server::_sendFrame(Frame &t_frame) {
                 << static_cast<Float>(entities[i].angle());
     }
     
-    if (Server::socket.send(packet, recipient, m_port) != sf::Socket::Done)
+
+    
+}
+
+void _sendPacketToSubscriber(Subscriber subscriber, sf::Packet &packet) {
+    sf::IpAddress recipient = subscriber.ip();
+    sf::Uin16 port = subscriber.port();
+    sf::UdpSocket socket;
+
+    if (socket.send(packet, recipient, port) != sf::Socket::Done)
     {
-        spdlog::get("Server")->info("sendFrame:: Something went wrong when trying to send the frame.\n");
+        spdlog::get("Server")->info("sendFrame:: Something went wrong when trying to send the frame to {}.\n", subscriber.ip().c_str());
     }
 }
 
-static void _addSubscriber(Subscriber &t_subscriber) {
+void _addSubscriber(Subscriber &t_subscriber) {
     subscribersSet.insert(t_subscriber);
 }
 
@@ -54,3 +62,12 @@ sf::Uint16 getPort() {
     return m_port;
 }
 
+void run() {
+    while(!Exit) {
+        sendFrame(entities);
+        time = clock.getElapsedTime();
+        clock.restart().asSeconds();
+        sf::sleep(sf::milliseconds(waitTime));
+        ++frameId;
+    }
+}
