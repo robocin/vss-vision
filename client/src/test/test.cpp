@@ -6,7 +6,7 @@
 #include <omp.h>
 #include <unistd.h>
 #include <math.h>
-#include "Network.hpp"
+#include "Network/Server.hpp"
 
 #define RAD_TO_DEG 180.0/M_PI
 
@@ -38,7 +38,7 @@ int main()
     while (!Exit)
     {
         if (frameId < messages_to_send) {
-            Network::sendFrame(entities);
+            Server::sendFrame(entities);
             time = clock.getElapsedTime();
             clock.restart().asSeconds();
             sf::sleep(sf::milliseconds(waitTime));

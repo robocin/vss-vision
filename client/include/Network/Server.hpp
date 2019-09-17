@@ -1,20 +1,21 @@
-/* Network classes made by the RoboCIn for the project IEEE - VSS
+/* Server classes made by the RoboCIn for the project IEEE - VSS
  * @author Lucas Oliveira Maggi
  *
- * This class contains all the network interface we use.
+ * This class contains all the SERVER network interface we use.
  *
  */
 
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef SERVER_H
+#define SERVER_H
 #include "Base.hpp"
 #include "Entity.hpp"
 #include "SFML/Network.hpp"
 
-class Network {
+class Server {
     static sf::UdpSocket socket;
     static sf::IpAddress recipient;
     static sf::Int32 frameId;
+    static void _sendFrame(std::vector<Entity> &entities);
 public:
     static sf::Uint16 port;
 	/*
@@ -24,4 +25,4 @@ public:
     static void sendFrame(std::vector<Entity> &entities);
 };
 
-#endif // NETWORK_H
+#endif // SERVER_H
