@@ -6,14 +6,15 @@
  */
 #include "Network/Server.hpp"
 
-sf::Uint16 Server::m_port = static_cast<sf::Uint16>(54000);
-sf::Int32 Server::frameId = 0;
-FramesQueue Server::framesQueue;
-SubscribersSet Server::subscribersSet;
-std::atomic<bool> Server::Exit;
+sf::Uint16 Network::Server::m_port = static_cast<sf::Uint16>(54000);
+sf::Int32 Network::Server::frameId = 0;
+FramesQueue Network::Server::framesQueue;
+SubscribersSet Network::Server::subscribersSet;
+SubscriberConnections Network::Server::connections;
+std::atomic<bool> Network::Server::Exit;
 
 
-void Server::_sendFrame(Frame &t_frame) {
+void Network::Server::_sendFrame(Frame &t_frame) {
     Entities &entities = t_frame.entities();
 
     if (!entities.size()) return;
@@ -39,10 +40,9 @@ void Server::_sendFrame(Frame &t_frame) {
     
 }
 
-void _sendPacketToSubscriber(Subscriber subscriber, sf::Packet &packet) {
-    sf::IpAddress recipient = subscriber.ip();
-    sf::Uin16 port = subscriber.port();
-    sf::UdpSocket socket;
+void Network::Server::_sendPacketToSubscriber(sf::UdpSocket &socket, Subscriber &subscriber, sf::Packet &packet) {
+    sf::IpAddress recipient = subscriber.first;
+    sf::Uin16 port = subscriber.second;
 
     if (socket.send(packet, recipient, port) != sf::Socket::Done)
     {
@@ -50,24 +50,21 @@ void _sendPacketToSubscriber(Subscriber subscriber, sf::Packet &packet) {
     }
 }
 
-void _addSubscriber(Subscriber &t_subscriber) {
-    subscribersSet.insert(t_subscriber);
-}
-
-void Server::sendFrame(Frame &t_frame) {
-    framesQueue.push(t_frame);
-}
-
-sf::Uint16 getPort() {
-    return m_port;
-}
-
-void run() {
+void Network::Server::_subscriberMain(Subscriber &subscriber) {
+    sf::UdpSocket socket;
     while(!Exit) {
-        sendFrame(entities);
-        time = clock.getElapsedTime();
-        clock.restart().asSeconds();
-        sf::sleep(sf::milliseconds(waitTime));
-        ++frameId;
+
     }
+}
+
+void _addSubscriber(Subscriber &t_subscriber) {
+    connections.insert(SubscriberConnection(t_subscriber));
+}
+
+void Network::Server::sendFrame(Frame &t_frame) {
+    
+}
+
+sf::Uint16 Network::Server::getPort() {
+    return m_port;
 }

@@ -38,7 +38,7 @@ int main()
     while (!Exit)
     {
         if (frameId < messages_to_send) {
-            Server::sendFrame(entities);
+            Network::Server::sendFrame(entities);
             time = clock.getElapsedTime();
             clock.restart().asSeconds();
             sf::sleep(sf::milliseconds(waitTime));

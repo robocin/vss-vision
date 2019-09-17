@@ -10,25 +10,12 @@
 #include <SFML/Main.hpp>
 #include <vector>
 #include <set>
+#include <pair>
 
-
-class Subscriber {
-    std::string m_ip;
-    sf::Uint16 m_port;
-    public:
-    Subscriber(std::string &t_ip, sf::Uint16 t_port){
-        m_ip.assign(t_ip.begin(),t_ip.end());
-        m_port = t_port;
-    }
-    std::string &ip() {
-        return m_ip;
-    }
-    sf::Uint16 &port() {
-        return m_port;
-    }
-}
-
-typedef std::vector<Subscriber> Subscribers;
-typedef std::set<Subscriber> SubscribersSet;
+namespace Network {
+    typedef std::pair<std::string, sf::Uint16> Subscriber;
+    typedef std::vector<Subscriber> Subscribers;
+    typedef std::set<Subscriber> SubscribersSet;
+};
 
 #endif // SUBSCRIBER_H
