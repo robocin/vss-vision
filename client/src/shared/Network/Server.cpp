@@ -1,7 +1,7 @@
 /* Server class made by the RoboCIn for the project IEEE - VSS
  * @author Lucas Oliveira Maggi
  *
- * This class contains all the SERVER network interface we use.
+ * This class contains all the Server network interface we use.
  *
  */
 #include "Network/Server.hpp"
@@ -11,6 +11,8 @@ sf::IpAddress Server::recipient = "0.0.0.0";
 sf::UdpSocket Server::socket;
 sf::Int32 Server::frameId = 0;
 FramesQueue Server::framesQueue;
+SubscribersSet Server::subscribersSet;
+
 
 void Server::_sendFrame(Frame &t_frame) {
     Entities &entities = t_frame.entities();
@@ -40,10 +42,15 @@ void Server::_sendFrame(Frame &t_frame) {
     }
 }
 
+static void _addSubscriber(Subscriber &t_subscriber) {
+    subscribersSet.insert(t_subscriber);
+}
+
 void Server::sendFrame(Frame &t_frame) {
-    framesToSend.push(t_frame);
+    framesQueue.push(t_frame);
 }
 
 sf::Uint16 getPort() {
     return m_port;
 }
+

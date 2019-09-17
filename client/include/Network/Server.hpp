@@ -1,7 +1,7 @@
 /* Server class made by the RoboCIn for the project IEEE - VSS
  * @author Lucas Oliveira Maggi
  *
- * This class contains all the SERVER network interface we use.
+ * This class contains all the Server network interface we use.
  *
  */
 
@@ -11,12 +11,12 @@
 #include "SFML/Network.hpp"
 
 class Server {
+    static sf::Uint16 m_port;
     static sf::UdpSocket socket;
     static sf::IpAddress recipient;
     static sf::Int32 frameId;
     static FramesQueue framesQueue;
-    static sf::Uint16 m_port;
-    static Subscribers subscribers;
+    static SubscribersSet subscribersSet;
 
     static void _sendFrame(Frame &t_frame);
     static void _addSubscriber(Subscriber &t_subscriber);

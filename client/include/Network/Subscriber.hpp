@@ -8,9 +8,8 @@
 #ifndef SUBSCRIBER_H
 #define SUBSCRIBER_H
 #include <SFML/Main.hpp>
-#include <Entity.hpp>
-#include <queue>
 #include <vector>
+#include <set>
 
 
 class Subscriber {
@@ -30,5 +29,6 @@ class Subscriber {
 }
 
 typedef std::vector<Subscriber> Subscribers;
+typedef std::set<Subscriber> SubscribersSet;
 
 #endif // SUBSCRIBER_H
