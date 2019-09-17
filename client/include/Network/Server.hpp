@@ -7,8 +7,8 @@
 
 #ifndef SERVER_H
 #define SERVER_H
-#include "Frame.hpp"
-#include "SFML/Network.hpp"
+#include "Network/Frame.hpp"
+#include "Network/SubscriberConnection.hpp"
 #include <atomic>
 
 namespace Network {

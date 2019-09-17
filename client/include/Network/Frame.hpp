@@ -26,10 +26,10 @@ class Frame {
     Entities &entities() {
         return m_entities;
     }
-    sf::Uint32 &id() {
+    sf::Int32 &id() {
         return m_frameId;
     }
-}
+};
 typedef std::vector<Frame> Frames;
 typedef std::queue<Frame> FramesQueue;
 

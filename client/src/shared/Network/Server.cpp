@@ -42,7 +42,6 @@ void Network::Server::_sendFrame(Frame &t_frame) {
 void _addSubscriber(Subscriber &t_subscriber) {
     std:string subscriptionId = Network::to_string(t_subscriber);
     connections[subscriptionId] = SubscriberConnection(t_subscriber);
-    connections[subscriptionId].start();
 }
 
 void Network::Server::sendFrame(Frame &t_frame) {

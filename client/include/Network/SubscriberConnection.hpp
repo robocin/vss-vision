@@ -10,12 +10,14 @@
 #include <SFML/Main.hpp>
 #include <thread>
 #include <mutex>
-#include <unnordered_map>
+#include <unordered_map>
+#include "Base.hpp"
 #include "Network/Subscriber.hpp"
+#include "SFML/Network.hpp"
 
 namespace Network {
 
-    class Thread : public std::thread {
+    class Thread {
         std::mutex m_mtx;
         std::atomic<bool> Exit;
         std::atomic<bool> m_isFinished;
@@ -23,9 +25,10 @@ namespace Network {
             run();
             m_isFinished = true;
         }
+        std::thread m_thread;
         public:
-        Thread ():Exit(false), m_isFinished(false) {
-            thread::thread(m_run);
+        Thread ():Exit(false), m_isFinished(false){
+            m_thread(m_run)
         };
         bool isFinished() {
             return m_isFinished;
@@ -38,14 +41,11 @@ namespace Network {
                 m_mtx.lock();
             }
         }
-        void start() {
-            thread::start();
-        }
         void exit() {
             Exit = true;
         }
         virtual void run() = 0;
-    }
+    };
 
     class SubscriberConnection : public Thread {
         Subscriber m_subscriber;
@@ -76,9 +76,9 @@ namespace Network {
             m_packet = t_packet;
             Thread::wake();
         }
-    }
+    };
 
-    typedef std::unnordered_map<std::string, SubscriberConnection> SubscriberConnections;
+    typedef std::unordered_map<std::string, SubscriberConnection> SubscriberConnections;
 };
 
 #endif // SUBSCRIBER_CONNECTION_H
