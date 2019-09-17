@@ -20,5 +20,6 @@ public:
 };
 
 typedef std::vector<Entity> Entities;
+typedef std::vector<Entities> ListOfEntities;
 
 #endif // ENTITY_H
