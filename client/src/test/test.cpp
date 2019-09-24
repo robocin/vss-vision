@@ -34,17 +34,25 @@ int main()
         entities[i].id() = i;
     }
 
-    sf::sleep(sf::seconds(2));
-    while (!Exit)
-    {
-        if (frameId < messages_to_send) {
-            Network::Server::sendFrame(entities);
-            time = clock.getElapsedTime();
-            clock.restart().asSeconds();
-            sf::sleep(sf::milliseconds(waitTime));
-            ++frameId;
-        } else Exit = true;
+    //sf::sleep(sf::seconds(2));
+    int tries = 3;
+    bool hasClient = false;
+    while(tries>0 && !hasClient) {
+        // hasClient = hasClient || Network::Server::waitClient(sf::seconds(3));
+        tries--;
     }
+    if(hasClient) puts("has clients");
+    else puts("nothing here :/");
+    // while (!Exit)
+    // {
+    //     if (frameId < messages_to_send) {
+    //         Network::Server::sendFrame(entities);
+    //         time = clock.getElapsedTime();
+    //         clock.restart().asSeconds();
+    //         sf::sleep(sf::milliseconds(waitTime));
+    //         ++frameId;
+    //     } else Exit = true;
+    // }
 
     return 0;
 }

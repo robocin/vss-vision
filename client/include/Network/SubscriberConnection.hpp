@@ -17,37 +17,37 @@
 
 namespace Network {
 
-    class Thread {
-        std::mutex m_mtx;
-        std::atomic<bool> Exit;
-        std::atomic<bool> m_isFinished;
-        void m_run() {
-            run();
-            m_isFinished = true;
-        }
-        std::thread m_thread;
-        public:
-        Thread ():Exit(false), m_isFinished(false){
-            m_thread(m_run)
-        };
-        bool isFinished() {
-            return m_isFinished;
-        }
-        void wake() {
-            m_mtx.unlock();
-        }
-        void wait() {
-            if (!m_isFinished) {
-                m_mtx.lock();
-            }
-        }
-        void exit() {
-            Exit = true;
-        }
-        virtual void run() = 0;
-    };
+    // class Thread {
+    //     std::mutex m_mtx;
+    //     std::atomic<bool> Exit;
+    //     std::atomic<bool> m_isFinished;
+    //     void m_run() {
+    //         run();
+    //         m_isFinished = true;
+    //     }
+    //     std::thread m_thread;
+    //     public:
+    //     Thread ():Exit(false), m_isFinished(false){
+    //         m_thread(m_run)
+    //     };
+    //     bool isFinished() {
+    //         return m_isFinished;
+    //     }
+    //     void wake() {
+    //         m_mtx.unlock();
+    //     }
+    //     void wait() {
+    //         if (!m_isFinished) {
+    //             m_mtx.lock();
+    //         }
+    //     }
+    //     void exit() {
+    //         Exit = true;
+    //     }
+    //     virtual void run() = 0;
+    // };
 
-    class SubscriberConnection : public Thread {
+    class SubscriberConnection { //: public Thread {
         Subscriber m_subscriber;
         sf::UdpSocket m_socket;
         sf::Packet m_packet;
@@ -63,22 +63,23 @@ namespace Network {
         }
 
         public:
-        void run() {
-            while(!Exit) {
-                Thread::wait();
-                _sendPacketToSubscriber(m_packet);
-            }
-        }
+        // void run() {
+        //     while(!Exit) {
+        //         //Thread::wait();
+        //         _sendPacketToSubscriber(m_packet);
+        //     }
+        // }
         SubscriberConnection(Subscriber &t_subscriber){
             m_subscriber = t_subscriber;
         }
         void sendPacket(sf::Packet &t_packet) {
             m_packet = t_packet;
-            Thread::wake();
+            _sendPacketToSubscriber(m_packet);
+            // Thread::wake();
         }
     };
 
-    typedef std::unordered_map<std::string, SubscriberConnection> SubscriberConnections;
+    typedef std::unordered_map<std::string, SubscriberConnection* > SubscriberConnections;
 };
 
 #endif // SUBSCRIBER_CONNECTION_H

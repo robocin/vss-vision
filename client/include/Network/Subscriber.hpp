@@ -8,15 +8,15 @@
 #ifndef SUBSCRIBER_H
 #define SUBSCRIBER_H
 #include <SFML/Main.hpp>
+#include <SFML/Network.hpp>
 #include <vector>
 #include <utility>
 
 namespace Network {
     typedef std::pair<std::string, sf::Uint16> Subscriber;
     typedef std::vector<Subscriber> Subscribers;
-    std::string to_string(Subscriber &t_subscriber) {
-        return t_subscriber.first + std::to_string(t_subscriber.second);
-    }
+    Subscriber make_subscriber(sf::IpAddress t_ipAddress, sf::Uint16 t_port);
+    std::string to_string(Subscriber &t_subscriber);
 };
 
 #endif // SUBSCRIBER_H

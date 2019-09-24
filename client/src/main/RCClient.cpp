@@ -92,7 +92,7 @@ int main(int argc, char **argv)
             // UDP socket:
             sf::UdpSocket socket;
             sf::IpAddress sender = "0.0.0.0";
-            sf::Uint16 oport = 54000, port = oport;
+            sf::Uint16 oport = 10000, port = oport;
             sf::Clock clock;
             sf::Time time;
             float fps = 0;
