@@ -38,7 +38,7 @@ int main()
     int tries = 3;
     bool hasClient = false;
     while(tries>0 && !hasClient) {
-        // hasClient = hasClient || Network::Server::waitClient(sf::seconds(3));
+        Network::Server::waitClient(sf::seconds(3));
         tries--;
     }
     if(hasClient) puts("has clients");

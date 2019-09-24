@@ -99,6 +99,14 @@ int main(int argc, char **argv)
             time = clock.getElapsedTime();
             sf::Int32 lastFrameId = -1;
 
+            sf::Uint16 serverPort = 20000;
+            sf::UdpSocket serverSocket;
+
+            sf::sleep(sf::seconds(3));
+            sf::Packet tpacket;
+            tpacket << "MAGGIC";
+            serverSocket.send(tpacket,sender,serverPort);
+
             // bind the socket to a port
             if (socket.bind(port) != sf::Socket::Done)
             {

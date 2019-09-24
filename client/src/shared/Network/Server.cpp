@@ -65,40 +65,46 @@ sf::Uint16 Network::Server::getPort() {
 
 bool Network::Server::waitClient(sf::Time t_time) {
     bool success = false;
-    // if (m_socket.isBlocking()) 
-    //     m_socket.setBlocking(false);
+    if (m_socket.isBlocking()) 
+        m_socket.setBlocking(false);
 
-    // if (!m_socketSelectorReady) {
-    //     m_socketSelector.add(m_socket);
-    //     m_socketSelectorReady = true;
-    // }
-    // if (m_socket.bind(m_port) != sf::Socket::Done) {
-    //     spdlog::get("Server")->error("waitClient:: Error trying to bind socket on port {}\n", m_port);
-    //     return false;
-    // }
+    if (!m_socketSelectorReady) {
+        m_socketSelector.add(m_socket);
+        m_socketSelectorReady = true;
+    }
+    if (m_socket.bind(m_port) != sf::Socket::Done) {
+        // spdlog::get("Server")->error("waitClient:: Error trying to bind socket on port {}\n", m_port);
+        puts("error trying to bind socket");
+        return false;
+    }
     // spdlog::get("Server")->info("waitClient:: Waiting for client on port {}.\n", m_port);
+    printf("wating for port %d\n", m_port);
 
-    // m_socketSelector.wait(t_time);
+    m_socketSelector.wait(t_time);
 
     // if (m_socketSelector.isReady(m_socket)) {
-    //     sf::Packet t_packet;
-    //     sf::IpAddress t_remoteAddress;
-    //     sf::Uint16 t_remotePort;
-    //     m_socket.receive(t_packet, t_remoteAddress, t_remotePort);
-    //     char maggic_string[7];
-    //     t_packet >> maggic_string;
-    //     if (!strcmp(maggic_string,MAGGIC_STRING)) {
-    //         spdlog::get("Server")->info("waitClient:: There's a client in {}.\n", t_remoteAddress.toString());
-    //         _addSubscriber(Network::make_subscriber(t_remoteAddress, t_remotePort));
-    //         success = true;
-    //     } else {
-    //         spdlog::get("Server")->info("waitClient:: {} did not sent the MAGGIC_STRING.\n", t_remoteAddress.toString());
-    //     }
+        sf::Packet t_packet;
+        sf::IpAddress t_remoteAddress;
+        sf::Uint16 t_remotePort;
+        m_socket.receive(t_packet, t_remoteAddress, t_remotePort);
+        char maggic_string[7];
+        t_packet >> maggic_string;
+        if (!strcmp(maggic_string,MAGGIC_STRING)) {
+            // spdlog::get("Server")->info("waitClient:: There's a client in {}.\n", t_remoteAddress.toString());
+            printf("client on %s:%d\n", t_remoteAddress.toString().c_str(), t_remotePort);
+            _addSubscriber(Network::make_subscriber(t_remoteAddress, 1000));
+            success = true;
+        } else {
+            // spdlog::get("Server")->info("waitClient:: {} did not sent the MAGGIC_STRING.\n", t_remoteAddress.toString());
+            // printf("client not maggic %s\n", t_remoteAddress.toString().c_str());
+        }
     // } else {
-    //     spdlog::get("Server")->info("waitClient:: Is any client trying to connect?.\n");
+        // spdlog::get("Server")->info("waitClient:: Is any client trying to connect?.\n");
+        // printf("anybody???\n");
     // }
-    spdlog::get("Server")->info("waitClient:: Now unbinding...\n");
+    // spdlog::get("Server")->info("waitClient:: Now unbinding...\n");
+    printf("now unbinding...\n");
 
-    // m_socket.unbind();
+    m_socket.unbind();
     return success;
 }
