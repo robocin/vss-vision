@@ -17,7 +17,7 @@ void BlobDetection::run(std::vector<Entity> &entities, std::vector< std::vector<
   this->matchBlobs(entities,currentFrame);
 
   this->_frameLocker.lockForWrite();
-  this->debugSrc = currentFrame;
+  this->debugSrc = currentFrame.clone();
   this->_frameLocker.unlock();
 }
 
@@ -29,7 +29,7 @@ void BlobDetection::init()
 cv::Mat BlobDetection::getDebugFrame()
 {
   this->_frameLocker.lockForRead();
-  cv::Mat frame = this->debugSrc;
+  cv::Mat frame = this->debugSrc.clone();
   this->_frameLocker.unlock();
   return frame;
 }
@@ -120,5 +120,5 @@ void BlobDetection::findBlobs(cv::Mat& debugFrame) {
 
     }
   }
-  this->_runs.clear();
+//  this->_runs.clear();
 }
