@@ -123,6 +123,7 @@ private:
   MaggicSegmentationDialog* m_maggicSegmentationDialog;
 
   QJsonObject m_secondaryColorJson;
+  QLabel *m_visionTimer;
 
 protected:
   void keyPressEvent(QKeyEvent *e);

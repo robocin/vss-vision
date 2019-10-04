@@ -4,7 +4,8 @@
 MainVSSWindow::MainVSSWindow(QWidget *parent)
   : QMainWindow(parent),
     m_ui(new Ui::MainVSSWindow),
-    m_mainWindowFrameTimer(new QTimer(this)) {
+    m_mainWindowFrameTimer(new QTimer(this)),
+    m_visionTimer(new QLabel()){
   m_ui->setupUi(this);
   setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
   qApp->installEventFilter(this);
@@ -40,6 +41,8 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
   this->m_visionDialog = nullptr;
   // this->m_maggicSegmentationDialog = nullptr;
   this->m_fieldDialog = nullptr;
+  m_visionTimer->setFixedWidth(250);
+  statusBar()->addWidget(m_visionTimer);
   getHalfFromFile();
 
   if (vss.getHalf() == 0) {
@@ -157,9 +160,18 @@ void MainVSSWindow::update() {
     selectCorrectFrame();
     setCameraFrame();
   }
+
+  double visionTime = Vision::singleton().getVisionRunTime();
+  m_visionTimer->setText(QString("Vision RunTime: ") +
+                         QString::number(visionTime, 'f', 2) +
+                         QString(" ms"));
+
   for (auto &widget : m_robotWidgets) {
     widget->update();
   }
+  double fps = CameraManager::singleton().getCurrentFPS();
+  m_ui->fpsLabel->setText(QString("FPS: ") + QString::number(fps,'f',2));
+
 }
 
 void MainVSSWindow::setFrame(QImage image) {

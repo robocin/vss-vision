@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'fieldpointscalibratedialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.12.0
+** Created by: Qt User Interface Compiler version 5.9.8
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -10,9 +10,12 @@
 #define UI_FIELDPOINTSCALIBRATEDIALOG_H
 
 #include <QtCore/QVariant>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QDialogButtonBox>
+#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 
 QT_BEGIN_NAMESPACE
@@ -30,35 +33,35 @@ public:
     void setupUi(QDialog *FieldPointsCalibrateDialog)
     {
         if (FieldPointsCalibrateDialog->objectName().isEmpty())
-            FieldPointsCalibrateDialog->setObjectName(QString::fromUtf8("FieldPointsCalibrateDialog"));
+            FieldPointsCalibrateDialog->setObjectName(QStringLiteral("FieldPointsCalibrateDialog"));
         FieldPointsCalibrateDialog->resize(738, 620);
         buttonBox = new QDialogButtonBox(FieldPointsCalibrateDialog);
-        buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
+        buttonBox->setObjectName(QStringLiteral("buttonBox"));
         buttonBox->setGeometry(QRect(360, 580, 341, 32));
         buttonBox->setOrientation(Qt::Horizontal);
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         videoLabel = new QLabel(FieldPointsCalibrateDialog);
-        videoLabel->setObjectName(QString::fromUtf8("videoLabel"));
+        videoLabel->setObjectName(QStringLiteral("videoLabel"));
         videoLabel->setGeometry(QRect(20, 20, 680, 520));
         videoLabel->setAutoFillBackground(true);
         videoLabel->setFrameShape(QFrame::Box);
         label = new QLabel(FieldPointsCalibrateDialog);
-        label->setObjectName(QString::fromUtf8("label"));
+        label->setObjectName(QStringLiteral("label"));
         label->setGeometry(QRect(20, 5, 16, 16));
         label->setPixmap(QPixmap(QString::fromUtf8(":/image/icon/021-keyboard-key-1.png")));
         label->setScaledContents(true);
         label_2 = new QLabel(FieldPointsCalibrateDialog);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setGeometry(QRect(19, 539, 16, 16));
         label_2->setPixmap(QPixmap(QString::fromUtf8(":/image/icon/023-keyboard-key-with-number-2.png")));
         label_2->setScaledContents(true);
         label_3 = new QLabel(FieldPointsCalibrateDialog);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
+        label_3->setObjectName(QStringLiteral("label_3"));
         label_3->setGeometry(QRect(685, 539, 16, 16));
         label_3->setPixmap(QPixmap(QString::fromUtf8(":/image/icon/022-number-3-key-on-keyboard.png")));
         label_3->setScaledContents(true);
         label_4 = new QLabel(FieldPointsCalibrateDialog);
-        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setObjectName(QStringLiteral("label_4"));
         label_4->setGeometry(QRect(684, 4, 16, 16));
         label_4->setPixmap(QPixmap(QString::fromUtf8(":/image/icon/029-keyboard-key-of-number-4.png")));
         label_4->setScaledContents(true);
@@ -72,7 +75,7 @@ public:
 
     void retranslateUi(QDialog *FieldPointsCalibrateDialog)
     {
-        FieldPointsCalibrateDialog->setWindowTitle(QApplication::translate("FieldPointsCalibrateDialog", "Field Points Calibration", nullptr));
+        FieldPointsCalibrateDialog->setWindowTitle(QApplication::translate("FieldPointsCalibrateDialog", "Field Points Calibration", Q_NULLPTR));
         videoLabel->setText(QString());
         label->setText(QString());
         label_2->setText(QString());

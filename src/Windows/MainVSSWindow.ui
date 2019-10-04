@@ -511,6 +511,19 @@
          </item>
         </layout>
        </widget>
+       <widget class="QLabel" name="fpsLabel">
+        <property name="geometry">
+         <rect>
+          <x>720</x>
+          <y>90</y>
+          <width>200</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>60fps</string>
+        </property>
+       </widget>
       </widget>
      </item>
     </layout>
