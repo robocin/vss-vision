@@ -35,3 +35,7 @@ client/RCClient
 
 # Visual Studio Code
 *.vscode/
+
+
+# Python Cache
+*__pycache__/
