@@ -175,14 +175,14 @@ cv::Mat Vision::getSegmentationDebugFrame(cv::Mat frame)
 
 cv::Mat Vision::getDetectionDebugFrame(cv::Mat frame)
 {
-  if (this->_isCorrectionEnabled) {
-    frame = this->_correction->run(frame);
-  }
+//  if (this->_isCorrectionEnabled) {
+//    frame = this->_correction->run(frame);
+//  }
 
-  this->_correctedFrame = this->_processingFrame.clone();
+  //this->_correctedFrame = this->_processingFrame.clone();
 
-  frame = this->_segmentation->run(frame);
-  this->_detection->run(this->_robotPositions,frame,frame.rows,frame.cols);
+  //frame = this->_segmentation->run(frame);
+  //this->_detection->run(this->_robotPositions,frame,frame.rows,frame.cols);
   return this->_detection->getDebugFrame();
 }
 
