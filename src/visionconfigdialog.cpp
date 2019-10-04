@@ -79,7 +79,7 @@ void VisionConfigDialog::updateLabels() {
                         (int)ColorSpace::markerColors[BlueCOL].blue);
   }
 
-  for (int i = 0; i < 7; i++) {
+  for (int i = 0; i < this->_robotPositions.size(); i++) {
     if (this->_robotPositions[i].updated()) {
       x = this->_robotPositions[i].position().x;
       y = this->_robotPositions[i].position().y;

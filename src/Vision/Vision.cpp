@@ -98,7 +98,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   this->setFrame(frame);
   this->update(currentPositions);
   //this->setObjectsSpeed(timeStamp, currentPositions);
-  this->_robotPositions = currentPositions;
+  //this->_robotPositions = currentPositions;
 
   int actualTime = timeStamp.msecsSinceStartOfDay();
   std::vector<Entity> &entities = currentPositions;
