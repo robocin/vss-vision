@@ -45,8 +45,8 @@ void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
 
 void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   QPainter paint(&t_robotId);
-  Players ally;
-  for (auto& e : vss.players()) {
+  Players ally, players = vss.players();
+  for (auto& e : players) {
       if (Vision::singleton().getTeamColor() == BlueCOL &&
                 e.id()/100 == 1) {
         ally.push_back(e);
