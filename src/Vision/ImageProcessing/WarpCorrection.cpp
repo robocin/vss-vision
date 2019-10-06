@@ -24,6 +24,8 @@ void WarpCorrection::initFromFile(std::string path, cv::Point2d* convert) {
 
   QJsonObject value;
 
+  this->_pointsLocker.lock();
+
   for (int i = 1; i <= 4; i++) {
     std::string tempKey = pointString + std::to_string(i);
     value = pointsJson[tempKey.c_str()].toObject();
@@ -52,16 +54,23 @@ void WarpCorrection::initFromFile(std::string path, cv::Point2d* convert) {
       cv::Point(box.boundingRect().width - 1, box.boundingRect().height - 1);
   dstPoints[3] = cv::Point(box.boundingRect().width - 1, 0);
 
+  this->_mapsLocker.lock();
+
   this->_warpPespectiveMatrix =
       cv::getPerspectiveTransform(_correctionPoints, dstPoints);
 
   this->_matrixSize =
       cv::Size(box.boundingRect().width, box.boundingRect().height);
+
   this->defineMaps();
+
+  this->_mapsLocker.unlock();
+  this->_pointsLocker.unlock();
 }
 
 void WarpCorrection::defineMaps() {
   cv::Mat inverseTransMatrix;
+
   cv::invert(this->_warpPespectiveMatrix, inverseTransMatrix);
 
   cv::Mat mapX, mapY, srcTM;
@@ -132,18 +141,20 @@ cv::Mat WarpCorrection::run(cv::Mat& frame) {
       cv::Rect(this->_matrixSize.width - w, this->_matrixSize.height - h, w, h),
       cv::Scalar(0, 0, 0), -1);
 
-  this->_warpPespectiveFrame = tmp.clone();
+  this->_frameLocker.lock();
+  tmp.copyTo(this->_warpPespectiveFrame);
+  this->_frameLocker.unlock();
 
-  return this->_warpPespectiveFrame;
+  return tmp;
 }
 
-cv::Mat WarpCorrection::getDebugFrame() {
-  if (this->_warpPespectiveFrame.empty()) {
-    this->_warpPespectiveFrame = cv::Mat::zeros(640, 480, CV_8UC3);
-  }
-  return this->_warpPespectiveFrame;
-}
+void WarpCorrection::getDebugFrame(cv::Mat& frame) {
+    this->_frameLocker.lock();
 
-cv::Mat WarpCorrection::getWarpPerspectiveFrame() {
-  return this->_warpPespectiveFrame.clone();
+    if (this->_warpPespectiveFrame.empty()) {
+        this->_warpPespectiveFrame = cv::Mat::zeros(640, 480, CV_8UC3);
+    }
+    this->_warpPespectiveFrame.copyTo(frame);
+
+    this->_frameLocker.unlock();
 }

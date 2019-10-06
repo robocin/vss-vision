@@ -131,7 +131,7 @@ public:
    *
    * @param[in]  frame  frame
    */
-  virtual cv::Mat getDebugFrame() = 0;
+  virtual void getDebugFrame(cv::Mat& frame) = 0;
 
     /**
    * @brief    Save all the paramenters into a xml file
@@ -265,7 +265,7 @@ protected:
   // retorna a maxima distancia entre blobs para serem um robo
   int blobMaxDist();
 
-  QReadWriteLock _frameLocker;
+  std::mutex _frameLocker;
   std::map<std::string,int> param;
   cv::Scalar _colorCar[ColorStrange+1];
   cv::Vec3b segColor[ColorStrange+1];

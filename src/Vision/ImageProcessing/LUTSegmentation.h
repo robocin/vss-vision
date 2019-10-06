@@ -74,9 +74,9 @@ class LUTSegmentation : public ImageProcessing {
   /**
    * @brief    Gets the debug frame, a Mat in BGR channel
    *
-   * @return   The debug frame.
+   * @param[in]   The debug frame.
    */
-  cv::Mat getDebugFrame() final;
+  void getDebugFrame(cv::Mat& frame) final;
 
   /**
    * @brief    Init the object using the parameters from a desired file
@@ -92,14 +92,6 @@ class LUTSegmentation : public ImageProcessing {
    * @param[in]  id   The identifier that needs to conform with the Color enum present in Utils
    */
   void setLUTPixel(YUV &color, int id);
-
-
-  /**
-   * @brief    Gets the segmentation frame from lut. Frame for debug).
-   *
-   * @return   The segmentation frame from lut, it's use in Vision to pass for other class.
-   */
-  cv::Mat getSegmentationFrameFromLUT();
 
   void setQuantizationBool(bool quantization);
 
@@ -122,7 +114,7 @@ class LUTSegmentation : public ImageProcessing {
    * @brief    Init the Look Up Table with the already loaded parameters
    */
   void initLUT();
-  QReadWriteLock _frameLock;
+  std::mutex _frameLock;
   int *_LUT;
   ColorInterval *_calibrationParameters;
   cv::Mat _debugFrame;

@@ -42,7 +42,8 @@ public:
    *
    * @param[in]  frame  frame
    */
-  cv::Mat getDebugFrame();
+  void getDebugFrame(cv::Mat& frame);
+
   /**
    * @brief    Save all param used in this class.
    */

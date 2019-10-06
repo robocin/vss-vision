@@ -86,12 +86,12 @@ void MaggicSegmentationDialog::updateFrame()
   if (this->_updateFrameTimer->isActive() == false) return;
 
   if (!this->paused) {
-    this->_actualFrame = CameraManager::singleton().getCurrentFrame();
+    CameraManager::singleton().getCurrentFrame(this->_actualFrame);
   }
 
 
   if (Vision::singleton().isCorrectionEnabled()) {
-      if (!this->paused) this->_actualFrame = Vision::singleton().getCorrectedDebugFrame(this->_actualFrame);
+      if (!this->paused) Vision::singleton().getCorrectedDebugFrame(this->_actualFrame);
   }
 
   if (!this->_actualFrame.empty()) {
@@ -107,8 +107,7 @@ void MaggicSegmentationDialog::updateFrame()
 
     maggicSegmentation->run(this->_actualFrame);
     maggicSegmentation->calibrate(this->_actualFrame);
-    //this->_segmentedFrame = maggicSegmentation->getSegmentationFrameFromLUT();
-    this->_segmentedFrame = maggicSegmentation->getDebugFrame();
+    maggicSegmentation->getDebugFrame(this->_segmentedFrame);
 
     timerFPS.stop();
     timeend = std::chrono::high_resolution_clock::now();

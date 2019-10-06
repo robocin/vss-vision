@@ -115,7 +115,7 @@ public:
    *
    * @return   The debug frame.
    */
-  cv::Mat getDebugFrame() final;
+  void getDebugFrame(cv::Mat& frame) final;
 
   /**
    * @brief    Init the object using the parameters from a desired file
@@ -129,7 +129,7 @@ public:
    *
    * @return   The segmentation frame from lut, it's use in Vision to pass for other class.
    */
-  cv::Mat getSegmentationFrameFromLUT();
+  void getSegmentationFrameFromLUT(cv::Mat& frame);
 
 
   void calibrate(cv::Mat &frame);

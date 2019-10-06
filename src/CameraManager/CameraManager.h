@@ -9,7 +9,6 @@
 #include <QJsonValue>
 #include <QMutex>
 #include <QProcess>
-#include <QReadWriteLock>
 #include <QRegExp>
 #include <QString>
 #include <QThread>
@@ -21,6 +20,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <mutex>
 #include "spdlog/spdlog.h"
 
 #define FRAME_WIDTH_DEFAULT 640
@@ -437,7 +437,7 @@ class CameraManager {
   CameraParameter _exposureAutoPriority;
   CameraParameter _contrast;
 
-  QReadWriteLock _cameraFrameLocker;
+  std::mutex _cameraFrameLocker;
 
   cv::VideoCapture _capture;
   cv::Mat _currentFrame;

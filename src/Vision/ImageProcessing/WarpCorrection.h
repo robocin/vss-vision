@@ -57,14 +57,7 @@ class WarpCorrection : public ImageProcessing {
    *
    * @return   The debug frame.
    */
-  cv::Mat getDebugFrame();
-
-  /**
-   * @brief    Gets the warp perspective frame.
-   *
-   * @return   The warp perspective frame.
-   */
-  cv::Mat getWarpPerspectiveFrame();
+  void getDebugFrame(cv::Mat& frame);
 
  private:
   void defineMaps();
@@ -75,6 +68,7 @@ class WarpCorrection : public ImageProcessing {
   cv::Size _matrixSize;
   cv::Mat _transformationX;
   cv::Mat _transformationY;
+  std::mutex _frameLocker, _mapsLocker, _pointsLocker;
 };
 
 #endif

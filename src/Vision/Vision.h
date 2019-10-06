@@ -137,7 +137,7 @@ private:
   int _deepLogInitialTime;
   Timer _visionTimer;
   double _visionRunTime;
-  QReadWriteLock _currentFrameLocker;
+  std::mutex _currentFrameLocker;
 
   Point _frameDimensions;
 
@@ -180,22 +180,23 @@ public:
   /**
    * @brief    Gets the debug segmentation frame with all segmented regions colorized with your tag color.
    *
-   * @return   The segmentation frame.
+   * @param[in]   The segmentation frame.
    */
-  cv::Mat getSegmentationDebugFrame(cv::Mat frame);
+  void getSegmentationDebugFrame(cv::Mat& frame);
 
   /**
    * @brief    Gets the debug tracking frame with information of the area the tracking algorithm points as area with
    * 			   highest probability to find the tracked robot.
    *
-   * @return   The tracking frame.
+   * @param[in]   The tracking frame.
    */
-  cv::Mat getTrackingFrame();
+  void getTrackingDebugFrame(cv::Mat& frame);
+
   /**
    * @brief    Gets the debug detection frame with information of every color cluster points
-   * @return   The tracking frame.
+   * @param[in]   The tracking frame.
    */
-  cv::Mat getDetectionDebugFrame(cv::Mat frame);
+  void getDetectionDebugFrame(cv::Mat& frame);
 
 
   ImageProcessing* getSegmentationObject();
@@ -257,11 +258,9 @@ public:
   /**
    * @brief    Gets the corrected debug frame.
    *
-   * @param    frame  The frame
-   *
-   * @return   The corrected debug frame.
+   * @param    frame  The corrected frame
    */
-  cv::Mat getCorrectedDebugFrame(cv::Mat& frame);
+  void getCorrectedDebugFrame(cv::Mat& frame);
 
   /**
    * @brief    { reinit the correction object }
@@ -276,16 +275,16 @@ public:
   /**
    * @brief    Gets the segmentation frame.
    *
-   * @return   The segmentation frame.
+   * @param[in]   The segmentation frame.
    */
-  cv::Mat getSegmentationFrame();
+  void getSegmentationFrame(cv::Mat& frame);
 
   /**
    * @brief    Gets the detection frame.
    *
-   * @return   The detection frame.
+   * @param[in]   The detection frame.
    */
-  cv::Mat getDetectionFrame();
+  void getDetectionFrame(cv::Mat& frame);
 
   /**
    * @brief getConvert convert (_wConvert, _hConvert) convertion px to cm
@@ -338,7 +337,7 @@ public:
 
   int getTeamColor();
 
-  cv::Mat getCurrentFrame();
+  void getCurrentFrame(cv::Mat& frame);
 
   void setDeepLogFileName(std::string fileName);
   void setRecordingVideo(bool value);

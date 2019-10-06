@@ -113,16 +113,16 @@ void MainVSSWindow::selectCorrectFrame() {
 
   if (frameType == "Original") {
     if (m_ui->cutFieldPushButton->isChecked()) {
-      m_currentFrame = Vision::singleton().getCurrentFrame();
+      Vision::singleton().getCurrentFrame(m_currentFrame);
     } else {
-      m_currentFrame = CameraManager::singleton().getCurrentFrame().clone();
+      CameraManager::singleton().getCurrentFrame(m_currentFrame);
     }
   } else if (frameType == "Segmented") {
-    m_currentFrame = Vision::singleton().getSegmentationFrame().clone();
+    Vision::singleton().getSegmentationFrame(m_currentFrame);
   } else if (frameType == "Tracked") {
     cv::Mat frameAux, frameAux2;
-    frameAux = Vision::singleton().getCurrentFrame().clone();
-    frameAux2 = Vision::singleton().getDetectionFrame();
+    Vision::singleton().getCurrentFrame(frameAux);
+    Vision::singleton().getDetectionFrame(frameAux2);
     cv::resize(frameAux2, frameAux2, frameAux.size());
     cv::Mat aux = vss.frameCopy();
     vss.clearFrame();

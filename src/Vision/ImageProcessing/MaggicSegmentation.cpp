@@ -1153,24 +1153,27 @@ void MaggicSegmentation::initLUT()
 
 }
 
-cv::Mat MaggicSegmentation::getDebugFrame()
+void MaggicSegmentation::getDebugFrame(cv::Mat& frame)
 {
+  mut.lock();
   switch(this->_debugSelection) {
     case MaggicVisionDebugSelection_Thresholded:
-      return this->_firstThreshold.clone();
+      this->_firstThreshold.copyTo(frame);
+      break;
     case MaggicVisionDebugSelection_ExtremeSaturation:
-      return this->_extremeSaturation.clone();
+      this->_extremeSaturation.copyTo(frame);
+      break;
     case MaggicVisionDebugSelection_MultipliedResults:
-      return this->_multipliedResults.clone();
+      this->_multipliedResults.copyTo(frame);
+      break;
     case MaggicVisionDebugSelection_SegmentationFrame:
-      return this->_segmentationFrame.clone();
+      this->_segmentationFrame.copyTo(frame);
+      break;
     case MaggicVisionDebugSelection_DetailsFrame:
-      mut.lock();
-      cv::Mat tmp = this->_detailsFrame.clone();
-      mut.unlock();
-      return tmp;
+      this->_detailsFrame.copyTo(frame);
     break;
   }
+  mut.unlock();
 }
 
 //void MaggicSegmentation::setLUTPixel(YUV &color, int id)
@@ -1232,9 +1235,9 @@ void MaggicSegmentation::initFromFile(std::string path)
   this->initLUT();
 }
 
-cv::Mat MaggicSegmentation::getSegmentationFrameFromLUT()
+void MaggicSegmentation::getSegmentationFrameFromLUT(cv::Mat& frame)
 {
-  return this->_segmentationFrame;
+  this->_segmentationFrame.copyTo(frame);
 }
 
 

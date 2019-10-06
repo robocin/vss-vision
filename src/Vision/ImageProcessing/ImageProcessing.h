@@ -5,7 +5,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/opencv.hpp"
-#include <QReadWriteLock>
+#include <mutex>
 
 /**
  * @brief    Class for image processing.
@@ -39,11 +39,9 @@ public:
 	/**
 	 * @brief    Gets the debug frame.
 	 *
-	 * @param[in]  frame  The frame
-	 *
-	 * @return   The debug frame.
+     * @param[in]  frame  The debug frame
 	 */
-  virtual cv::Mat getDebugFrame() = 0;
+  virtual void getDebugFrame(cv::Mat& frame) = 0;
 
   virtual ~ImageProcessing() = default;
 	

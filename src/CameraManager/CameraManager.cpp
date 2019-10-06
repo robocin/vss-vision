@@ -67,8 +67,6 @@ bool CameraManager::init(int cameraIndex) {
   }
 
   this->_capture.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
-  // this->_capture.set(CV_CAP_PROP_FRAME_WIDTH, this->_frameWidth);
-  // this->_capture.set(CV_CAP_PROP_FRAME_HEIGHT, this->_frameHeight);
 
   if (this->_frameWidth !=
           static_cast<int>(this->_capture.get(CV_CAP_PROP_FRAME_WIDTH)) ||
@@ -77,10 +75,9 @@ bool CameraManager::init(int cameraIndex) {
     this->_is60fps = false;
   }
 
-  // this->_capture.set(CV_CAP_PROP_FPS,60.0);
   double cameraFps = this->_capture.get(CV_CAP_PROP_FPS);
 
-  if (static_cast<int>(cameraFps) == 60)
+  if (static_cast<int>(cameraFps) >= 60)
     this->_is60fps = true;
   else
     this->_is60fps = false;
@@ -162,7 +159,7 @@ void CameraManager::updateFrame() {
                cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
   }
 
-  this->_cameraFrameLocker.lockForWrite();
+  this->_cameraFrameLocker.lock();
   this->_currentFrame = frame;
   if (this->_distortionOption > NULO) {
     remap(frame, frame, this->_map_x, this->_map_y, cv::INTER_LINEAR);
@@ -397,14 +394,16 @@ int CameraManager::getFrameWidth() { return this->_frameWidth; }
 int CameraManager::getFrameHeight() { return this->_frameHeight; }
 
 cv::Mat CameraManager::getCurrentFrame() {
-  this->_cameraFrameLocker.lockForRead();
+  this->_cameraFrameLocker.lock();
   cv::Mat frame = this->_currentFrame.clone();
   this->_cameraFrameLocker.unlock();
   return frame;
 }
 
 void CameraManager::getCurrentFrame(cv::Mat& frame) {
-  frame = this->_currentFrame;
+  this->_cameraFrameLocker.lock();
+  this->_currentFrame.copyTo(frame);
+  this->_cameraFrameLocker.unlock();
 }
 
 void CameraManager::setVideoFrameToBegin() {

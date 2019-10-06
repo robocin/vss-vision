@@ -71,8 +71,8 @@ cv::Mat LUTSegmentation::run(cv::Mat &frame) {
       }
     }
   );
-  this->_frameLock.lockForWrite();
-  this->_segmentationFrame = debugFrame;
+  this->_frameLock.lock();
+  debugFrame.copyTo(this->_segmentationFrame);
   this->_frameLock.unlock();
   return returnFrame;
 }
@@ -101,11 +101,10 @@ void LUTSegmentation::initLUT() {
   }
 }
 
-cv::Mat LUTSegmentation::getDebugFrame() {
-  this->_frameLock.lockForRead();
-  cv::Mat frame = this->_segmentationFrame;
+void LUTSegmentation::getDebugFrame(cv::Mat& frame) {
+  this->_frameLock.lock();
+  this->_segmentationFrame.copyTo(frame);
   this->_frameLock.unlock();
-  return frame;
 }
 
 void LUTSegmentation::setLUTPixel(YUV &color, int id) {
@@ -154,10 +153,6 @@ void LUTSegmentation::initFromFile(std::string path) {
 
   fs.release();
   this->initLUT();
-}
-
-cv::Mat LUTSegmentation::getSegmentationFrameFromLUT() {
-  return this->_segmentationFrame;
 }
 
 void LUTSegmentation::setQuantizationBool(bool quantization) {

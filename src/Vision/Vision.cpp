@@ -163,32 +163,22 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
    this->_visionRunTime = static_cast<double> (this->_visionTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
 }
 
-cv::Mat Vision::getSegmentationDebugFrame(cv::Mat frame)
+void Vision::getSegmentationDebugFrame(cv::Mat& frame)
 {
-  if (this->_isCorrectionEnabled) {
-    frame = this->_correction->run(frame);
-  }
-
-  this->_segmentation->run(frame);
-  return ((LUTSegmentation*)this->_segmentation)->getSegmentationFrameFromLUT();
+    if (this->_segmentation)
+        this->_segmentation->getDebugFrame(frame);
 }
 
-cv::Mat Vision::getDetectionDebugFrame(cv::Mat frame)
+void Vision::getDetectionDebugFrame(cv::Mat& frame)
 {
-//  if (this->_isCorrectionEnabled) {
-//    frame = this->_correction->run(frame);
-//  }
-
-  //this->_correctedFrame = this->_processingFrame.clone();
-
-  //frame = this->_segmentation->run(frame);
-  //this->_detection->run(this->_robotPositions,frame,frame.rows,frame.cols);
-  return this->_detection->getDebugFrame();
+    if (this->_detection)
+        this->_detection->getDebugFrame(frame);
 }
 
-cv::Mat Vision::getTrackingFrame()
+void Vision::getTrackingDebugFrame(cv::Mat& frame)
 {
-  return _tracking->getDebugFrame();
+    if (this->_tracking)
+        this->_tracking->getDebugFrame(frame);
 }
 
 ImageProcessing* Vision::getSegmentationObject() {
@@ -246,9 +236,9 @@ void Vision::setTrackParamFromXml()
   }
 }
 
-cv::Mat Vision::getCorrectedDebugFrame(cv::Mat &frame)
+void Vision::getCorrectedDebugFrame(cv::Mat &frame)
 {
-  return _correction->run(frame);
+  _correction->getDebugFrame(frame);
 }
 
 void Vision::savePositionParam()
@@ -271,17 +261,19 @@ void Vision::resetSegmentation()
   ((LUTSegmentation*)this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
 }
 
-cv::Mat Vision::getSegmentationFrame()
+void Vision::getSegmentationFrame(cv::Mat& frame)
 {
-  return this->_segmentation->getDebugFrame();
+    if (this->_segmentation)
+        this->_segmentation->getDebugFrame(frame);
 }
 
-cv::Mat Vision::getDetectionFrame()
+void Vision::getDetectionFrame(cv::Mat& frame)
 {
-  return this->_detection->getDebugFrame();
+    if (this->_detection)
+        this->_detection->getDebugFrame(frame);
 }
 
-bool  Vision::isCorrectionEnabled()
+bool Vision::isCorrectionEnabled()
 {
   return this->_isCorrectionEnabled;
 }
@@ -308,13 +300,11 @@ int Vision::setColorIndex(int color, int index)
 
 void Vision::setQuantizationBool(bool quantization)
 {
-
   ((LUTSegmentation*)this->_segmentation)->setQuantizationBool(quantization);
 }
 
 bool Vision::getQuantizationBool()
 {
-
   return ((LUTSegmentation*)this->_segmentation)->getQuantizationBool();
 }
 
@@ -334,11 +324,10 @@ int Vision::getTeamColor()
   return this->_teamColor;
 }
 
-cv::Mat Vision::getCurrentFrame() {
-  this->_currentFrameLocker.lockForRead();
-  cv::Mat clone = this->_currentFrame.clone();
+void Vision::getCurrentFrame(cv::Mat& frame) {
+  this->_currentFrameLocker.lock();
+  this->_currentFrame.copyTo(frame);
   this->_currentFrameLocker.unlock();
-  return clone;
 }
 
 void Vision::setDeepLogFileName(std::string fileName) {
