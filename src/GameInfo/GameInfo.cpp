@@ -72,9 +72,20 @@ void GameInfo::setBall(Entity& t_ball) {
   setLockedFrame(false);
 }
 
-Players GameInfo::players() {
+Players GameInfo::players(uint t_team) {
+    Players ret;
     setLockedFrame(true);
-    Players ret(m_players.begin(),m_players.end());
+    switch (t_team) {
+        case 0:
+            ret.assign(m_players.begin(),m_players.end());
+            break;
+        default:
+            printf("Getting %u team\n", t_team);
+            for (auto& e : m_players) {
+                if (e.team() == t_team)
+                    ret.push_back(e);
+            }
+    }
     setLockedFrame(false);
     return ret;
 }

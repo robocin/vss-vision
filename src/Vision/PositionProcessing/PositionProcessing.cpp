@@ -50,6 +50,8 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
 
     std::bitset<MAX_PLAYERS> markedColors;
     int teamCounter = 0;
+    uint teamColor = static_cast<uint>(getTeamColor());
+    printf("teamColor %u\n", teamColor);
 
     for (Region &region : teamRegions) {
       if (region.distance < blobMaxDist()) {
@@ -67,7 +69,8 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
         markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player robot((static_cast<int>(getTeamColor()))*100 + colorIndex-COLORS_ID_BEGIN);
+        Player robot(teamColor*100 + colorIndex-COLORS_ID_BEGIN);
+        robot.team(teamColor);
         Point lastPosition = robot.position();
         Point newPositionInPixels = (b1.position + b2.position) / 2.0;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);

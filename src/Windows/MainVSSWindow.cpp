@@ -82,10 +82,10 @@ void MainVSSWindow::initColors() {
 
   if (teamLabel == 0) {
     this->on_primaryColor_clicked(false);
-    Vision::singleton().setTeamColor(BlueCOL);
+    Vision::singleton().setTeamColor(Color::BLUE);
   } else {
     this->on_primaryColor_clicked(true);
-    Vision::singleton().setTeamColor(YellowCOL);
+    Vision::singleton().setTeamColor(Color::YELLOW);
   }
 
   this->m_ui->primaryColor->setChecked(teamLabel);
@@ -479,13 +479,13 @@ void MainVSSWindow::startVideoRecording() {
 
 void MainVSSWindow::on_primaryColor_clicked(bool checked) {
   if (!checked) {
-    Vision::singleton().setTeamColor(BlueCOL);
-    Vision::singleton().setDetectionParam(MYTEAM, BlueCOL);
-    Vision::singleton().setDetectionParam(ENEMYTEAM, YellowCOL);
+    Vision::singleton().setTeamColor(Color::BLUE);
+    Vision::singleton().setDetectionParam(MYTEAM, Color::BLUE);
+    Vision::singleton().setDetectionParam(ENEMYTEAM, Color::YELLOW);
   } else {
-    Vision::singleton().setTeamColor(YellowCOL);
-    Vision::singleton().setDetectionParam(MYTEAM, YellowCOL);
-    Vision::singleton().setDetectionParam(ENEMYTEAM, BlueCOL);
+    Vision::singleton().setTeamColor(Color::YELLOW);
+    Vision::singleton().setDetectionParam(MYTEAM, Color::YELLOW);
+    Vision::singleton().setDetectionParam(ENEMYTEAM, Color::BLUE);
   }
 
   this->saveColorFile();

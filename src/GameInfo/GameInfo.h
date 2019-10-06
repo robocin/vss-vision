@@ -41,7 +41,7 @@ public:
 
   void setBall(Entity& t_ball);
 
-  Players players();
+  Players players(uint t_team = 0);
 
   void setPlayers(Players& t_players);
 

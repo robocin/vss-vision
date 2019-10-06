@@ -45,30 +45,19 @@ void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
 
 void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   QPainter paint(&t_robotId);
-  Players ally, players = vss.players();
-  for (auto& e : players) {
-      if (Vision::singleton().getTeamColor() == BlueCOL &&
-                e.id()/100 == 1) {
-        ally.push_back(e);
-      } else if (Vision::singleton().getTeamColor() == YellowCOL &&
-                 e.id()/100 == 2) {
-        ally.push_back(e);
-      }
-  }
 
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  if (m_index < ally.size()) {
-      size_t t_id = ally[m_index].id()%100;
-      for (const char *str : Color::_names()) {
-        if (t_id == Color::_from_string(str)) {
-          QString correctColor(str);
-          if (QColor::isValidColor(correctColor)) {
-            color = QColor(correctColor);
-          }
-        }
+  ulong t_id = m_index + 3;
+  printf("%u\n", t_id);
+  for (const char *str : Color::_names()) {
+    if (t_id == Color::_from_string(str)) {
+      QString correctColor(str);
+      if (QColor::isValidColor(correctColor)) {
+        color = QColor(correctColor);
       }
+    }
   }
 
   paint.setBrush(QBrush(color));
@@ -78,8 +67,17 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
 void RobotWidget::update() {
   int offset_x = static_cast<int>(m_index) * 50;
   int offset_y = 0;
-  Players players = vss.players();
-  if (m_index < players.size()) {
+  Players players = vss.players(
+              static_cast<uint>(
+                  Vision::singleton().getTeamColor())
+              );
+  Bool isInside = false;
+  for(Player &e : players) {
+      if(e.id()%100 == m_index) {
+          isInside = true;
+      }
+  }
+  if (isInside) {
     m_ui->idRobot->setPixmap(getRobotId());
     Ally &ally = players[m_index];
     std::stringstream ss;

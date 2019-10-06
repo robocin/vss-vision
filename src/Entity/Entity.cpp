@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(const Int &t_id):m_id(t_id) {
+Entity::Entity(const uint &t_id):m_id(t_id) {
 }
 
 Void Entity::outdate() {
@@ -13,27 +13,36 @@ Void Entity::update(const Point &t_position, const Float &t_angle) {
     m_updated = true;
 }
 
-const Point &Entity::position() {
+Point Entity::position() {
     return m_position;
 }
 
-const Bool &Entity::updated()
+Bool Entity::updated()
 {
   return m_updated;
 }
 
-const Float &Entity::angle()
+Float Entity::angle()
 {
   return m_angle;
 }
 
-void Entity::id(const Int& t_id) {
+void Entity::id(const uint& t_id) {
     m_id = t_id;
 }
 
-const Int &Entity::id()
+const uint &Entity::id()
 {
   return m_id;
+}
+
+void Entity::team(const uint& t_team) {
+    m_team = t_team;
+}
+
+const uint &Entity::team()
+{
+  return m_team;
 }
 
 Bool operator<(Entity& a, Entity& b) {
