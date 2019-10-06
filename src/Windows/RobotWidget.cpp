@@ -49,8 +49,9 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  ulong t_id = m_index + 3;
+  ulong t_id = this->m_robotId%100 + 3;
   printf("%u\n", t_id);
+
   for (const char *str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
       QString correctColor(str);
@@ -71,15 +72,10 @@ void RobotWidget::update() {
               static_cast<uint>(
                   Vision::singleton().getTeamColor())
               );
-  Bool isInside = false;
-  for(Player &e : players) {
-      if(e.id()%100 == m_index) {
-          isInside = true;
-      }
-  }
-  if (isInside) {
-    m_ui->idRobot->setPixmap(getRobotId());
+  if (m_index < players.size()) {
     Ally &ally = players[m_index];
+    this->m_robotId = ally.id();
+    m_ui->idRobot->setPixmap(getRobotId());
     std::stringstream ss;
     std::string str;
     QString value;

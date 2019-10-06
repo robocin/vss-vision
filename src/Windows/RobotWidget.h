@@ -30,6 +30,7 @@ class RobotWidget : public QWidget {
   size_t m_index;
   QPixmap m_borderImage;
   QPixmap m_numbersImage;
+  uint m_robotId;
 };
 
 #endif  // ROBOTWIDGET_H
