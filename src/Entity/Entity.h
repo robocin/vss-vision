@@ -56,4 +56,6 @@ typedef Player Enemy;
 using Entities      = Vector<Entity>;
 using Players       = Vector<Player>;
 
+Bool operator<(Entity& a, Entity& b);
+
 #endif // Entity_H

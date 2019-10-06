@@ -35,3 +35,7 @@ const Int &Entity::id()
 {
   return m_id;
 }
+
+Bool operator<(Entity& a, Entity& b) {
+    return a.id() < b.id();
+}
