@@ -42,14 +42,14 @@ void VisionConfigDialog::on_calibrateTrackingPushButton_clicked() {
 }
 
 void VisionConfigDialog::on_calibrateSegmentationPushButton_clicked() {
-  this->_segmentationDialog = new SegmentationConfigDialog(this->_videoFlag);
-  this->_segmentationDialog->exec();
+//  this->_segmentationDialog = new SegmentationConfigDialog(this->_videoFlag);
+//  this->_segmentationDialog->exec();
 
-  if (this->_segmentationDialog->result() == QDialog::Accepted) {
-  } else {
-  }
+//  if (this->_segmentationDialog->result() == QDialog::Accepted) {
+//  } else {
+//  }
 
-  delete this->_segmentationDialog;
+//  delete this->_segmentationDialog;
 }
 
 void VisionConfigDialog::updateLabels() {
@@ -96,7 +96,7 @@ void VisionConfigDialog::updateLabels() {
                             (int)ColorSpace::markerColors[colorIndex].blue);
       painter.setPen(robotSidePen);
 
-      if (i == BALL) {
+      if (this->_robotPositions[i].id() == 0) { // ball
         painter.setBrush(currentColor);
         painter.drawEllipse(p1, 8, 8);
         painter.setPen(velocityPen);
@@ -115,7 +115,7 @@ void VisionConfigDialog::updateLabels() {
         painter.setBrush(QBrush(currentColor));
         painter.drawRect(p1.x() - robotWidth / 2, p1.y() - robotWidth / 2, robotWidth, robotWidth / 2);
 
-        if (i <= ROBOT3) {
+        if (this->_robotPositions[i].id()/100 == 1) {
           painter.setBrush(QBrush(allyColor));
         } else {
           painter.setBrush(QBrush(enemyColor));

@@ -111,7 +111,10 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
     //entities[i].id(i);
   }
 
-  Network::sendFrame(entities);
+// NETWORK
+    if (this->isProcessingEnabled())
+        Network::sendFrame(entities);
+
 
   if (this->_deepLogRecord) {
     // put to deep log

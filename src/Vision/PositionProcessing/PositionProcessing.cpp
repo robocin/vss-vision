@@ -61,7 +61,7 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
         markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player robot((static_cast<int>(getTeamColor()))*10 + teamCounter++);
+        Player robot((static_cast<int>(getTeamColor()))*100 + teamCounter++);
         Point lastPosition = robot.position();
         Point newPositionInPixels = (b1.position + b2.position) / 2.0;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);

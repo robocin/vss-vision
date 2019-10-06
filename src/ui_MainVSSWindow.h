@@ -191,6 +191,7 @@ public:
         verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
         visualizationComboBox = new QComboBox(viewOptionsWidget);
         visualizationComboBox->setObjectName(QStringLiteral("visualizationComboBox"));
+        visualizationComboBox->setMinimumSize(QSize(90, 22));
         visualizationComboBox->setLayoutDirection(Qt::RightToLeft);
         visualizationComboBox->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
         visualizationComboBox->setFrame(false);

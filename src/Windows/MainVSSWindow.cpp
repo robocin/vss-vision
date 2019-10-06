@@ -328,8 +328,8 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
     Vision::singleton().setProcessing(false);
     this->m_ui->visionInitPushButton->setChecked(false);
     this->m_ui->startAllPushButton->setChecked(false);
-    m_ui->visualizationComboBox->removeItem(1);
-    m_ui->visualizationComboBox->removeItem(1);
+    m_ui->visualizationComboBox->clear();
+    m_ui->visualizationComboBox->addItem("Original");
     m_ui->visualizationComboBox->setCurrentIndex(0);
     // this->_hasVisionStarted = false;
     m_ui->strategyInitPushButton->setEnabled(false);
@@ -340,8 +340,11 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
   } else {
     Vision::singleton().setProcessing(true);
     this->m_ui->visionInitPushButton->setChecked(true);
+    m_ui->visualizationComboBox->clear();
+    m_ui->visualizationComboBox->addItem("Original");
     m_ui->visualizationComboBox->addItem("Segmented");
     m_ui->visualizationComboBox->addItem("Tracked");
+    m_ui->visualizationComboBox->setCurrentIndex(2);
 
     // this->_hasVisionStarted = true;  <<--------------- não sei se precisa
     // disso, mas aparentemente não :D
