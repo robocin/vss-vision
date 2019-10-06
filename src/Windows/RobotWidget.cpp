@@ -50,7 +50,8 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
       if (Vision::singleton().getTeamColor() == BlueCOL &&
                 e.id()/100 == 1) {
         ally.push_back(e);
-      } else if (Vision::singleton().getTeamColor() == YellowCOL && e.id()/100 == 2) {
+      } else if (Vision::singleton().getTeamColor() == YellowCOL &&
+                 e.id()/100 == 2) {
         ally.push_back(e);
       }
   }
@@ -58,14 +59,16 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  size_t t_id = m_index+3;
-  for (const char *str : Color::_names()) {
-    if (t_id == Color::_from_string(str)) {
-      QString correctColor(str);
-      if (QColor::isValidColor(correctColor)) {
-        color = QColor(correctColor);
+  if (m_index < ally.size()) {
+      size_t t_id = ally[m_index].id()%100;
+      for (const char *str : Color::_names()) {
+        if (t_id == Color::_from_string(str)) {
+          QString correctColor(str);
+          if (QColor::isValidColor(correctColor)) {
+            color = QColor(correctColor);
+          }
+        }
       }
-    }
   }
 
   paint.setBrush(QBrush(color));
