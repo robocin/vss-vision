@@ -80,7 +80,6 @@ Players GameInfo::players(uint t_team) {
             ret.assign(m_players.begin(),m_players.end());
             break;
         default:
-            printf("Getting %u team\n", t_team);
             for (auto& e : m_players) {
                 if (e.team() == t_team)
                     ret.push_back(e);
