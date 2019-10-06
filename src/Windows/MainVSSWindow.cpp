@@ -272,9 +272,8 @@ void MainVSSWindow::on_capturePushButton_clicked() {
 
     if (m_ui->visionInitPushButton->isChecked()) {
       m_ui->visionInitPushButton->setChecked(false);
-      m_ui->visualizationComboBox->removeItem(1);
-      m_ui->visualizationComboBox->removeItem(1);
-      m_ui->visualizationComboBox->removeItem(1);
+      m_ui->visualizationComboBox->clear();
+      m_ui->visualizationComboBox->addItem("Original");
       m_ui->visualizationComboBox->setCurrentIndex(0);
     }
 
