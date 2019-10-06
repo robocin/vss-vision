@@ -36,6 +36,7 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
   Players allPlayers;
   allPlayers.insert(allPlayers.end(),teamA.begin(),teamA.end());
   allPlayers.insert(allPlayers.end(),teamB.begin(),teamB.end());
+  sort(allPlayers.begin(),allPlayers.end());
 
   Entity ball = findBall(entities, debugFrame);
 
@@ -66,7 +67,7 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
         markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player robot((static_cast<int>(getTeamColor()))*100 + teamCounter++);
+        Player robot((static_cast<int>(getTeamColor()))*100 + colorIndex-COLORS_ID_BEGIN);
         Point lastPosition = robot.position();
         Point newPositionInPixels = (b1.position + b2.position) / 2.0;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
@@ -233,6 +234,7 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
 
     Float newTime = vss.time().getMilliseconds();
     ball.update(newPosition);
+    ball.id(0);
 
   return ball;
 
