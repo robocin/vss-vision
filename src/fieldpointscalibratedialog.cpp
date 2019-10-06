@@ -99,7 +99,7 @@ void FieldPointsCalibrateDialog::mousePressEvent(QMouseEvent *event) {
 }
 
 void FieldPointsCalibrateDialog::updateFrame() {
-  this->_cameraFrame = CameraManager::singleton().getCurrentFrame().clone();
+  CameraManager::singleton().getCurrentFrame(this->_cameraFrame);
 
   this->_frameCols = this->_cameraFrame.cols;
   this->_frameRows = this->_cameraFrame.rows;
@@ -162,7 +162,7 @@ void FieldPointsCalibrateDialog::drawPoints() {
 
     cv::putText(_cameraFrame, std::to_string(i + 1),
                 cv::Point(_limitPoints[i].x - 10, _limitPoints[i].y - 10),
-                cv::FONT_HERSHEY_SIMPLEX, 0.5, RED_SCALAR, 2);
+                cv::FONT_HERSHEY_PLAIN, 1.5, RED_SCALAR, 2, cv::LINE_4);
   }
 }
 
