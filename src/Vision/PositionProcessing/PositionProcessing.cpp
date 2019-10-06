@@ -51,7 +51,6 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
     std::bitset<MAX_PLAYERS> markedColors;
     int teamCounter = 0;
     uint teamColor = static_cast<uint>(getTeamColor());
-    printf("teamColor %u\n", teamColor);
 
     for (Region &region : teamRegions) {
       if (region.distance < blobMaxDist()) {

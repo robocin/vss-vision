@@ -50,7 +50,6 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   QColor color(Qt::black);
   QVector<QString> names;
   ulong t_id = this->m_robotId%100 + 3;
-  printf("%u\n", t_id);
 
   for (const char *str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
