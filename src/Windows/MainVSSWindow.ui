@@ -137,12 +137,12 @@
                   <widget class="QComboBox" name="visualizationComboBox">
                    <property name="minimumSize">
                     <size>
-                     <width>90</width>
+                     <width>110</width>
                      <height>22</height>
                     </size>
                    </property>
                    <property name="layoutDirection">
-                    <enum>Qt::RightToLeft</enum>
+                    <enum>Qt::LeftToRight</enum>
                    </property>
                    <property name="sizeAdjustPolicy">
                     <enum>QComboBox::AdjustToMinimumContentsLength</enum>
