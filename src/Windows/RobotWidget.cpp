@@ -35,11 +35,11 @@ QPixmap RobotWidget::getRobotId() {
 
 void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
   QPainter paint(&t_robotId);
-  if (Vision::singleton().getTeamColor() == BlueCOL) {
+  if (Vision::singleton().getTeamColor() == Color::BLUE) {
     paint.setBrush(QBrush(Qt::blue));
-  } else {
+  } else if (Vision::singleton().getTeamColor() == Color::YELLOW) {
     paint.setBrush(QBrush(Qt::yellow));
-  }
+  } else paint.setBrush(QBrush(Qt::black));
   paint.drawRect(0, 0, 200, 100);
 }
 
@@ -67,9 +67,10 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
 void RobotWidget::update() {
   int offset_x = static_cast<int>(m_index) * 50;
   int offset_y = 0;
+  int teamColor = Vision::singleton().getTeamColor();
+  // printf("Team Color %d\n", teamColor);
   Players players = vss.players(
-              static_cast<uint>(
-                  Vision::singleton().getTeamColor())
+              static_cast<uint>(teamColor)
               );
   if (m_index < players.size()) {
     Ally &ally = players[m_index];

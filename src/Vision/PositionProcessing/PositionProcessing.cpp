@@ -26,6 +26,7 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
   static Players empty_players;
 
   vss.setPlayers(empty_players);
+  // printf("Team Color %d\n", getTeamColor());
 
   // Settting team positions
   Players teamA = findTeam(entities, debugFrame, groupedBlobs.team);
@@ -304,7 +305,7 @@ std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> Positio
   Blob choosen;
   NearestBlobInfo result;
 
-  for(int teamColor = BlueCOL ; teamColor <= YellowCOL ; teamColor++) {
+  for(int teamColor = Color::BLUE ; teamColor <= Color::YELLOW ; teamColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ;i++) {
       if(blob[teamColor][i].valid) {
         distance = Utils::sumOfSquares(current.position,blob[teamColor][i].position);
@@ -331,7 +332,7 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
   std::pair<Blob, NearestBlobInfo> primary;
   Region current;
 
-  for(int idColor = RedCOL ; idColor < ColorStrange ; idColor++) {
+  for(int idColor = Color::RED ; idColor < Color::BROWN+1; idColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
       if(blob[idColor][i].valid) {
         primary = this->getNearestPrimary(blob[idColor][i]);

@@ -79,7 +79,7 @@ void MainVSSWindow::initColors() {
   QJsonDocument loadDoc(QJsonDocument::fromJson(data));
   m_secondaryColorJson = loadDoc.object();
   int teamLabel = m_secondaryColorJson[TEAM_LABEL].toInt();
-
+  // printf("team Label %d\n", teamLabel);
   if (teamLabel == 0) {
     this->on_primaryColor_clicked(false);
     Vision::singleton().setTeamColor(Color::BLUE);
