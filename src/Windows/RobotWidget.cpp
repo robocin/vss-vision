@@ -45,13 +45,22 @@ void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
 
 void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   QPainter paint(&t_robotId);
-  Ally &ally = vss.players()[m_index];
+  Players ally;
+  for (auto& e : vss.players()) {
+      if (Vision::singleton().getTeamColor() == BlueCOL &&
+                e.id()/100 == 1) {
+        ally.push_back(e);
+      } else if (Vision::singleton().getTeamColor() == YellowCOL && e.id()/100 == 2) {
+        ally.push_back(e);
+      }
+  }
 
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
+  size_t t_id = m_index+3;
   for (const char *str : Color::_names()) {
-    if (ally.id() == Color::_from_string(str)) {
+    if (t_id == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
         color = QColor(correctColor);
@@ -66,9 +75,10 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
 void RobotWidget::update() {
   int offset_x = static_cast<int>(m_index) * 50;
   int offset_y = 0;
-  if (m_index < vss.players().size()) {
+  Players players = vss.players();
+  if (m_index < players.size()) {
     m_ui->idRobot->setPixmap(getRobotId());
-    Ally &ally = vss.players()[m_index];
+    Ally &ally = players[m_index];
     std::stringstream ss;
     std::string str;
     QString value;

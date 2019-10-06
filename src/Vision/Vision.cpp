@@ -105,11 +105,8 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   //entities.resize(1 + vss.players().size());
   entities.resize(1);
   entities[0] = vss.ball();
-  entities[0].id(0);
-  entities.insert(entities.end(),vss.players().begin(),vss.players().end());
-  for(int i=0; i < entities.size(); ++i) {
-    //entities[i].id(i);
-  }
+  Players players = vss.players();
+  entities.insert(entities.end(),players.begin(),players.end());
 
 // NETWORK
     if (this->isProcessingEnabled())

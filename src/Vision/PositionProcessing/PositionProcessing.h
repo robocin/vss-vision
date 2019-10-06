@@ -174,7 +174,7 @@ protected:
    *
    * @param    entities  The entity
    */
-  void findBall(std::vector<Entity> &entities, cv::Mat &debugFrame);
+  Entity findBall(std::vector<Entity> &entities, cv::Mat &debugFrame);
 
    /**
   * @brief    Identifies from which team the blob belongs to.
@@ -205,7 +205,7 @@ protected:
   *
   * @param    entities  The entity
   */
-  void findTeam(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region>& teamRegions);
+  Players findTeam(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region>& teamRegions);
 
   /**
    * @brief    Updates the enemys positions.

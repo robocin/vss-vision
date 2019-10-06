@@ -23,24 +23,29 @@ void PositionProcessing::saveXML()
 void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debugFrame){
 
   FieldRegions groupedBlobs = pairBlobs();
+  static Players empty_players;
 
-  vss.players().clear();
+  vss.setPlayers(empty_players);
 
   // Settting team positions
-  findTeam(entities, debugFrame, groupedBlobs.team);
+  Players teamA = findTeam(entities, debugFrame, groupedBlobs.team);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
-  findTeam(entities, debugFrame, groupedBlobs.enemys);
+  Players teamB = findTeam(entities, debugFrame, groupedBlobs.enemys);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
-  findBall(entities, debugFrame);
+  Players allPlayers;
+  allPlayers.insert(allPlayers.end(),teamA.begin(),teamA.end());
+  allPlayers.insert(allPlayers.end(),teamB.begin(),teamB.end());
+
+  Entity ball = findBall(entities, debugFrame);
+
+  vss.setPlayers(allPlayers);
+  vss.setBall(ball);
 }
 
-void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
-  // depois substituir por essa funcao
-  std::function<void(GameInfo &, Vector<Region> &)> FindAllies = [&](GameInfo &vss, Vector<Region> &teamRegions) -> void {
-    // Os jogadores ativos serao salvos em uma tabela
-    // de referencias
-    Entities &players = vss.players();
+Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
+
+    Entities players;
 
     std::bitset<MAX_PLAYERS> markedColors;
     int teamCounter = 0;
@@ -83,10 +88,7 @@ void PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugF
         players.push_back(robot);
       }
     }
-  };
-
-  FindAllies(vss, teamRegions);
-
+    return players;
 }
 
 void PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &enemyRegions) {
@@ -190,10 +192,8 @@ void PositionProcessing::findEnemysWithPrimary(std::vector<Entity> &entities, cv
   */
 }
 
-void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugFrame) {
-  // AJUSTAR
-  std::function<void(GameInfo &)> newFindBall = [&](GameInfo &vss) {
-    Entity &ball = vss.ball();
+Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugFrame) {
+    Entity ball;
     // Desativar, so ativar quando encontrar
     // a bola no frame atual
     ball.outdate();
@@ -210,7 +210,7 @@ void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugF
     }
 
     if (!blobBall.valid) {
-      return;
+      return ball;
     }
 
     // Debug
@@ -232,66 +232,65 @@ void PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugF
     }
 
     Float newTime = vss.time().getMilliseconds();
-    vss.ball().update(newPosition);
-  };
-  newFindBall(vss);
-  return;
+    ball.update(newPosition);
 
-  Blob ball;
-  ball.valid = false;
-  int maxArea = -1;
+  return ball;
 
-  //get orange blob with larger area
-  for (int i=0; i < CLUSTERSPERCOLOR; i++) {
-    if (blob[OrangeCOL][i].area > maxArea && blob[OrangeCOL][i].valid) {
-      maxArea = blob[OrangeCOL][i].area;
-      ball = blob[OrangeCOL][i];
-      ball.valid = true;
-    }
-  }
+//  Blob ball;
+//  ball.valid = false;
+//  int maxArea = -1;
 
-  if (!ball.valid) {
-     //entities[BALL_INDEX].setUpdated(false);
-     return;
-  }
+//  //get orange blob with larger area
+//  for (int i=0; i < CLUSTERSPERCOLOR; i++) {
+//    if (blob[OrangeCOL][i].area > maxArea && blob[OrangeCOL][i].valid) {
+//      maxArea = blob[OrangeCOL][i].area;
+//      ball = blob[OrangeCOL][i];
+//      ball.valid = true;
+//    }
+//  }
 
-  cv::Point currentPos = ball.position, lastPos;
-  //lastPos.x = entities[BALL_INDEX].position().x;
-  //lastPos.y = entities[BALL_INDEX].position().y;
+//  if (!ball.valid) {
+//     //entities[BALL_INDEX].setUpdated(false);
+//     return;
+//  }
 
-  //with pos does not change so much, dont change position ( prevent position noise )
-  if(abs(lastPos.x-currentPos.x) < 2 && abs(lastPos.y-currentPos.y) < 2) {
-     currentPos.x = lastPos.x;
-     currentPos.y = lastPos.y;
-  }
+//  cv::Point currentPos = ball.position, lastPos;
+//  //lastPos.x = entities[BALL_INDEX].position().x;
+//  //lastPos.y = entities[BALL_INDEX].position().y;
 
-  double realX=0, realY=0;
-  /*
-  double convertWidth = entities[BALL_INDEX].getConvert().x;
-  double convertHeigth = entities[BALL_INDEX].getConvert().y;
+//  //with pos does not change so much, dont change position ( prevent position noise )
+//  if(abs(lastPos.x-currentPos.x) < 2 && abs(lastPos.y-currentPos.y) < 2) {
+//     currentPos.x = lastPos.x;
+//     currentPos.y = lastPos.y;
+//  }
 
-  // verifying if position is inside field
-  if(entities[BALL_INDEX].getConvertSet()) {
+//  double realX=0, realY=0;
+//  /*
+//  double convertWidth = entities[BALL_INDEX].getConvert().x;
+//  double convertHeigth = entities[BALL_INDEX].getConvert().y;
 
-    realX = currentPos.x * convertWidth;
-    realY = 130 - currentPos.y* convertHeigth;
+//  // verifying if position is inside field
+//  if(entities[BALL_INDEX].getConvertSet()) {
 
-    if(!Utils::between(realX,MIN_X_LIMIT,RANGE_X) && !Utils::between(realY,MIN_GOAL_Y,RANGE_Y)) {
+//    realX = currentPos.x * convertWidth;
+//    realY = 130 - currentPos.y* convertHeigth;
 
-      if(realX < MIN_X_LIMIT)
-        currentPos.x = MIN_X_LIMIT/entities[BALL_INDEX].getConvert().x;
-      else
-        currentPos.x = (MIN_X_LIMIT + RANGE_X)/entities[BALL_INDEX].getConvert().x;
-    }
-  }
-  */
+//    if(!Utils::between(realX,MIN_X_LIMIT,RANGE_X) && !Utils::between(realY,MIN_GOAL_Y,RANGE_Y)) {
 
-  //draw bal in frame
-  cv::circle(debugFrame, currentPos, 9, this->_colorCar[OrangeCOL], 1, CV_AA);
+//      if(realX < MIN_X_LIMIT)
+//        currentPos.x = MIN_X_LIMIT/entities[BALL_INDEX].getConvert().x;
+//      else
+//        currentPos.x = (MIN_X_LIMIT + RANGE_X)/entities[BALL_INDEX].getConvert().x;
+//    }
+//  }
+//  */
+
+//  //draw bal in frame
+//  cv::circle(debugFrame, currentPos, 9, this->_colorCar[OrangeCOL], 1, CV_AA);
 
 
-  //entities[BALL_INDEX] = Entity(0);
-  //entities[BALL_INDEX].update(cv::Point2f(currentPos.x, currentPos.y),0);
+//  //entities[BALL_INDEX] = Entity(0);
+//  //entities[BALL_INDEX].update(cv::Point2f(currentPos.x, currentPos.y),0);
 
 }
 

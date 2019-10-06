@@ -37,11 +37,17 @@ public:
 
   int getHalf();
 
-  Entity &ball();
+  Entity ball();
 
-  Players &players();
+  void setBall(Entity& t_ball);
 
-  Timer &time();
+  Players players();
+
+  void setPlayers(Players& t_players);
+
+  Timer time();
+
+  void setTime(Timer& t_timer);
 };
 
 // Singleton

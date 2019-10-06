@@ -46,22 +46,55 @@ cv::Mat GameInfo::frameCopy() {
 
 void GameInfo::setHalf(int half)
 {
+  setLockedFrame(true);
   m_half = half;
+  setLockedFrame(false);
 }
 
 int GameInfo::getHalf()
 {
-  return m_half;
+  setLockedFrame(true);
+  int ret = m_half;
+  setLockedFrame(false);
+  return ret;
 }
 
-Entity &GameInfo::ball() {
-  return m_ball;
+Entity GameInfo::ball() {
+  setLockedFrame(true);
+  Entity ret(m_ball);
+  setLockedFrame(false);
+  return ret;
 }
 
-Players &GameInfo::players() {
-    return m_players;
+void GameInfo::setBall(Entity& t_ball) {
+  setLockedFrame(true);
+  m_ball = t_ball;
+  setLockedFrame(false);
 }
 
-Timer &GameInfo::time() {
-  return m_time;
+Players GameInfo::players() {
+    setLockedFrame(true);
+    Players ret(m_players.begin(),m_players.end());
+    setLockedFrame(false);
+    return ret;
 }
+
+void GameInfo::setPlayers(Players& t_players) {
+    setLockedFrame(true);
+    m_players.assign(t_players.begin(),t_players.end());
+    setLockedFrame(false);
+}
+
+Timer GameInfo::time() {
+  setLockedFrame(true);
+  Timer ret(m_time);
+  setLockedFrame(false);
+  return ret;
+}
+
+void GameInfo::setTime(Timer& t_timer) {
+  setLockedFrame(true);
+  m_time = t_timer;
+  setLockedFrame(false);
+}
+
