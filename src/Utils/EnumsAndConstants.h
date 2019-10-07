@@ -38,7 +38,7 @@ namespace Constants {
   BETTER_ENUM(Fields, int, INVALID = -1, size3x3, size5x5);
 
   BETTER_ENUM(Color, int,
-    INVALID = -1,
+    INVALID = 0,
     ORANGE,
     BLUE,
     YELLOW,

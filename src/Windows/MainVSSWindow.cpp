@@ -15,11 +15,8 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
   for (size_t i = 0; i < MAX_PLAYERS; i++) {
     auto &widget = m_robotWidgets[i];
 
-    if (i == 0) {
-      widget = new RobotWidget(i, m_ui->scrollAreaWidgetContents);
-    } else {
-      widget = new RobotWidget(i, m_ui->scrollAreaWidgetContents);
-    }
+
+    widget = new RobotWidget(i, m_ui->scrollAreaWidgetContents);
 
     robotLayout->addWidget(widget);
 
@@ -242,6 +239,8 @@ void MainVSSWindow::on_capturePushButton_clicked() {
       this->m_isRecording = false;
       m_ui->calibrateFieldPointspushButton->setEnabled(true);
       m_ui->cameraConfigPushButton->setEnabled(true);
+      m_ui->visionInitPushButton->setEnabled(true);
+      m_ui->visionConfigurePushButton->setEnabled(true);
 
       if (m_ui->cutFieldPushButton->isChecked()) {
         this->on_cutFieldPushButton_clicked();
@@ -260,6 +259,7 @@ void MainVSSWindow::on_capturePushButton_clicked() {
       }
 
       emit startCameraUpdate();
+      emit enableVisionThread(true);
     } else {
       this->m_ui->capturePushButton->setChecked(false);
       QMessageBox cameraAlert;
@@ -290,15 +290,15 @@ void MainVSSWindow::on_capturePushButton_clicked() {
       m_ui->strategyInitPushButton->setChecked(false);
       m_ui->strategyInitPushButton->setEnabled(false);
     }
-
+    emit enableVisionThread(false);
     emit pauseCameraUpdate();
   }
 }
 
 void MainVSSWindow::on_cutFieldPushButton_clicked() {
   if (this->m_ui->cutFieldPushButton->isChecked()) {
-    m_ui->visionInitPushButton->setEnabled(true);
-    m_ui->visionConfigurePushButton->setEnabled(true);
+    //m_ui->visionInitPushButton->setEnabled(true);
+    //m_ui->visionConfigurePushButton->setEnabled(true);
     Vision::singleton().resetCorrection();
 
     if (m_ui->capturePushButton->isChecked()) {
@@ -308,14 +308,13 @@ void MainVSSWindow::on_cutFieldPushButton_clicked() {
     }
 
     this->m_ui->halfPushButton->setEnabled(true);
-    emit enableVisionThread(true);
   } else {
-    if (this->m_ui->visionInitPushButton->isChecked()) {
-      this->on_visionInitPushButton_clicked();
-    }
+    //if (this->m_ui->visionInitPushButton->isChecked()) {
+    //  this->on_visionInitPushButton_clicked();
+    //}
 
-    m_ui->visionInitPushButton->setEnabled(false);
-    m_ui->visionConfigurePushButton->setEnabled(false);
+    //m_ui->visionInitPushButton->setEnabled(false);
+    //m_ui->visionConfigurePushButton->setEnabled(false);
     this->m_ui->startAllPushButton->setChecked(false);
 
     if (this->m_ui->strategyInitPushButton->isChecked()) {
@@ -325,7 +324,7 @@ void MainVSSWindow::on_cutFieldPushButton_clicked() {
 
     this->m_ui->halfPushButton->setEnabled(false);
     this->m_ui->strategyInitPushButton->setEnabled(false);
-    emit enableVisionThread(false);
+
   }
 
   Vision::singleton().setCorrection(m_ui->cutFieldPushButton->isChecked());
@@ -345,6 +344,7 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
     // this->_hasStrategyStarted = false;
     this->m_ui->strategyInitPushButton->setChecked(false);
     this->m_ui->strategyInitPushButton->setEnabled(false);
+
   } else {
     Vision::singleton().setProcessing(true);
     this->m_ui->visionInitPushButton->setChecked(true);

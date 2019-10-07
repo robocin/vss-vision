@@ -69,10 +69,10 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
         markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player robot(teamColor*100 + colorIndex-COLORS_ID_BEGIN);
+        Player robot((teamColor-1)*100 + colorIndex - Color::RED);
         robot.team(teamColor);
         Point lastPosition = robot.position();
-        Point newPositionInPixels = (b1.position + b2.position) / 2.0;
+        Point newPositionInPixels = (b1.position + b2.position) * 0.5;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
         // Debug
@@ -81,10 +81,10 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
         // Para evitar ruido, se o robo se movimentar muito pouco,
         // ele permanece no mesmo local
 
-        if (std::abs(newPosition.x - lastPosition.x) < Global::minPositionDifference() &&
-            std::abs(newPosition.y - lastPosition.y) < Global::minPositionDifference()) {
-          newPosition = lastPosition;
-        }
+//        if (std::abs(newPosition.x - lastPosition.x) < Global::minPositionDifference() &&
+//            std::abs(newPosition.y - lastPosition.y) < Global::minPositionDifference()) {
+//          newPosition = lastPosition;
+//        }
 
         Float newTime = vss.time().getMilliseconds();
         Float newAngle = Utils::angle(b1.position, b2.position);
