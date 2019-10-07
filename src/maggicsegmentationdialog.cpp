@@ -85,13 +85,15 @@ void MaggicSegmentationDialog::updateFrame()
   if (this->isHidden()) return;
   if (this->_updateFrameTimer->isActive() == false) return;
 
-  if (!this->paused) {
-    CameraManager::singleton().getCurrentFrame(this->_actualFrame);
-  }
+
 
 
   if (Vision::singleton().isCorrectionEnabled()) {
-      if (!this->paused) Vision::singleton().getCorrectedDebugFrame(this->_actualFrame);
+      if (!this->paused)
+        Vision::singleton().getCorrectedDebugFrame(this->_actualFrame);
+  } else {
+      if (!this->paused)
+        CameraManager::singleton().getCurrentFrame(this->_actualFrame);
   }
 
   if (!this->_actualFrame.empty()) {

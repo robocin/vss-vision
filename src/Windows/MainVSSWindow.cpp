@@ -241,7 +241,7 @@ void MainVSSWindow::on_capturePushButton_clicked() {
       m_ui->cameraConfigPushButton->setEnabled(true);
       m_ui->visionInitPushButton->setEnabled(true);
       m_ui->visionConfigurePushButton->setEnabled(true);
-
+      Vision::singleton().resetCorrection();
       if (m_ui->cutFieldPushButton->isChecked()) {
         this->on_cutFieldPushButton_clicked();
       }

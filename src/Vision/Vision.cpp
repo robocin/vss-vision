@@ -69,10 +69,10 @@ void Vision::update(std::vector<Entity> &currentPositions)
 {
 
   if (this->_isCorrectionEnabled) {
-    Global::setConvertRatio(_convert);
     //this->setConvertAll(currentPositions); // apagar depois, field possui
     // as taxas de conversao
   }
+  Global::setConvertRatio(_convert);
 
   this->_processingFrame = this->_currentFrame.clone();
 
