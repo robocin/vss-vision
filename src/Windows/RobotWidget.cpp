@@ -35,9 +35,10 @@ QPixmap RobotWidget::getRobotId() {
 
 void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
   QPainter paint(&t_robotId);
-  if (Vision::singleton().getTeamColor() == Color::BLUE) {
+  int teamColor = Vision::singleton().getTeamColor();
+  if (teamColor == Color::BLUE) {
     paint.setBrush(QBrush(Qt::blue));
-  } else if (Vision::singleton().getTeamColor() == Color::YELLOW) {
+  } else if (teamColor == Color::YELLOW) {
     paint.setBrush(QBrush(Qt::yellow));
   } else paint.setBrush(QBrush(Qt::black));
   paint.drawRect(0, 0, 200, 100);

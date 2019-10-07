@@ -125,6 +125,8 @@ private:
   QJsonObject m_secondaryColorJson;
   QLabel *m_visionTimer;
 
+  std::mutex m_currentFrameLocker;
+
 protected:
   void keyPressEvent(QKeyEvent *e);
  signals:

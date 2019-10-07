@@ -113,12 +113,18 @@ void MainVSSWindow::selectCorrectFrame() {
 
   if (frameType == "Original") {
     if (m_ui->cutFieldPushButton->isChecked()) {
+        this->m_currentFrameLocker.lock();
       Vision::singleton().getCurrentFrame(m_currentFrame);
+      this->m_currentFrameLocker.unlock();
     } else {
+        this->m_currentFrameLocker.lock();
       CameraManager::singleton().getCurrentFrame(m_currentFrame);
+      this->m_currentFrameLocker.unlock();
     }
   } else if (frameType == "Segmented") {
+      this->m_currentFrameLocker.lock();
     Vision::singleton().getSegmentationFrame(m_currentFrame);
+    this->m_currentFrameLocker.unlock();
   } else if (frameType == "Tracked") {
     cv::Mat frameAux, frameAux2;
     Vision::singleton().getCurrentFrame(frameAux);
@@ -127,7 +133,9 @@ void MainVSSWindow::selectCorrectFrame() {
     cv::Mat aux = vss.frameCopy();
     vss.clearFrame();
     cv::resize(aux, aux, frameAux2.size());
+    this->m_currentFrameLocker.lock();
     this->m_currentFrame = frameAux + frameAux2 + aux;
+    this->m_currentFrameLocker.unlock();
   } else {
     throw std::runtime_error("Invalid visualization option");
   }
@@ -136,12 +144,13 @@ void MainVSSWindow::selectCorrectFrame() {
 void MainVSSWindow::setCameraFrame() {
   resizeFrames();
   cv::Mat cameraFrame;
-
+    this->m_currentFrameLocker.lock();
   if (this->m_currentFrame.empty()) {
     this->m_currentFrame = cv::Mat::zeros(480, 640, CV_8UC3);
   }
 
   this->m_currentFrame.copyTo(cameraFrame);
+  this->m_currentFrameLocker.unlock();
 
   if (!cameraFrame.empty()) {
     cv::Mat tempFrame = cameraFrame.clone();
