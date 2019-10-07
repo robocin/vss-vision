@@ -24,6 +24,7 @@ Vision::Vision()
   this->_deepLogFileFolder = "Log/deep/"; // default file folder
   this->_deepLogRecordingVideo = false;
   this->_visionRunTime = 0;
+  this->firstTime = QTime::currentTime();
 }
 
 Vision::~Vision()
@@ -99,8 +100,8 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   this->update(currentPositions);
   //this->setObjectsSpeed(timeStamp, currentPositions);
   //this->_robotPositions = currentPositions;
-
-  int actualTime = timeStamp.msecsSinceStartOfDay();
+  int actualTime = (this->firstTime.msecsTo(timeStamp));
+  printf("%d\n", actualTime);
   std::vector<Entity> &entities = currentPositions;
   //entities.resize(1 + vss.players().size());
   entities.resize(1);
@@ -111,6 +112,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
 // NETWORK
     if (this->isProcessingEnabled())
         Network::sendFrame(entities);
+    else this->firstTime = timeStamp.currentTime();
 
 
   if (this->_deepLogRecord) {

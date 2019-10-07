@@ -139,6 +139,8 @@ private:
   double _visionRunTime;
   std::mutex _currentFrameLocker;
 
+  QTime firstTime;
+
   Point _frameDimensions;
 
 
