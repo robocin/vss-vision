@@ -135,14 +135,15 @@ private:
   std::string _deepLogFileName, _deepLogFilePath, _deepLogFileFolder;
   FILE* _deepLogFile;
   int _deepLogInitialTime;
-  Timer _visionTimer;
+  Timer _visionTimer, _visionFrameTimer;
   double _visionRunTime;
-  std::mutex _currentFrameLocker;
+  std::mutex _currentFrameLocker, _visionStatusLocker;
 
   QTime firstTime;
 
   Point _frameDimensions;
 
+  void saveFrameDimensions(cv::Mat &frame);
 
 public:
   /**
@@ -166,7 +167,6 @@ public:
    */
   void update(std::vector<Entity>& currentPositions);
 
-  void saveFrameDimensions(cv::Mat &frame);
 
   Point getFrameDimensions();
 

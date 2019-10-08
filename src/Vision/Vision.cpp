@@ -4,40 +4,40 @@
 
 Vision::Vision()
 {
-  this->_detection = new BlobDetection();
-  this->_detection->init();
-  this->_detection->setTeamColor(getTeamColor());
-  this->_segmentation = new LUTSegmentation();
-  this->_correction = new WarpCorrection();
-  this->_compression = new RunLengthEncoding();
-  ((WarpCorrection*) this->_correction )->initFromFile(FIELDLIMITSPATH,&this->_convert);
-  ((LUTSegmentation*)this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
-  this->_isCorrectionEnabled = false;
-  this->_isProcessingEnabled = false;
-  std::vector<Entity> currentPositions (7, Entity());
-  this->_robotPositions = currentPositions;
-  this->_currentFrame = cv::Mat::zeros(640,480,CV_8UC3);
-  this->_lastPositions = std::vector<std::queue<std::pair<cv::Point2d,QTime>>>(7);
-  this->_firstFrameDeepLog = true;
-  this->_deepLogFile = NULL;
-  this->_deepLogFileName = "log"; // default file name
-  this->_deepLogFileFolder = "Log/deep/"; // default file folder
-  this->_deepLogRecordingVideo = false;
-  this->_visionRunTime = 0;
-  this->firstTime = QTime::currentTime();
+//    this->_visionStatusLocker.lock();
+    this->_detection = new BlobDetection();
+    this->_detection->init();
+    this->_detection->setTeamColor(getTeamColor());
+    this->_segmentation = new LUTSegmentation();
+    this->_correction = new WarpCorrection();
+    this->_compression = new RunLengthEncoding();
+    static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH,&this->_convert);
+    static_cast<LUTSegmentation*>(this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
+    this->_isCorrectionEnabled = false;
+    this->_isProcessingEnabled = false;
+    std::vector<Entity> currentPositions (7, Entity());
+    this->_robotPositions = currentPositions;
+    this->_currentFrame = cv::Mat::zeros(640,480,CV_8UC3);
+    this->_lastPositions = std::vector<std::queue<std::pair<cv::Point2d,QTime>>>(7);
+    this->_firstFrameDeepLog = true;
+    this->_deepLogFile = NULL;
+    this->_deepLogFileName = "log"; // default file name
+    this->_deepLogFileFolder = "Log/deep/"; // default file folder
+    this->_deepLogRecordingVideo = false;
+    this->_visionRunTime = 0;
+    this->firstTime = QTime::currentTime();
+//    this->_visionStatusLocker.unlock();
 }
 
 Vision::~Vision()
 {
-  if(this->_detection != NULL)
-  {
-    delete(this->_detection);
-  }
+    this->_visionStatusLocker.lock();
+    if (this->_detection)
+        delete this->_detection;
 
-  if(this->_segmentation != NULL)
-  {
-    delete(this->_segmentation);
-  }
+    if (this->_segmentation)
+        delete(this->_segmentation);
+    this->_visionStatusLocker.unlock();
 }
 
 Vision& Vision::singleton()
@@ -49,42 +49,43 @@ Vision& Vision::singleton()
 
 void Vision::setFrame(cv::Mat& frame)
 {
-  if (this->_isCorrectionEnabled) {
+    this->_visionStatusLocker.lock();
 
-    this->_currentFrame = this->_correction->run(frame);
+    if (this->_isCorrectionEnabled)
+        this->_currentFrame = this->_correction->run(frame);
+    else
+        this->_currentFrame = frame;
 
-  } else {
-    this->_currentFrame = frame;
-  }
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::saveFrameDimensions(cv::Mat &frame){
-    _frameDimensions = Point(frame.rows,frame.cols);
+    this->_frameDimensions = Point(frame.rows,frame.cols);
 }
 
 Point Vision::getFrameDimensions(){
-    return _frameDimensions;
+    this->_visionStatusLocker.lock();
+    Point ret = _frameDimensions;
+    this->_visionStatusLocker.unlock();
+    return ret;
 }
 
 void Vision::update(std::vector<Entity> &currentPositions)
 {
+    this->_visionStatusLocker.lock();
 
-  if (this->_isCorrectionEnabled) {
-    //this->setConvertAll(currentPositions); // apagar depois, field possui
-    // as taxas de conversao
-  }
-  Global::setConvertRatio(_convert);
+    Global::setConvertRatio(_convert);
 
-  this->_processingFrame = this->_currentFrame.clone();
+    this->_processingFrame = this->_currentFrame.clone();
 
-  if (this->_isProcessingEnabled) {
+    if (this->_isProcessingEnabled) {
 
-    this->_processingFrame = this->_segmentation->run(this->_processingFrame);
-    std::vector< std::vector <Run> > runs = this->_compression->run(this->_processingFrame);
-    saveFrameDimensions(this->_processingFrame);
-    this->_detection->run(currentPositions, runs, this->_processingFrame.rows, this->_processingFrame.cols);
-  }
-
+        this->_processingFrame = this->_segmentation->run(this->_processingFrame);
+        std::vector< std::vector <Run> > runs = this->_compression->run(this->_processingFrame);
+        saveFrameDimensions(this->_processingFrame);
+        this->_detection->run(currentPositions, runs, this->_processingFrame.rows, this->_processingFrame.cols);
+    }
+    this->_visionStatusLocker.unlock();
 }
 
 
@@ -94,7 +95,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   //vss.setFrame(frame);
   //vss.m_enemies.clear();
   //vss.m_allies.clear();
-  this->_visionTimer.start();
+  this->_visionFrameTimer.start();
   std::vector<Entity> &currentPositions = this->_robotPositions;
   this->setFrame(frame);
   this->update(currentPositions);
@@ -161,169 +162,262 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
     }
 
    }
-   this->_visionTimer.stop();
-   this->_visionRunTime = static_cast<double> (this->_visionTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
+   this->_visionFrameTimer.stop();
+   this->_visionRunTime = static_cast<double> (this->_visionFrameTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
 }
 
 void Vision::getSegmentationDebugFrame(cv::Mat& frame)
 {
+    this->_visionStatusLocker.lock();
     if (this->_segmentation)
         this->_segmentation->getDebugFrame(frame);
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getDetectionDebugFrame(cv::Mat& frame)
 {
+    this->_visionStatusLocker.lock();
     if (this->_detection)
         this->_detection->getDebugFrame(frame);
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getTrackingDebugFrame(cv::Mat& frame)
 {
+    this->_visionStatusLocker.lock();
     if (this->_tracking)
         this->_tracking->getDebugFrame(frame);
+    this->_visionStatusLocker.unlock();
 }
 
 ImageProcessing* Vision::getSegmentationObject() {
-  return this->_segmentation;
+    this->_visionStatusLocker.lock();
+    ImageProcessing* ret = this->_segmentation;
+    this->_visionStatusLocker.unlock();
+    return ret;
 }
 
 bool Vision::setTrackingAlgorithm(std::string algorithmLabel)
 {
-  if(this->_tracking != NULL) {
-    delete this->_tracking;
-  }
-  if(algorithmLabel == GENERIC_TRACKING_LABEL) {
-    //this->_tracking = new Generic();
-    return true;
-  }
-  return false;
+    bool ret = false;
+
+    this->_visionStatusLocker.lock();
+
+    if (this->_tracking)
+        delete this->_tracking;
+
+    if (algorithmLabel == GENERIC_TRACKING_LABEL) {
+        //this->_tracking = new Generic();
+        ret = true;
+    }
+
+    this->_visionStatusLocker.unlock();
+
+    return ret;
 }
 
 bool Vision::setDetectionAlgorithm(std::string algorithmLabel)
 {
-  if(this->_detection != NULL) {
-    delete this->_detection;
-  }
+    bool ret = false;
 
-  if(algorithmLabel == WHEREARE_LABEL) {
-    this->_detection = new BlobDetection();
-    this->_detection->init();
-    return true;
-  }
-  return false;
+    this->_visionStatusLocker.lock();
+
+    if (this->_detection)
+        delete this->_detection;
+
+    if (algorithmLabel == WHEREARE_LABEL) {
+        this->_detection = new BlobDetection();
+        this->_detection->init();
+        ret = true;
+    }
+
+    this->_visionStatusLocker.unlock();
+    return ret;
 }
 
 void Vision::setDetectionParam(std::string var, int value)
 {
-  this->_detection->setUp(var,value);
+    this->_visionStatusLocker.lock();
+
+    if (this->_detection)
+        this->_detection->setUp(var,value);
+
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::setTrackParam(std::string var, int value)
 {
-  this->_tracking->setUp(var,value);
+    this->_visionStatusLocker.lock();
+
+    if (this->_tracking)
+        this->_tracking->setUp(var,value);
+
+    this->_visionStatusLocker.unlock();
 }
 void Vision::setDetectionParamFromXml()
 {
-  if(this->_detection != NULL)
-  {
-    this->_detection->init();
-  }
+    this->_visionStatusLocker.lock();
+
+    if (this->_detection)
+        this->_detection->init();
+
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::setTrackParamFromXml()
 {
-  if(this->_tracking != NULL)
-  {
-    this->_tracking->init();
-  }
+    this->_visionStatusLocker.lock();
+
+    if (this->_tracking)
+        this->_tracking->init();
+
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getCorrectedDebugFrame(cv::Mat &frame)
 {
-  _correction->getDebugFrame(frame);
+    this->_visionStatusLocker.lock();
+
+    if (this->_correction)
+        this->_correction->getDebugFrame(frame);
+
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::savePositionParam()
 {
-  if(this->_detection != NULL) {
-    this->_detection->saveParam();
-  }
-  if(this->_tracking != NULL) {
-    this->_tracking->saveParam();
-  }
+    this->_visionStatusLocker.lock();
+
+    if (this->_detection)
+        this->_detection->saveParam();
+
+    if (this->_tracking)
+        this->_tracking->saveParam();
+
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::resetCorrection()
 {
-  ((WarpCorrection*) this->_correction )->initFromFile(FIELDLIMITSPATH, &this->_convert);
+    this->_visionStatusLocker.lock();
+    if (this->_correction)
+        static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH, &this->_convert);
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::resetSegmentation()
 {
-  ((LUTSegmentation*)this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
+    this->_visionStatusLocker.lock();
+
+    if (this->_segmentation)
+        static_cast<LUTSegmentation*>(this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
+
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getSegmentationFrame(cv::Mat& frame)
 {
+    this->_visionStatusLocker.lock();
+
     if (this->_segmentation)
         this->_segmentation->getDebugFrame(frame);
+
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getDetectionFrame(cv::Mat& frame)
 {
+    this->_visionStatusLocker.lock();
+
     if (this->_detection)
         this->_detection->getDebugFrame(frame);
+
+    this->_visionStatusLocker.unlock();
 }
 
 bool Vision::isCorrectionEnabled()
 {
-  return this->_isCorrectionEnabled;
+    this->_visionStatusLocker.lock();
+
+    bool ret = this->_isCorrectionEnabled;
+
+    this->_visionStatusLocker.unlock();
+
+    return ret;
 }
 
 void Vision::setCorrection(bool enabled)
 {
-  this->_isCorrectionEnabled = enabled;
+    this->_visionStatusLocker.lock();
+    this->_isCorrectionEnabled = enabled;
+    this->_visionStatusLocker.unlock();
 }
 
 bool Vision::isProcessingEnabled()
 {
-  return this->_isProcessingEnabled;
+    this->_visionStatusLocker.lock();
+    bool ret = this->_isProcessingEnabled;
+    this->_visionStatusLocker.unlock();
+    return ret;
 }
 
 void Vision::setProcessing(bool enabled)
 {
-  this->_isProcessingEnabled = enabled;
+    this->_visionStatusLocker.lock();
+    this->_isProcessingEnabled = enabled;
+    this->_visionStatusLocker.unlock();
 }
 
 int Vision::setColorIndex(int color, int index)
 {
-  return this->_detection->setColorIndex(color, index);
+    this->_visionStatusLocker.lock();
+    int ret = 0;
+    if (this->_detection)
+        ret = this->_detection->setColorIndex(color, index);
+    this->_visionStatusLocker.unlock();
+    return ret;
 }
 
 void Vision::setQuantizationBool(bool quantization)
 {
-  ((LUTSegmentation*)this->_segmentation)->setQuantizationBool(quantization);
+    this->_visionStatusLocker.lock();
+    if (this->_segmentation)
+        static_cast<LUTSegmentation*>(this->_segmentation)->setQuantizationBool(quantization);
+    this->_visionStatusLocker.unlock();
 }
 
 bool Vision::getQuantizationBool()
 {
-  return ((LUTSegmentation*)this->_segmentation)->getQuantizationBool();
+    this->_visionStatusLocker.lock();
+    bool ret = false;
+    if (this->_segmentation)
+        ret = static_cast<LUTSegmentation*>(this->_segmentation)->getQuantizationBool();
+    this->_visionStatusLocker.unlock();
+    return ret;
 }
 
 std::vector<Entity> Vision::getRobotPositions()
 {
-  return this->_robotPositions;
+    this->_visionStatusLocker.lock();
+    std::vector<Entity> ret = this->_robotPositions;
+    this->_visionStatusLocker.unlock();
+    return ret;
 }
 
 void Vision::setTeamColor(int color)
 {
-  this->_teamColor = color;
-  this->_detection->setTeamColor(this->_teamColor);
+    this->_visionStatusLocker.lock();
+    this->_teamColor = color;
+    this->_detection->setTeamColor(this->_teamColor);
+    this->_visionStatusLocker.unlock();
 }
 
 int Vision::getTeamColor()
 {
-  return this->_teamColor;
+    this->_visionStatusLocker.lock();
+    int ret = this->_teamColor;
+    this->_visionStatusLocker.unlock();
+    return ret;
 }
 
 void Vision::getCurrentFrame(cv::Mat& frame) {
@@ -333,26 +427,37 @@ void Vision::getCurrentFrame(cv::Mat& frame) {
 }
 
 void Vision::setDeepLogFileName(std::string fileName) {
-  this->_deepLogFilePath = fileName;
+    this->_visionStatusLocker.lock();
+    this->_deepLogFilePath = fileName;
 
-  this->_deepLogFileName = fileName.substr(
+    this->_deepLogFileName = fileName.substr(
         std::max(0,(int)fileName.rfind('/')+1));
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::setRecordingVideo(bool value) {
-  this->_deepLogRecordingVideo = value;
+    this->_visionStatusLocker.lock();
+    this->_deepLogRecordingVideo = value;
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::closeDeepLog() {
-  if(this->_deepLogFile) fclose(this->_deepLogFile);
-  this->_deepLogRecord = false;
+    this->_visionStatusLocker.lock();
+    if(this->_deepLogFile) fclose(this->_deepLogFile);
+    this->_deepLogRecord = false;
+    this->_visionStatusLocker.unlock();
 }
 
 void Vision::recordDeepLog() {
-  this->_deepLogRecord = true;
-  this->_firstFrameDeepLog = true;
+    this->_visionStatusLocker.lock();
+    this->_deepLogRecord = true;
+    this->_firstFrameDeepLog = true;
+    this->_visionStatusLocker.unlock();
 }
 
 double Vision::getVisionRunTime() {
-  return this->_visionRunTime;
+  this->_visionStatusLocker.lock();
+  double ret = this->_visionRunTime;
+  this->_visionStatusLocker.unlock();
+  return ret;
 }
