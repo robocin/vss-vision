@@ -17,14 +17,14 @@
 class Network {
     static sf::UdpSocket socket;
     static sf::IpAddress recipient;
-    static sf::Int32 frameId;
 public:
+    static sf::Int32 frameId;
     static sf::Uint16 port;
 	/*
 	*	@brief	Method to send entities for a frame.
 	*	@param[in]  entities  The entities to be sent for a frame.
 	*/
-    static void sendFrame(std::vector<Entity> &entities);
+    static void sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_msec = 0);
 };
 
 #endif /**		NETWORK_H*/

@@ -10,7 +10,7 @@ class VSSClient:
         pass
 
     def run(self):
-        header_offset = 5
+        header_offset = 10
         entity_size = 8*3 + 1
         try:
             UDP_IP = '127.0.0.1'
@@ -21,9 +21,13 @@ class VSSClient:
             print("VSSClient :: listening on port {}\n".format(UDP_PORT))
             while True:
                 data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-                frameId = struct.unpack_from('>i',data,0)[0]
-                entities = ord(struct.unpack_from('c',data,4)[0])
-                print("message have {} entities on frame {}".format(entities,frameId))
+                messageType = struct.unpack_from('c',data,0)[0].decode("utf-8")
+                print("message type {}".format(messageType))
+                if (messageType != 'F'): continue
+                timestamp = struct.unpack_from('>I',data,1)[0]
+                frameId = struct.unpack_from('>i',data,5)[0]
+                entities = ord(struct.unpack_from('c',data,header_offset-1)[0])
+                print("message '{}' have {} entities on frame {} time:{}".format(messageType,entities,frameId,timestamp))
                 for i in range(0,entities):
                     id = ord(struct.unpack_from('c',data,header_offset + entity_size*i)[0])
                     # print("id {} ".format(id))

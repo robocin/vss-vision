@@ -5,7 +5,7 @@ sf::IpAddress Network::recipient = "0.0.0.0";
 sf::UdpSocket Network::socket;
 sf::Int32 Network::frameId = 0;
 
-void Network::sendFrame(std::vector<Entity> &entities) {
+void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_msec) {
     if (!entities.size()) return;
     if (entities.size() > 255) {
         spdlog::get("Network")->info("sendFrame:: I cannot send more than 255 entities. You asked {}.\n", entities.size());
@@ -13,7 +13,8 @@ void Network::sendFrame(std::vector<Entity> &entities) {
     }
 
     sf::Packet packet;
-
+    packet << static_cast<sf::Uint8>('F');
+    packet << static_cast<sf::Uint32>(timestamp_in_msec);
     packet << static_cast<sf::Int32>(Network::frameId);
     ++frameId;
     packet << static_cast<sf::Uint8>(entities.size());

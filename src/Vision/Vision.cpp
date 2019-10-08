@@ -101,8 +101,8 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   this->update(currentPositions);
   //this->setObjectsSpeed(timeStamp, currentPositions);
   //this->_robotPositions = currentPositions;
-  int actualTime = (this->firstTime.msecsTo(timeStamp));
-  printf("%d\n", actualTime);
+  uint32_t actualTime = static_cast<uint32_t>(this->firstTime.msecsTo(timeStamp));
+//  printf("%u\n", actualTime);
   std::vector<Entity> &entities = currentPositions;
   //entities.resize(1 + vss.players().size());
   entities.resize(1);
@@ -110,10 +110,13 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   Players players = vss.players();
   entities.insert(entities.end(),players.begin(),players.end());
 
-// NETWORK
+    // NETWORK
     if (this->isProcessingEnabled())
-        Network::sendFrame(entities);
-    else this->firstTime = timeStamp.currentTime();
+        Network::sendFrame(entities, actualTime);
+    else {
+        Network::frameId = 0;
+        this->firstTime = timeStamp.currentTime();
+    }
 
 
   if (this->_deepLogRecord) {
