@@ -3,7 +3,7 @@
 LUTSegmentation::LUTSegmentation() {
   this->_LUT = new int[LUTSIZE];
   this->_calibrationParameters = new ColorInterval[NUMBEROFCOLOR];
-  this->_quantization = false;
+  setQuantizationBool(false);
   this->_grayTrashHoldLevel = 0;
 }
 
@@ -51,6 +51,7 @@ cv::Mat LUTSegmentation::run(cv::Mat &frame) {
   cv::Mat debugFrame = cv::Mat::zeros(frame.rows, frame.cols, frame.type());
   cv::Mat returnFrame = cv::Mat::zeros(frame.rows, frame.cols, CV_8U);
   uchar cutBitsDecimal = 15;
+  this->_quantizationLock.lock();
   tbb::parallel_for(tbb::blocked_range2d<int>(0, frame.rows, 238, 0, frame.cols, 161),
     [&](const tbb::blocked_range2d<int> &r) {
       for (int i = r.rows().begin(); i != r.rows().end(); i++) {
@@ -71,6 +72,7 @@ cv::Mat LUTSegmentation::run(cv::Mat &frame) {
       }
     }
   );
+  this->_quantizationLock.unlock();
   this->_frameLock.lock();
   debugFrame.copyTo(this->_segmentationFrame);
   this->_frameLock.unlock();
@@ -156,11 +158,16 @@ void LUTSegmentation::initFromFile(std::string path) {
 }
 
 void LUTSegmentation::setQuantizationBool(bool quantization) {
-  this->_quantization = quantization;
+    this->_quantizationLock.lock();
+    this->_quantization = quantization;
+    this->_quantizationLock.unlock();
 }
 
 bool LUTSegmentation::getQuantizationBool() {
-  return this->_quantization;
+  this->_quantizationLock.lock();
+  bool ret = this->_quantization;
+  this->_quantizationLock.unlock();
+  return ret;
 }
 
 

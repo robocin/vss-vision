@@ -114,7 +114,7 @@ class LUTSegmentation : public ImageProcessing {
    * @brief    Init the Look Up Table with the already loaded parameters
    */
   void initLUT();
-  std::mutex _frameLock;
+  std::mutex _frameLock, _quantizationLock;
   int *_LUT;
   ColorInterval *_calibrationParameters;
   cv::Mat _debugFrame;
