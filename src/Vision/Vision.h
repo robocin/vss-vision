@@ -145,6 +145,12 @@ private:
 
   void saveFrameDimensions(cv::Mat &frame);
 
+  /**
+   * @brief    Sets the frame that will be processed by vision module.
+   *
+   * @param[in]  frame  The frame wanted to be processed
+   */
+  void setFrame(cv::Mat &frame);
 public:
   /**
    * @brief    Singleton method to acess Vision module
@@ -153,12 +159,6 @@ public:
    */
   static Vision& singleton();
 
-  /**
-   * @brief    Sets the frame that will be processed by vision module.
-   *
-   * @param[in]  frame  The frame wanted to be processed
-   */
-  void setFrame(cv::Mat &frame);
 
   /**
    * @brief    Process the frame , generating as output a entity's vector with velocity and position of all detected robots .

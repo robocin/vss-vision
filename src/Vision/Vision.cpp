@@ -49,14 +49,10 @@ Vision& Vision::singleton()
 
 void Vision::setFrame(cv::Mat& frame)
 {
-    this->_visionStatusLocker.lock();
-
     if (this->_isCorrectionEnabled)
         this->_currentFrame = this->_correction->run(frame);
     else
         this->_currentFrame = frame;
-
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::saveFrameDimensions(cv::Mat &frame){
