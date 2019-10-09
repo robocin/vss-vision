@@ -151,14 +151,6 @@ private:
    * @param[in]  frame  The frame wanted to be processed
    */
   void setFrame(cv::Mat &frame);
-public:
-  /**
-   * @brief    Singleton method to acess Vision module
-   *
-   * @return   return a Vision reference, unique and common to all class in the program
-   */
-  static Vision& singleton();
-
 
   /**
    * @brief    Process the frame , generating as output a entity's vector with velocity and position of all detected robots .
@@ -167,6 +159,13 @@ public:
    */
   void update(std::vector<Entity>& currentPositions);
 
+public:
+  /**
+   * @brief    Singleton method to acess Vision module
+   *
+   * @return   return a Vision reference, unique and common to all class in the program
+   */
+  static Vision& singleton();
 
   Point getFrameDimensions();
 

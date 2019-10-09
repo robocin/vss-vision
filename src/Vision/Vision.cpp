@@ -68,8 +68,6 @@ Point Vision::getFrameDimensions(){
 
 void Vision::update(std::vector<Entity> &currentPositions)
 {
-    this->_visionStatusLocker.lock();
-
     Global::setConvertRatio(_convert);
 
     this->_processingFrame = this->_currentFrame.clone();
@@ -81,13 +79,13 @@ void Vision::update(std::vector<Entity> &currentPositions)
         saveFrameDimensions(this->_processingFrame);
         this->_detection->run(currentPositions, runs, this->_processingFrame.rows, this->_processingFrame.cols);
     }
-    this->_visionStatusLocker.unlock();
 }
 
 
 
 void Vision::update(cv::Mat &frame, QTime timeStamp)
 {
+    this->_visionStatusLocker.lock();
   //vss.setFrame(frame);
   //vss.m_enemies.clear();
   //vss.m_allies.clear();
@@ -107,7 +105,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   entities.insert(entities.end(),players.begin(),players.end());
 
     // NETWORK
-    if (this->isProcessingEnabled())
+    if (this->_isProcessingEnabled)
         Network::sendFrame(entities, actualTime);
     else {
         Network::frameId = 0;
@@ -163,6 +161,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
    }
    this->_visionFrameTimer.stop();
    this->_visionRunTime = static_cast<double> (this->_visionFrameTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
+  this->_visionStatusLocker.unlock();
 }
 
 void Vision::getSegmentationDebugFrame(cv::Mat& frame)
