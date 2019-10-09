@@ -29,7 +29,8 @@ struct visionBody {
   void operator()(tbb::flow::continue_msg) const {
 
     if(!(*visionStop)) {
-      cv::Mat frame = CameraManager::singleton().getCurrentFrame();
+      cv::Mat frame;
+      CameraManager::singleton().getCurrentFrame(frame);
       QTime timeStamp = CameraManager::singleton().getCurrentFrameTimeStamp();
 
       Vision::singleton().update(frame,timeStamp);
