@@ -12,29 +12,31 @@
 using namespace tbb::flow;
 
 struct cameraBody {
-  bool &cameraStop;
-  cameraBody(bool &x): cameraStop(x) {}
+  bool *cameraStop;
+  cameraBody(bool *x): cameraStop(x) {}
   bool operator()(tbb::flow::continue_msg) const {
+    if (!cameraStop) return false;
 
     CameraManager::singleton().updateFrame();
     if (CameraManager::singleton().getCaptureType() == videoCapture) usleep(29000);
 
-    return !cameraStop;
+    return !*cameraStop;
   }
 };
 
 struct visionBody {
   bool *visionStop;
-  visionBody(bool &x): visionStop(&x) {}
+  visionBody(bool *x): visionStop(x) {}
   void operator()(tbb::flow::continue_msg) const {
-
-    if(!(*visionStop)) {
+//      if (!visionStop) return false;
+      if (!visionStop) return;
       cv::Mat frame;
       CameraManager::singleton().getCurrentFrame(frame);
       QTime timeStamp = CameraManager::singleton().getCurrentFrameTimeStamp();
 
       Vision::singleton().update(frame,timeStamp);
-    }
+
+//    return !*visionStop;
 
   }
 };
@@ -63,6 +65,8 @@ public slots:
 
 private:
    tbb::flow::source_node <tbb::flow::continue_msg> _cameraNode;
+   tbb::flow::limiter_node <tbb::flow::continue_msg> _limiterNode;
+//   tbb::flow::source_node <tbb::flow::continue_msg> _visionNode;
    tbb::flow::function_node<tbb::flow::continue_msg, tbb::flow::continue_msg> _visionNode;
    tbb::flow::indexer_node<tbb::flow::continue_msg, tbb::flow::continue_msg> _indexerNode;
 
