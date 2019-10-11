@@ -18,7 +18,7 @@ struct cameraBody {
     if (!cameraStop) return false;
 
     CameraManager::singleton().updateFrame();
-    if (CameraManager::singleton().getCaptureType() == videoCapture) usleep(29000);
+    if (CameraManager::singleton().getCaptureType() == videoCapture) usleep(1000);
 
     return !*cameraStop;
   }
