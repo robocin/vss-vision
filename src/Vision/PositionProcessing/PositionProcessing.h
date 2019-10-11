@@ -212,7 +212,7 @@ protected:
    *
    * @param    entities  The entity
    */
-  void findEnemys(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &enemyRegions);
+  Players findEnemys(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &enemyRegions);
 
 
   /**

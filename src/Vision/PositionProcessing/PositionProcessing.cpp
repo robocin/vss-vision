@@ -31,7 +31,7 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
   // Settting team positions
   Players teamA = findTeam(entities, debugFrame, groupedBlobs.team);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
-  Players teamB = findTeam(entities, debugFrame, groupedBlobs.enemys);
+  Players teamB = findEnemys(entities, debugFrame, groupedBlobs.enemys);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
   Players allPlayers;
@@ -95,74 +95,43 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
     return players;
 }
 
-void PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &enemyRegions) {
-  int enemyIndex = 3;
-  cv::Point currentPos, lastPos;
-  int mappedId, idColor;
-  Blob b1, b2;
-/*
-  for (unsigned int i=0; i < enemyRegions.size(); i++) {
+Players PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &enemyRegions) {
 
-    mappedId = this->_colorIndex[enemyRegions[i].color];
+    Entities players;
 
-    if (enemyRegions[i].distance <= this->_blobMaxDist && enemyIndex < 6) {
-      lastPos.x = entities[mappedId].getPositionPixel().x;
-      lastPos.y = entities[mappedId].getPositionPixel().y;
+    std::bitset<MAX_PLAYERS> markedColors;
+    uint teamColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
 
-      b1 = enemyRegions[i].blobs.first;
-      b2 = enemyRegions[i].blobs.second;
 
-      idColor = enemyRegions[i].color;
+    for (Region &region : enemyRegions) {
+      if (region.distance < blobMaxDist()) {
+        int colorIndex = region.color;
+        Blob b1, b2;
+        std::tie(b1, b2) = region.blobs;
+        Player robot((teamColor-1)*100 + colorIndex - Color::RED);
+        robot.team(teamColor);
+        Point lastPosition = robot.position();
+        Point newPositionInPixels = b2.position ;
+        Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
-      switch (this->_enemySearch) {
-        case Both:
-          currentPos.x = (b1.position.x + b2.position.x)/2;
-          currentPos.y = (b1.position.y + b2.position.y)/2;
-          break;
-        case Primary:
-          currentPos.x = b1.position.x;
-          currentPos.y = b1.position.y;
-          break;
-        case Secundary:
-          currentPos.x = b2.position.x;
-          currentPos.y = b2.position.y;
-          break;
-        default:
-          break;
-      }
+        // Debug
+        cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, CV_AA);
+        //cv::circle(debugFrame,Utils::convertPositionCmToPixel(Point(170/2,130/2)),10,cv::Scalar(0,255,0));
+        // Para evitar ruido, se o robo se movimentar muito pouco,
+        // ele permanece no mesmo local
 
-      if(abs(lastPos.x-currentPos.x) < 2 && abs(lastPos.y-currentPos.y) < 2) {
-         currentPos.x = lastPos.x;
-         currentPos.y = lastPos.y;
-      }
-
-      double xw, yh, wConvert, hConvert;
-      wConvert = entities[enemyIndex].getConvert().x;
-      hConvert = entities[enemyIndex].getConvert().y;
-
-      if(entities[enemyIndex].getConvertSet()) {
-
-        xw = currentPos.x * wConvert;
-        yh = 130 - currentPos.y* hConvert;
-
-        if(!Utils::between(xw,MIN_X_LIMIT,RANGE_X) && !Utils::between(yh,MIN_GOAL_Y,RANGE_Y)) {
-          if(xw < MIN_X_LIMIT)
-            currentPos.x = MIN_X_LIMIT/entities[enemyIndex].getConvert().x;
-          else
-            currentPos.x = (MIN_X_LIMIT + RANGE_X)/entities[enemyIndex].getConvert().x;
+        if (std::abs(newPosition.x - lastPosition.x) < Global::minPositionDifference() &&
+            std::abs(newPosition.y - lastPosition.y) < Global::minPositionDifference()) {
+          newPosition = lastPosition;
         }
 
-        cv::circle(debugFrame, currentPos,15,this->_colorCar[enemyRegions[i].team],1, CV_AA);
-
+        Float newTime = vss.time().getMilliseconds();
+        Float newAngle = Utils::angle(b2.position, b2.position);
+        robot.update(newPosition, newAngle);
+        players.push_back(robot);
       }
-
-      entities[enemyIndex].setPosition(currentPos.x,currentPos.y);
-      entities[enemyIndex].setAngle(Utils::angle(b1.position,b2.position));
-      entities[enemyIndex].setUpdated(true);
-      entities[enemyIndex].setColor(idColor);
-      enemyIndex++;
     }
-  }*/
+    return players;
 }
 
 void PositionProcessing::findEnemysWithPrimary(std::vector<Entity> &entities, cv::Mat& debugFrame) {
@@ -301,7 +270,6 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
 
 std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> PositionProcessing::getNearestPrimary(Blob current) {
   int dMin = INT_MAX, distance, team;
-
   Blob choosen;
   NearestBlobInfo result;
 
@@ -341,13 +309,27 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
         current.team = primary.second.teamIndex;
         current.color = idColor;
         current.distance = primary.second.distance;
-
         if (current.team == this->_teamId) result.team.push_back(current);
-        else result.enemys.push_back(current);
+        //else result.enemys.push_back(current);
       } else break;
     }
   }
 
+  if(result.enemys.empty() || result.enemys.size() < 3)
+  {
+      int idColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
+      for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
+        if(blob[idColor][i].valid) {
+
+          current.blobs = std::make_pair(blob[idColor][i], blob[idColor][i]);
+          current.team = idColor;
+          current.color = idColor;
+          current.distance = 0.0;
+          std::cout << current.team << std::endl;
+          result.enemys.push_back(current);
+      }
+      }
+  }
   return result;
 }
 
