@@ -19,9 +19,10 @@
 #include <QReadWriteLock>
 #include "runlengthencoding.h"
 #include "GameInfo/GameInfo.h"
+#include <Utils/kalmanfilter.h>
 
 #define CLUSTERSPERCOLOR 8
-
+#define MAX_ROBOTS 3
 #define BALL_INDEX 6
 
 #define POSITION_PROCESSING_FILE  "Config/PositionProcessing.xml"
@@ -276,6 +277,11 @@ protected:
   enum enemy{Nothing,Primary,Secundary,Both};
   int _teamColor;
   int _minSize, _maxSize, _minSizeBall, _maxSizeBall, _blobMaxDist, _teamId, _enemyTeam , _enemySearch, _showElement;
+  KalmanFilter _kalmanFilterRobots[2][MAX_ROBOTS];
+  KalmanFilter _dirFilteRobots[2][MAX_ROBOTS];
+  KalmanFilter _kalmanFilterBall[1][1];
+  KalmanFilter _dirFilterBall[1][1];
+
 };
 
 #endif

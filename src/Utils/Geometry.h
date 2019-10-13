@@ -6,6 +6,14 @@
 #include "opencv2/opencv.hpp"
 #include "Global.h"
 #include "Types.h"
+#include <cmath>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+
+const float INF = std::numeric_limits<float>::infinity();
+const float EPS = 1e-12;
+//const float PI = acos(-1.0);
 
 namespace Geometry {
   // Considerando ponto e vetor como o mesmo tipo
@@ -200,6 +208,113 @@ namespace Geometry {
 
   // Compute intersection of circle centered at a with radius r with circle centered at b with radius R
   Points circleCircleIntersection(const Point &t_p, const Float &t_r1, const Point &t_q, const Float t_r2);
+
+
+  int cmp(float a, float b = 0.0);
+
+  struct PT {
+    float x,y;
+    PT() {}
+    PT(float x, float y) : x(x), y(y){}
+    PT(const PT &p) : x(p.x), y(p.y){}
+    PT(std::pair<float, float> p) : x(p.first), y(p.second){}
+    PT operator +(const PT &p)     const { return PT(x+p.x,y+p.y); }
+    PT operator -(const PT &p)     const { return PT(x-p.x,y-p.y); }
+    PT operator *(float c)        const { return PT(x*c,y*c);     }
+    PT operator /(float c)        const { return PT(x/c,y/c);     }
+    float operator *(const PT &p) const { return x*p.x+y*p.y;     }
+    float operator %(const PT &p) const { return x*p.y-y*p.x;     }
+    float operator !()            const { return sqrt(x*x+y*y);   }
+    float operator ^(const PT &p) const { return fabs(atan2(*this%p,*this*p)); }
+    bool operator ==(const PT &p)  const { return Geometry::cmp(x,p.x)==0 && Geometry::cmp(y,p.y)==0; }
+    bool operator <(const PT &p)   const {
+        if (Geometry::cmp(x,p.x)!=0) return Geometry::cmp(x,p.x)==-1;
+            return Geometry::cmp(y,p.y)==-1;
+    }
+  };
+
+  // roda o ponto CCW ou CW ao redor da origem
+  PT rotateCCW90(PT p);
+  PT rotateCW90(PT p);
+  PT rotateCCW(PT p, float t);
+
+  // projeta ponto c na linha através de a e b
+  // assume a != b
+  PT projPtLine(PT a, PT b, PT c);
+
+  // projeta ponto c no segmento através de a e b
+  PT projPtSeg(PT a, PT b, PT c);
+
+  // calcula a distância de c para o segmento entre a e b
+  float distPtSeg(PT a, PT b, PT c);
+
+  // compute distance between point (x,y,z) and plane ax+by+cz=d
+  float distPtPlane(float x, float y, float z, float a, float b, float c, float d);
+
+  // determina se linhas (a,b) e (c,d) são paralelas
+  bool parallel(PT a, PT b, PT c, PT d);
+
+  // determina se linhas (a,b) e (c,d) são colineares
+  bool collinear(PT a, PT b, PT c, PT d);
+
+  // determina se segmento (a,b) intersecta segmento (c,d)
+  bool segInter(PT a, PT b, PT c, PT d);
+
+  // calcula interseção das linha (a,b) com linha (c,d)
+  // assume que é única
+  // para segmentos checar se intersecta
+  PT lineLine(PT a, PT b, PT c, PT d);
+
+  // calcula circuncentro
+  PT circleCenter(PT a, PT b, PT c);
+
+  // 1 para pontos dentro do polígono
+  // 0 para pontos fora
+  // 1 ou 0 para pontos da borda
+  bool PointInPolygon(const std::vector<PT> &p, PT q);
+
+  // determina se está na borda
+  bool PointOnPolygon(const std::vector<PT> &p, PT q);
+
+  // calcula interseção da linha (a,b) com o círculo (c,r)
+  std::vector<PT> circleLine(PT a, PT b, PT c, float r);
+
+  // calcula interseção do círculo(a,r) com o círculo(b,R)
+  std::vector<PT> circleCircle(PT a, PT b, float r, float R);
+
+  // assume que pontos estão em CCW ou CW
+  // calcula área do polígono (não precisa ser convexo)
+  float signedArea(const std::vector<PT> &p);
+
+  float area(const std::vector<PT> &p);
+
+  // assume que pontos estão em CCW ou CW
+  // calcula centróide (centro de gravidade ou centro de massa)
+  PT centroid(const std::vector<PT> &p);
+
+  // assume que pontos estão em CCW ou CW
+  // testa se o polígono é simples
+  bool isSimple(const std::vector<PT> &p);
+
+  bool circle2PtsRad(PT p1, PT p2, float r, PT &c); // to get the other center, reverse p1 and p2
+
+  // P1 and P2 must be vectors (p1: final point - start point)
+  bool areClockwise(Geometry::PT p1, Geometry::PT p2); // Need to check isInsideSector: (Counter clock-wise start arm, Clock-wise end arm, Inside Radius)
+
+  // P1 and P2 must be vectors (p1: final point - start point)
+  bool isWithinRadius(Geometry::PT p1, float radius); // Need to check isInsideSector: (Counter clock-wise start arm, Clock-wise end arm, Inside Radius)
+
+  // P1 and P2 must be vectors (p1: final point - start point)
+  bool isPointInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, float sectorRadius); // Check if isInsideSector
+
+  // Check if a range (like a robot) is inside sector
+  bool isRangeInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, float sectorRadius, float rangeRadius);
+
+  // Check each quadrant
+  uint8_t whichQuadrant(Geometry::PT p1);
+
+
+
 }
 
 #endif // GEOMETRY_H

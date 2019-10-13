@@ -93,7 +93,17 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
 
         Float newTime = vss.time().getMilliseconds();
         Float newAngle = Utils::angle(b1.position, b2.position);
-        robot.update(newPosition, newAngle);
+
+        auto & playerPosVel = _kalmanFilterRobots[0][robot.id()%100].update(newPosition.x,newPosition.y);
+
+        Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
+        Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
+
+        auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(robot.angle()), std::sin(robot.angle()));
+        double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
+
+        robot.update(Point(filtPoint.x,filtPoint.y), filterDir);//newAngle);
+        //robot.update(newPosition,newAngle);
         players.push_back(robot);
       }
     }
@@ -136,6 +146,21 @@ Players PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& d
         }
         Float newTime = vss.time().getMilliseconds();
         Float newAngle = Utils::angle(b2.position, b2.position);
+
+        /*
+        std::cout << robot.id() << std::endl;
+        auto & playerPosVel = _kalmanFilterRobots[1][robot.id()%100].update(newPosition.x,newPosition.y);
+
+        Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
+        Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
+
+        auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(robot.angle()), std::sin(robot.angle()));
+        double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
+
+        robot.update(Point(filtPoint.x,filtPoint.y), filterDir);//newAngle);
+        //robot.update(newPosition,newAngle);
+        */
+
         robot.update(newPosition, newAngle);
         players.push_back(robot);
       }
@@ -208,6 +233,9 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
     Point newPosition = Utils::convertPositionPixelToCm(blobBall.position);
     Point lastPosition = vss.ball().position();
 
+    double dx = lastPosition.x - newPosition.x;
+    double dy = lastPosition.y - lastPosition.y;
+    double angle = atan2(dy,dx);
     if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
         std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
       newPosition = lastPosition;
@@ -218,8 +246,17 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
         newPosition = k*newPosition + (1-k)*lastPosition;
     }
 
+    auto & ballPosVel = _kalmanFilterBall[0][0].update(newPosition.x,newPosition.y);
+
+    Geometry::PT filtPoint (ballPosVel(0, 0), ballPosVel(1, 0));
+    Geometry::PT PlayVel(ballPosVel(2, 0), ballPosVel(3, 0));
+
+    auto &ballRotVel = _dirFilterBall[0][0].update(std::cos(angle), std::sin(angle));
+    double filterDir = std::atan2(ballRotVel(1, 0), ballRotVel(0, 0));
+
+    ball.update(Point(filtPoint.x,filtPoint.y),filterDir);
     Float newTime = vss.time().getMilliseconds();
-    ball.update(newPosition);
+    //ball.update(newPosition);
     ball.id(0);
 
   return ball;

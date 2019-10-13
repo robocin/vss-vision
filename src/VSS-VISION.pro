@@ -52,6 +52,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
   Utils/Utils.cpp \
   Entity/Entity.cpp \
+    Utils/kalmanfilter.cpp \
+    Utils/matrix2d.cpp \
   Vision/Vision.cpp \
   Vision/PositionProcessing/PositionProcessing.cpp \
   Vision/ImageProcessing/ImageProcessing.cpp \
@@ -88,6 +90,8 @@ HEADERS  += \
   Entity/Entity.h \
     Planning/PUnivector.h \
   Utils/Utils.h \
+    Utils/kalmanfilter.h \
+    Utils/matrix2d.h \
   Vision/Vision.h \
   Vision/PositionProcessing/PositionProcessing.h \
   Vision/ImageProcessing/ImageProcessing.h \
