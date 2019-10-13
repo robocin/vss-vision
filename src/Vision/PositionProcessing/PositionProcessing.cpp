@@ -187,7 +187,7 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
     }
 
     // Debug
-    //cv::circle(vss.frame(), blobBall.position, 9, _colorCar[OrangeCOL], 1, CV_AA);
+    cv::circle(debugFrame, blobBall.position, 9, _colorCar[OrangeCOL], 2, CV_AA);
     {
         //cv::Mat tmp(EMPTY_MATRIX);
         //std::cout << stringizer(blobBall.position) << " " << blobBall.position << std::endl;
@@ -325,7 +325,6 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
           current.team = idColor;
           current.color = idColor;
           current.distance = 0.0;
-          std::cout << current.team << std::endl;
           result.enemys.push_back(current);
       }
       }
