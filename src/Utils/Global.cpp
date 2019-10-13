@@ -52,6 +52,6 @@ const Float &Global::halfAxis() {
 Float Global::m_spinDistance;
 Float Global::m_nearDistance;
 Point Global::m_convertRatio;
-Float Global::m_minPositionDifference = 2;
+Float Global::m_minPositionDifference = 5;
 Float Global::m_eps = 1e-6;
 Float Global::m_halfAxis = 3.5;

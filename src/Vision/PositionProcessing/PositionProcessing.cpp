@@ -81,10 +81,15 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
         // Para evitar ruido, se o robo se movimentar muito pouco,
         // ele permanece no mesmo local
 
-//        if (std::abs(newPosition.x - lastPosition.x) < Global::minPositionDifference() &&
-//            std::abs(newPosition.y - lastPosition.y) < Global::minPositionDifference()) {
-//          newPosition = lastPosition;
-//        }
+        if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
+            std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
+          newPosition = lastPosition;
+        }
+        else
+        {
+            float k = 0.8;
+            newPosition = k*newPosition + (1-k)*lastPosition;
+        }
 
         Float newTime = vss.time().getMilliseconds();
         Float newAngle = Utils::angle(b1.position, b2.position);
@@ -120,11 +125,15 @@ Players PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& d
         // Para evitar ruido, se o robo se movimentar muito pouco,
         // ele permanece no mesmo local
 
-        if (std::abs(newPosition.x - lastPosition.x) < Global::minPositionDifference() &&
-            std::abs(newPosition.y - lastPosition.y) < Global::minPositionDifference()) {
+        if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
+            std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
           newPosition = lastPosition;
         }
-
+        else
+        {
+            float k = 0.8;
+            newPosition = k*newPosition + (1-k)*lastPosition;
+        }
         Float newTime = vss.time().getMilliseconds();
         Float newAngle = Utils::angle(b2.position, b2.position);
         robot.update(newPosition, newAngle);
@@ -199,9 +208,14 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
     Point newPosition = Utils::convertPositionPixelToCm(blobBall.position);
     Point lastPosition = vss.ball().position();
 
-    if (std::abs(newPosition.x - lastPosition.x) < Global::minPositionDifference() &&
-        std::abs(newPosition.y - lastPosition.y) < Global::minPositionDifference()) {
+    if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
+        std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
       newPosition = lastPosition;
+    }
+    else
+    {
+        float k = 0.8;
+        newPosition = k*newPosition + (1-k)*lastPosition;
     }
 
     Float newTime = vss.time().getMilliseconds();
@@ -326,7 +340,7 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
           current.color = idColor;
           current.distance = 0.0;
           result.enemys.push_back(current);
-      }
+        }
       }
   }
   return result;
@@ -465,3 +479,5 @@ void PositionProcessing::setTeamColor(int teamColor)
 int PositionProcessing::blobMaxDist() {
   return _blobMaxDist;
 }
+
+
