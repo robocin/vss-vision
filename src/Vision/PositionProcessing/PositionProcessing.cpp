@@ -99,9 +99,8 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
         Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
         Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
 
-        auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(robot.angle()), std::sin(robot.angle()));
+        auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
         double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
-
         robot.update(Point(filtPoint.x,filtPoint.y), filterDir);//newAngle);
         //robot.update(newPosition,newAngle);
         players.push_back(robot);
