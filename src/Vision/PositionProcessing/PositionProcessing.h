@@ -281,6 +281,8 @@ protected:
   KalmanFilter _dirFilteRobots[2][MAX_ROBOTS];
   KalmanFilter _kalmanFilterBall[1][1];
   KalmanFilter _dirFilterBall[1][1];
+  Point _ballLastPosition;
+  Float _ballLastTime;
 
 };
 

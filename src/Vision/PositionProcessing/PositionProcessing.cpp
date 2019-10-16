@@ -76,19 +76,10 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
         // Debug
-        cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, CV_AA);
-        //cv::circle(debugFrame,Utils::convertPositionCmToPixel(Point(170/2,130/2)),10,cv::Scalar(0,255,0));
-        // Para evitar ruido, se o robo se movimentar muito pouco,
-        // ele permanece no mesmo local
-
+        //cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, CV_AA);
         if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
             std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
           newPosition = lastPosition;
-        }
-        else
-        {
-            float k = 0.8;
-            newPosition = k*newPosition + (1-k)*lastPosition;
         }
 
         Float newTime = vss.time().getMilliseconds();
@@ -101,11 +92,13 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
 
         auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
         double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
-        robot.update(Point(filtPoint.x,filtPoint.y), filterDir);//newAngle);
-        //robot.update(newPosition,newAngle);
+        robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
         players.push_back(robot);
+
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[colorIndex+1], 1, CV_AA);
       }
     }
+
     return players;
 }
 
@@ -138,28 +131,8 @@ Players PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& d
             std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
           newPosition = lastPosition;
         }
-        else
-        {
-            float k = 0.8;
-            newPosition = k*newPosition + (1-k)*lastPosition;
-        }
-        Float newTime = vss.time().getMilliseconds();
+
         Float newAngle = Utils::angle(b2.position, b2.position);
-
-        /*
-        std::cout << robot.id() << std::endl;
-        auto & playerPosVel = _kalmanFilterRobots[1][robot.id()%100].update(newPosition.x,newPosition.y);
-
-        Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
-        Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
-
-        auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(robot.angle()), std::sin(robot.angle()));
-        double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
-
-        robot.update(Point(filtPoint.x,filtPoint.y), filterDir);//newAngle);
-        //robot.update(newPosition,newAngle);
-        */
-
         robot.update(newPosition, newAngle);
         players.push_back(robot);
       }
@@ -216,106 +189,48 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
     }
 
     if (!blobBall.valid) {
+        int fps = 30;
+        auto & ballPosVel = _kalmanFilterBall[0][0].update(this->_ballLastPosition.x,this->_ballLastPosition.y);
+        Geometry::PT filtPoint (ballPosVel(0, 0), ballPosVel(1, 0));
+        Geometry::PT ballVel(ballPosVel(2, 0)*fps, ballPosVel(3, 0)*fps);
+
+        Float actualTime = vss.time().getMilliseconds();
+        Float dt = (actualTime-this->_ballLastTime)/1000; // dt in seconds
+        this->_ballLastTime = actualTime;
+
+        Float lostFrames = dt*fps;
+        ballVel = ballVel/lostFrames;
+        filtPoint.x = filtPoint.x + ballVel.x*dt;
+        filtPoint.y = filtPoint.y + ballVel.y*dt;
+
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)), 9, _colorCar[OrangeCOL], 2, CV_AA);
+        //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
+
+        ball.id(0);
+        ball.update(Point(filtPoint.x,filtPoint.y),atan2(ballVel.y,ballVel.x));
+        this->_ballLastPosition.x = filtPoint.x;
+        this->_ballLastPosition.y = filtPoint.y;
+
       return ball;
     }
 
     // Debug
-    cv::circle(debugFrame, blobBall.position, 9, _colorCar[OrangeCOL], 2, CV_AA);
-    {
-        //cv::Mat tmp(EMPTY_MATRIX);
-        //std::cout << stringizer(blobBall.position) << " " << blobBall.position << std::endl;
-        //std::cout << stringizer(convert_twice    ) << " " << Utils::convertPositionCmToPixel(Utils::convertPositionPixelToCm(blobBall.position)) << std::endl;
-        //cv::circle(tmp, blobBall.position, 9, cv::Scalar(0,165,255), 1, CV_AA);
-        //vss.mergeFrame(tmp);
-    }
-
+    //cv::circle(debugFrame, blobBall.position, 9, _colorCar[OrangeCOL], 2, CV_AA);
     Point newPosition = Utils::convertPositionPixelToCm(blobBall.position);
-    Point lastPosition = vss.ball().position();
-
-    double dx = lastPosition.x - newPosition.x;
-    double dy = lastPosition.y - lastPosition.y;
-    double angle = atan2(dy,dx);
-    if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
-        std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
-      newPosition = lastPosition;
-    }
-    else
-    {
-        float k = 0.8;
-        newPosition = k*newPosition + (1-k)*lastPosition;
-    }
+    this->_ballLastPosition = vss.ball().position();
 
     auto & ballPosVel = _kalmanFilterBall[0][0].update(newPosition.x,newPosition.y);
 
     Geometry::PT filtPoint (ballPosVel(0, 0), ballPosVel(1, 0));
-    Geometry::PT PlayVel(ballPosVel(2, 0), ballPosVel(3, 0));
-
-    auto &ballRotVel = _dirFilterBall[0][0].update(std::cos(angle), std::sin(angle));
-    double filterDir = std::atan2(ballRotVel(1, 0), ballRotVel(0, 0));
-
-    ball.update(Point(filtPoint.x,filtPoint.y),filterDir);
-    Float newTime = vss.time().getMilliseconds();
-    //ball.update(newPosition);
+    int fps = 30;
+    Geometry::PT ballVel(ballPosVel(2, 0)*fps, ballPosVel(3, 0)*fps);
+    ball.update(Point(filtPoint.x,filtPoint.y),atan2(ballVel.y,ballVel.x));
+    this->_ballLastTime = vss.time().getMilliseconds();
     ball.id(0);
-
-  return ball;
-
-//  Blob ball;
-//  ball.valid = false;
-//  int maxArea = -1;
-
-//  //get orange blob with larger area
-//  for (int i=0; i < CLUSTERSPERCOLOR; i++) {
-//    if (blob[OrangeCOL][i].area > maxArea && blob[OrangeCOL][i].valid) {
-//      maxArea = blob[OrangeCOL][i].area;
-//      ball = blob[OrangeCOL][i];
-//      ball.valid = true;
-//    }
-//  }
-
-//  if (!ball.valid) {
-//     //entities[BALL_INDEX].setUpdated(false);
-//     return;
-//  }
-
-//  cv::Point currentPos = ball.position, lastPos;
-//  //lastPos.x = entities[BALL_INDEX].position().x;
-//  //lastPos.y = entities[BALL_INDEX].position().y;
-
-//  //with pos does not change so much, dont change position ( prevent position noise )
-//  if(abs(lastPos.x-currentPos.x) < 2 && abs(lastPos.y-currentPos.y) < 2) {
-//     currentPos.x = lastPos.x;
-//     currentPos.y = lastPos.y;
-//  }
-
-//  double realX=0, realY=0;
-//  /*
-//  double convertWidth = entities[BALL_INDEX].getConvert().x;
-//  double convertHeigth = entities[BALL_INDEX].getConvert().y;
-
-//  // verifying if position is inside field
-//  if(entities[BALL_INDEX].getConvertSet()) {
-
-//    realX = currentPos.x * convertWidth;
-//    realY = 130 - currentPos.y* convertHeigth;
-
-//    if(!Utils::between(realX,MIN_X_LIMIT,RANGE_X) && !Utils::between(realY,MIN_GOAL_Y,RANGE_Y)) {
-
-//      if(realX < MIN_X_LIMIT)
-//        currentPos.x = MIN_X_LIMIT/entities[BALL_INDEX].getConvert().x;
-//      else
-//        currentPos.x = (MIN_X_LIMIT + RANGE_X)/entities[BALL_INDEX].getConvert().x;
-//    }
-//  }
-//  */
-
-//  //draw bal in frame
-//  cv::circle(debugFrame, currentPos, 9, this->_colorCar[OrangeCOL], 1, CV_AA);
-
-
-//  //entities[BALL_INDEX] = Entity(0);
-//  //entities[BALL_INDEX].update(cv::Point2f(currentPos.x, currentPos.y),0);
-
+    cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)), 9, _colorCar[OrangeCOL], 2, CV_AA);
+    //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
+    this->_ballLastPosition = cv::Point(filtPoint.x,filtPoint.y);
+    return ball;
 }
 
 std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> PositionProcessing::getNearestPrimary(Blob current) {
