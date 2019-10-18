@@ -70,6 +70,8 @@ class MainVSSWindow : public QMainWindow {
 
   void on_halfPushButton_clicked();
 
+  void on_playNNButton_clicked(bool checked);
+
 private:
   Ui::MainVSSWindow* m_ui;
   QTimer* m_mainWindowFrameTimer;

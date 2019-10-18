@@ -35,5 +35,7 @@
         <file>numbers.png</file>
         <file>field1.png</file>
         <file>field2.png</file>
+        <file>pause.png</file>
+        <file>play.png</file>
     </qresource>
 </RCC>

@@ -32,34 +32,20 @@ void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_mse
     }
 }
 
-void Network::buttonsMessage(bool teamColor)
+void Network::buttonsMessage(bool teamColor, bool atackRight, bool playNN)
 {
-
-    //teamColor
-    /*
-    if (!entities.size()) return;
-    if (entities.size() > 255) {
-        spdlog::get("Network")->info("sendFrame:: I cannot send more than 255 entities. You asked {}.\n", entities.size());
-        return;
-    }
-
+    //std::cout << (teamColor==true?"Yellow":"Blue") << " | " << (atackRight==true?"Right":"Left") << " | " << (playNN==true?"Play":"Pause") << std::endl;
     sf::Packet packet;
-    packet << static_cast<sf::Uint8>('F');
-    packet << static_cast<sf::Uint32>(timestamp_in_msec);
-    packet << static_cast<sf::Int32>(Network::frameId);
-    ++frameId;
-    packet << static_cast<sf::Uint8>(entities.size());
+    packet << static_cast<sf::Uint8>('X');
+    packet << (teamColor==true?static_cast<sf::Uint8>('Y'):static_cast<sf::Uint8>('B')); // Yellow or Blue
+    packet << (atackRight==true?static_cast<sf::Uint8>('R'):static_cast<sf::Uint8>('L')); // Right or Left
+    packet << (playNN==true?static_cast<sf::Uint8>('P'):static_cast<sf::Uint8>('S')); // Play or Stop
 
-    for (int i=0; i < entities.size(); ++i) {
-        packet  << static_cast<sf::Uint8>(entities[i].id())
-                << static_cast<Float>(entities[i].position().x)
-                << static_cast<Float>(entities[i].position().y)
-                << static_cast<Float>(entities[i].angle());
-    }
-
-    if (Network::socket.send(packet, recipient, port) != sf::Socket::Done)
+    for(int i = 0; i < 10; ++i)
     {
-        spdlog::get("Network")->info("sendFrame:: Something went wrong when trying to send the frame.\n");
+        if (Network::socket.send(packet, recipient, port) != sf::Socket::Done)
+        {
+            spdlog::get("Network")->info("sendFrame:: Something went wrong when trying to send the frame.\n");
+        }
     }
-    */
 }

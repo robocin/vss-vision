@@ -26,7 +26,8 @@ public:
 	*/
     static void sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_msec = 0);
 
-    static void buttonsMessage(bool teamColor);
+    static void buttonsMessage(bool teamColor,bool atackRight, bool playNN);
+
 };
 
 #endif /**		NETWORK_H*/
