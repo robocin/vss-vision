@@ -429,7 +429,7 @@ void MainVSSWindow::on_primaryColor_clicked(bool checked) {
     Vision::singleton().setDetectionParam(MYTEAM, Color::YELLOW);
     Vision::singleton().setDetectionParam(ENEMYTEAM, Color::BLUE);
   }
-  Network::buttonsMessage(this->m_ui->primaryColor->isChecked(),this->m_ui->halfPushButton->isChecked(),this->m_ui->playNNButton->isChecked());
+  Network::buttonsMessageTeamColor(this->m_ui->primaryColor->isChecked());
   this->saveColorFile();
 }
 
@@ -678,13 +678,11 @@ void MainVSSWindow::on_halfPushButton_clicked() {
     if (m_ui->cutFieldPushButton->isChecked()) {
       Vision::singleton().resetCorrection();
     }
-
     Vision::singleton().setCorrection(m_ui->cutFieldPushButton->isChecked());
   }
-  Network::buttonsMessage(this->m_ui->primaryColor->isChecked(),this->m_ui->halfPushButton->isChecked(),this->m_ui->playNNButton->isChecked());
 }
 
 void MainVSSWindow::on_playNNButton_clicked(bool checked)
 {
-    Network::buttonsMessage(this->m_ui->primaryColor->isChecked(),this->m_ui->halfPushButton->isChecked(),this->m_ui->playNNButton->isChecked());
+    Network::buttonsMessagePlayNN(checked);
 }

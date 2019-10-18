@@ -32,14 +32,24 @@ void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_mse
     }
 }
 
-void Network::buttonsMessage(bool teamColor, bool atackRight, bool playNN)
+void Network::buttonsMessageTeamColor(bool teamColor)
+{
+    sf::Packet packet;
+    packet << (teamColor==true?static_cast<sf::Uint8>('Y'):static_cast<sf::Uint8>('B')); // Yellow or Blue
+    for(int i = 0; i < 10; ++i)
+    {
+        if (Network::socket.send(packet, recipient, port) != sf::Socket::Done)
+        {
+            spdlog::get("Network")->info("sendFrame:: Something went wrong when trying to send the frame.\n");
+        }
+    }
+}
+
+void Network::buttonsMessagePlayNN(bool playNN)
 {
     //std::cout << (teamColor==true?"Yellow":"Blue") << " | " << (atackRight==true?"Right":"Left") << " | " << (playNN==true?"Play":"Pause") << std::endl;
     sf::Packet packet;
-    packet << static_cast<sf::Uint8>('X');
-    packet << (teamColor==true?static_cast<sf::Uint8>('Y'):static_cast<sf::Uint8>('B')); // Yellow or Blue
-    packet << (atackRight==true?static_cast<sf::Uint8>('R'):static_cast<sf::Uint8>('L')); // Right or Left
-    packet << (playNN==true?static_cast<sf::Uint8>('P'):static_cast<sf::Uint8>('S')); // Play or Stop
+    packet << (playNN==true?static_cast<sf::Uint8>('R'):static_cast<sf::Uint8>('P')); // Play or Stop
 
     for(int i = 0; i < 10; ++i)
     {
@@ -48,4 +58,5 @@ void Network::buttonsMessage(bool teamColor, bool atackRight, bool playNN)
             spdlog::get("Network")->info("sendFrame:: Something went wrong when trying to send the frame.\n");
         }
     }
+
 }
