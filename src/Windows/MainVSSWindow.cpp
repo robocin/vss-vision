@@ -62,6 +62,7 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
   this->m_maggicSegmentationDialog = new MaggicSegmentationDialog();
   initColors();
   Field::set3x3();
+  this->m_ui->DistortionComboBox->setCurrentText("ELP-USB");
 }
 
 void MainVSSWindow::initColors() {
@@ -285,11 +286,6 @@ void MainVSSWindow::on_capturePushButton_clicked() {
       m_ui->visualizationComboBox->addItem("Original");
       m_ui->visualizationComboBox->setCurrentIndex(0);
     }
-
-    if (m_ui->strategyInitPushButton->isChecked()) {
-      m_ui->strategyInitPushButton->setChecked(false);
-      m_ui->strategyInitPushButton->setEnabled(false);
-    }
     emit enableVisionThread(false);
     emit pauseCameraUpdate();
   }
@@ -300,13 +296,6 @@ void MainVSSWindow::on_cutFieldPushButton_clicked() {
     //m_ui->visionInitPushButton->setEnabled(true);
     //m_ui->visionConfigurePushButton->setEnabled(true);
     Vision::singleton().resetCorrection();
-
-    if (m_ui->capturePushButton->isChecked()) {
-      this->m_ui->strategyInitPushButton->setEnabled(true);
-    } else {
-      this->m_ui->strategyInitPushButton->setEnabled(false);
-    }
-
     this->m_ui->halfPushButton->setEnabled(true);
   } else {
     //if (this->m_ui->visionInitPushButton->isChecked()) {
@@ -316,14 +305,7 @@ void MainVSSWindow::on_cutFieldPushButton_clicked() {
     //m_ui->visionInitPushButton->setEnabled(false);
     //m_ui->visionConfigurePushButton->setEnabled(false);
     this->m_ui->startAllPushButton->setChecked(false);
-
-    if (this->m_ui->strategyInitPushButton->isChecked()) {
-      this->m_ui->halfPushButton->setEnabled(true);
-      this->on_strategyInitPushButton_clicked();
-    }
-
     this->m_ui->halfPushButton->setEnabled(false);
-    this->m_ui->strategyInitPushButton->setEnabled(false);
 
   }
 
@@ -338,12 +320,6 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
     m_ui->visualizationComboBox->clear();
     m_ui->visualizationComboBox->addItem("Original");
     m_ui->visualizationComboBox->setCurrentIndex(0);
-    // this->_hasVisionStarted = false;
-    m_ui->strategyInitPushButton->setEnabled(false);
-    // m_ui->strategyConfigurePushButton->setEnabled(false);
-    // this->_hasStrategyStarted = false;
-    this->m_ui->strategyInitPushButton->setChecked(false);
-    this->m_ui->strategyInitPushButton->setEnabled(false);
 
   } else {
     Vision::singleton().setProcessing(true);
@@ -353,27 +329,11 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
     m_ui->visualizationComboBox->addItem("Segmented");
     m_ui->visualizationComboBox->addItem("Tracked");
     m_ui->visualizationComboBox->setCurrentIndex(2);
-
-    // this->_hasVisionStarted = true;  <<--------------- não sei se precisa
-    // disso, mas aparentemente não :D
-    if (this->m_ui->cutFieldPushButton->isChecked()) {
-      m_ui->strategyInitPushButton->setEnabled(true);
     }
 
     m_ui->visualizationComboBox->setCurrentText("Tracked");
-  }
 }
 
-void MainVSSWindow::on_strategyInitPushButton_clicked() {
-  if (!this->m_ui->strategyInitPushButton->isChecked()) {
-    m_ui->strategyInitPushButton->setChecked(false);
-    m_ui->startAllPushButton->setChecked(false);
-    // this->_hasStrategyStarted = false;
-  } else {
-    m_ui->strategyInitPushButton->setChecked(true);
-    // this->_hasStrategyStarted = true;
-  }
-}
 
 void MainVSSWindow::on_DistortionComboBox_currentIndexChanged(
   const QString &arg1) {
@@ -422,11 +382,6 @@ void MainVSSWindow::on_visionConfigurePushButton_clicked() {
 void MainVSSWindow::on_cameraConfigPushButton_clicked() {
   this->m_cameraDialog = new CameraConfigurationDialog();
   this->m_cameraDialog->exec();
-  //    if (this->_cameraDialog->result() == QDialog::Accepted)
-  //    {<<-------------acho que não serve pra nada, só não apaguei por que não
-  //    consigo abrir pra conferir
-  //    } else {
-  //    }
   delete this->m_cameraDialog;
 }
 
@@ -442,28 +397,6 @@ void MainVSSWindow::toggleMaggicSegmentationDialog() {
 
 void MainVSSWindow::on_maggicSegmentationButton_clicked() {
   this->toggleMaggicSegmentationDialog();
-}
-
-void MainVSSWindow::on_communicationPushButton_clicked() {
-  if (!m_ui->communicationPushButton->isChecked()) {
-    this->m_ui->communicationPushButton->setChecked(false);
-    this->m_ui->communicationModeComboBox->setEnabled(true);
-    // this->_communicationRunning = false;
-    // Coach::singleton().setPausedGame(true);
-    // Deep Log
-    Vision::singleton().closeDeepLog();
-  } else {
-    this->m_ui->communicationPushButton->setChecked(true);
-    this->m_ui->communicationModeComboBox->setEnabled(false);
-
-    if (m_ui->recordPushButton->isChecked()) {
-      this->record();  //   <<<<<<<<<< -------- como que funciona isso?
-    }
-
-    // Coach::singleton().setPausedGame(false);
-    // Deep Log
-    Vision::singleton().recordDeepLog();
-  }
 }
 
 void MainVSSWindow::record() {
@@ -490,13 +423,14 @@ void MainVSSWindow::on_primaryColor_clicked(bool checked) {
   if (!checked) {
     Vision::singleton().setTeamColor(Color::BLUE);
     Vision::singleton().setDetectionParam(MYTEAM, Color::BLUE);
-    Vision::singleton().setDetectionParam(ENEMYTEAM, Color::YELLOW);
+    Vision::singleton().setDetectionParam(ENEMYTEAM, Color::YELLOW);    
   } else {
     Vision::singleton().setTeamColor(Color::YELLOW);
     Vision::singleton().setDetectionParam(MYTEAM, Color::YELLOW);
     Vision::singleton().setDetectionParam(ENEMYTEAM, Color::BLUE);
   }
 
+  //Network::buttonsMessage(Vision::singleton().getTeamColor()==Color::BLUE?true:false);
   this->saveColorFile();
 }
 
@@ -534,20 +468,6 @@ bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
         m_ui->cameraIndexComboBox->currentText().toInt());
       listSize = cameraListAux.size();
     }
-  }
-
-  if (f_event->type() == QEvent::MouseMove &&
-      f_object == m_ui->simulationLabel &&
-      m_ui->cutFieldPushButton->isChecked()) {
-    QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(f_event);
-    cv::Point positioncm;
-    positioncm.x = mouseEvent->x();
-    positioncm.y = mouseEvent->y();
-    positioncm.x = positioncm.x * (170.0 / m_ui->simulationLabel->width());
-    positioncm.y =
-      130 - positioncm.y * (130.0 / m_ui->simulationLabel->height());
-    m_ui->mousePositionLabel->setText(
-      QString("Mouse Position: (%1,%2)").arg(positioncm.x).arg(positioncm.y));
   }
 
   return false;

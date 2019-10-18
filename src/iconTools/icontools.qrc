@@ -33,5 +33,7 @@
         <file>35-turn-visibility-off-button.png</file>
         <file>border.png</file>
         <file>numbers.png</file>
+        <file>field1.png</file>
+        <file>field2.png</file>
     </qresource>
 </RCC>

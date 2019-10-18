@@ -18,6 +18,7 @@
 #include "cameraconfigurationdialog.h"
 #include "maggicsegmentationdialog.h"
 #include "visionconfigdialog.h"
+#include "Network/Network.h"
 
 #define SECONDARY_COLOR_FILE "Config/SecondaryColor.json"
 #define HALF_FILE "Config/Half.json"
@@ -43,8 +44,6 @@ class MainVSSWindow : public QMainWindow {
 
   void on_visionInitPushButton_clicked();
 
-  void on_strategyInitPushButton_clicked();
-
   void on_DistortionComboBox_currentIndexChanged(const QString& arg1);
 
   void on_calibrateFieldPointspushButton_clicked();
@@ -56,8 +55,6 @@ class MainVSSWindow : public QMainWindow {
   void on_maggicSegmentationButton_clicked();
 
   void toggleMaggicSegmentationDialog();
-
-  void on_communicationPushButton_clicked();
 
   void on_primaryColor_clicked(bool checked);
 
