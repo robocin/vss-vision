@@ -686,3 +686,8 @@ void MainVSSWindow::on_playNNButton_clicked(bool checked)
 {
     Network::buttonsMessagePlayNN(checked);
 }
+
+void MainVSSWindow::on_stopButton_clicked()
+{
+   Network::buttonsMessageStop();
+}

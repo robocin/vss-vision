@@ -72,6 +72,8 @@ class MainVSSWindow : public QMainWindow {
 
   void on_playNNButton_clicked(bool checked);
 
+  void on_stopButton_clicked();
+
 private:
   Ui::MainVSSWindow* m_ui;
   QTimer* m_mainWindowFrameTimer;

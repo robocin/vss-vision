@@ -29,6 +29,8 @@ public:
     static void buttonsMessageTeamColor(bool teamColor);
 
     static void buttonsMessagePlayNN(bool playNN);
+
+    static void buttonsMessageStop();
 };
 
 #endif /**		NETWORK_H*/

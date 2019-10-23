@@ -58,5 +58,18 @@ void Network::buttonsMessagePlayNN(bool playNN)
             spdlog::get("Network")->info("sendFrame:: Something went wrong when trying to send the frame.\n");
         }
     }
+}
 
+void Network::buttonsMessageStop()
+{
+    sf::Packet packet;
+    packet << static_cast<sf::Uint8>('S');
+
+    for(int i = 0; i < 10; ++i)
+    {
+        if (Network::socket.send(packet, recipient, port) != sf::Socket::Done)
+        {
+            spdlog::get("Network")->info("sendFrame:: Something went wrong when trying to send the frame.\n");
+        }
+    }
 }
