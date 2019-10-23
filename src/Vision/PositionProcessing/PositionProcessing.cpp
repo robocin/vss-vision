@@ -203,6 +203,9 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
         filtPoint.x = filtPoint.x + ballVel.x*dt;
         filtPoint.y = filtPoint.y + ballVel.y*dt;
 
+        filtPoint.x = Utils::bound(filtPoint.x, 0, 170);
+        filtPoint.y = Utils::bound(filtPoint.y, 0, 130);
+
         cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)), 9, _colorCar[OrangeCOL], 2, CV_AA);
         //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
 
@@ -227,6 +230,10 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
     ball.update(Point(filtPoint.x,filtPoint.y),atan2(ballVel.y,ballVel.x));
     this->_ballLastTime = vss.time().getMilliseconds();
     ball.id(0);
+
+    filtPoint.x = Utils::bound(filtPoint.x, 0, 170);
+    filtPoint.y = Utils::bound(filtPoint.y, 0, 130);
+
     cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)), 9, _colorCar[OrangeCOL], 2, CV_AA);
     //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
     this->_ballLastPosition = cv::Point(filtPoint.x,filtPoint.y);
