@@ -7,6 +7,8 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
     m_mainWindowFrameTimer(new QTimer(this)),
     m_visionTimer(new QLabel()){
   m_ui->setupUi(this);
+  this->readMainWindowConfig();
+
   setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
   qApp->installEventFilter(this);
   // Baseado na quantidade de jogadores.
@@ -57,8 +59,9 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
     this->m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
   }
 
-  CameraManager::singleton().setCameraIndex(
-    this->m_ui->cameraIndexComboBox->currentText().toInt());
+  this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
+  CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
+
   this->m_maggicSegmentationDialog = new MaggicSegmentationDialog();
   initColors();
   Field::set3x3();
@@ -463,8 +466,10 @@ bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
         m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
       }
 
-      CameraManager::singleton().setCameraIndex(
-        m_ui->cameraIndexComboBox->currentText().toInt());
+      this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
+      CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
+
+
       listSize = cameraListAux.size();
     }
   }
@@ -635,6 +640,7 @@ void MainVSSWindow::mirrorLimitPoints() {
 
 void MainVSSWindow::keyPressEvent(QKeyEvent *e) {
   if (e->key() == Qt::Key_Escape) {
+    this->saveMainWindowConfig();
     this->close();
   }
 }
@@ -690,4 +696,30 @@ void MainVSSWindow::on_playNNButton_clicked(bool checked)
 void MainVSSWindow::on_stopButton_clicked()
 {
    Network::buttonsMessageStop();
+}
+
+void MainVSSWindow::readMainWindowConfig()
+{
+    QFile loadFile("./config.json");
+    if (!loadFile.open(QIODevice::ReadOnly)) {
+        std::cout <<  "Couldn't open config file." << std::endl;
+        return ;
+      }
+   QByteArray savedData = loadFile.readAll();
+   QJsonDocument loadDoc(QJsonDocument::fromJson(savedData));
+   this->_mainWindowConfig = loadDoc.object();
+
+}
+
+void MainVSSWindow::saveMainWindowConfig()
+{
+    // Create save file
+    QFile saveFile("./config.json");
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+     std::cout << "Couldn't open save file." << std::endl;
+     return ;
+    }
+    this->_mainWindowConfig["camIdx"] = this->m_ui->cameraIndexComboBox->currentText();
+    QJsonDocument saveDoc(this->_mainWindowConfig);
+    saveFile.write(saveDoc.toJson());
 }

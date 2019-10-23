@@ -74,6 +74,11 @@ class MainVSSWindow : public QMainWindow {
 
   void on_stopButton_clicked();
 
+  void readMainWindowConfig();
+
+  void saveMainWindowConfig();
+
+
 private:
   Ui::MainVSSWindow* m_ui;
   QTimer* m_mainWindowFrameTimer;
@@ -127,6 +132,8 @@ private:
   QLabel *m_visionTimer;
 
   std::mutex m_currentFrameLocker;
+
+  QJsonObject _mainWindowConfig;
 
 protected:
   void keyPressEvent(QKeyEvent *e);
