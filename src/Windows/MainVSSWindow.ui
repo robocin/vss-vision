@@ -996,7 +996,7 @@
             </rect>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Primary color button&lt;/p&gt;&lt;p&gt;This button toggles between the blue color and the yellow color as primary color to your team.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The shortcut for this button is key '-' in the keyboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Play/Pause Button&lt;/p&gt;&lt;p&gt;This button toggles between the blue color and the yellow color as primary color to your team.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The shortcut for this button is key 'p' in the keyboard.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string/>
@@ -1015,7 +1015,7 @@
             </size>
            </property>
            <property name="shortcut">
-            <string>-</string>
+            <string>P</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
