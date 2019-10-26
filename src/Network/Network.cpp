@@ -21,8 +21,8 @@ void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_mse
 
     for (int i=0; i < entities.size(); ++i) {
         packet  << static_cast<sf::Uint8>(entities[i].id())
-                << static_cast<Float>(entities[i].position().x)
-                << static_cast<Float>(entities[i].position().y)
+                << static_cast<Float>((entities[i].position().x*(1.4411)))
+                << static_cast<Float>(entities[i].position().y*1.3421)
                 << static_cast<Float>(entities[i].angle());
     }
     
