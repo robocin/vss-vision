@@ -267,6 +267,8 @@ private:
   int* _LUT;
   ColorInterval* _calibrationParameters;
   cv::Mat _imageBuffer;
+  cv::Mat _imageBufferFiltered;
+  cv::Mat _imageBufferHSV;
   cv::Mat _debugFrame;
   cv::Mat _segmentationFrame;
   cv::Mat _extremeSaturation, _multipliedResults, _firstThreshold, _secondThreshold;
@@ -278,6 +280,7 @@ private:
   int dragpivotId = -1;
   bool pressedMouse = false, releasedMouse = false;
   bool mouseDrag = false;
+  bool colorDistribution = true;
 
   std::string _colorLabels[NUMBEROFCOLOR] = { NOCOLLABEL,
                         ORANGELABEL,

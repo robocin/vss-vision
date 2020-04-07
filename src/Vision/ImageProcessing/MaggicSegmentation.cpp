@@ -168,6 +168,7 @@ MaggicSegmentation::~MaggicSegmentation()
 }
 
 void MaggicSegmentation::openLastSession() {
+  mut.lock();
   //std::cout << "Opening last session on MaggicSegmentation" << std::endl;
   std::string str;
   std::ifstream fin;
@@ -199,9 +200,11 @@ void MaggicSegmentation::openLastSession() {
   }
 
   fin.close();
+  mut.unlock();
 }
 
 void MaggicSegmentation::saveSession() {
+  mut.lock();
   std::string str;
   std::ofstream fout;
   fout.open(this->_maggicSegmentationSessionFileName);
@@ -219,6 +222,7 @@ void MaggicSegmentation::saveSession() {
      spdlog::get("Vision")->error("MaggicSegmentation::saveSession: Acesso negado ao arquivo {}",this->_maggicSegmentationSessionFileName);
   }
   fout.close();
+  mut.unlock();
 }
 
 void MaggicSegmentation::init(std::map<std::string, int> paramaters)
@@ -330,7 +334,7 @@ int MaggicSegmentation::getEntitiesCount() {
 }
 
 void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
-  cv::Mat res = cv::Mat::zeros(d.size(), d.type());
+  cv::Mat res = cv::Mat::zeros(o.size(), o.type());
 
 
   for (int r = 0; r < o.rows; ++r) {
@@ -1356,6 +1360,30 @@ void MaggicSegmentation::doDetails() {
 
     // draw color frame
     this->_colorDetailsFrame.copyTo(this->_detailsFrame(colorFrame));
+
+    if (this->colorDistribution) {
+        // Convert frame from BGR to HSV
+        filterGray(this->_imageBufferFiltered,this->_imageBuffer);
+        cv::cvtColor( this->_imageBufferFiltered,  this->_imageBufferHSV, cv::COLOR_BGR2HSV_FULL);
+        int h2 = (colorFrame.height>>1);
+        for (int i = 0; i < this->_imageBufferHSV.rows; ++i) {
+          const HSV* row = this->_imageBufferHSV.ptr<HSV>(i);
+          const RGB* rowRGB = this->_imageBufferFiltered.ptr<RGB>(i);
+          for (int j = 0; j < this->_imageBufferHSV.cols; ++j) {
+            //if (!(rowRGB[j].blue == 0 &&
+                //rowRGB[j].green == 0 &&
+                //rowRGB[j].red == 0)) {
+                if (row[j].saturation > row[j].value) {
+                  this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+row[j].value, colorFrame.x+row[j].hue) = cv::Vec3b(255,255,255);
+                } else {
+                  //this->_colorDetailsFrame.at<cv::Vec3b>(colorFrame.y+(255-(((row[j].saturation-h2)*255)/h2)), colorFrame.x+row[j].hue) = cv::Vec3b(255,255,255);
+                  cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x+row[j].hue,colorFrame.y+(colorFrame.height-(row[j].saturation*h2/255)),2,2),cv::Vec3b(255,255,255),-1);
+                }
+            //}
+           }
+        }
+    }
+
     colorSelectionId = -1;
     for(int i=0;i<7;i++) {
       cv::Scalar cor(colorPalette.at<cv::Vec3b>(0,i+1));
