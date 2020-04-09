@@ -1377,7 +1377,7 @@ void MaggicSegmentation::doDetails() {
                 if (row[j].saturation > row[j].value) {
                   this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+(h2*row[j].value)/255, colorFrame.x+(colorFrame.width*row[j].hue)/255) = cv::Vec3b(255,255,255);
                 } else {
-                  //this->_colorDetailsFrame.at<cv::Vec3b>(colorFrame.y+(255-(((row[j].saturation-h2)*255)/h2)), colorFrame.x+row[j].hue) = cv::Vec3b(255,255,255);
+                  this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+h2+((255-row[j].saturation)*h2)/255, colorFrame.x+(w2*row[j].hue)/255) = cv::Vec3b(255,255,255);
                   //cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x+row[j].hue,colorFrame.y+(colorFrame.height-(row[j].saturation*h2/255)),2,2),cv::Vec3b(255,255,255),-1);
                 }
             }
