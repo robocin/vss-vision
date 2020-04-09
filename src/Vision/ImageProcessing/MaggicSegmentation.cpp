@@ -1310,6 +1310,8 @@ void MaggicSegmentation::doDetails() {
   static bool pressedRight = false, pressedLeft = false;
   static int pivotForPaletteId = 0;
   static int colorSelectionId = -1;
+  static int h2 = colorFrame.height >> 1;
+  static int w2 = colorFrame.width >> 1;
 
   if (!colorSelectionReady) {
     colorSelectionReady = true;
@@ -1323,10 +1325,9 @@ void MaggicSegmentation::doDetails() {
     assert(selectionCircleRadius > 1);
     if (this->_colorDetailsFrame.empty() || this->updateColors) {
       this->_colorDetailsFrame = cv::Mat::zeros(cv::Size(colorFrame.width, colorFrame.height), CV_8UC3);
-      int h2, h, s, v;
+      int h, s, v;
       for (int i=0;i<colorFrame.height;i++) {
         for(int j=0;j<colorFrame.width;j++) {
-          h2 = (colorFrame.height>>1);
           if (i<h2) {
             h = j*255/colorFrame.width;
             s = 255;
@@ -1370,16 +1371,16 @@ void MaggicSegmentation::doDetails() {
           const HSV* row = this->_imageBufferHSV.ptr<HSV>(i);
           const RGB* rowRGB = this->_imageBufferFiltered.ptr<RGB>(i);
           for (int j = 0; j < this->_imageBufferHSV.cols; ++j) {
-            //if (!(rowRGB[j].blue == 0 &&
-                //rowRGB[j].green == 0 &&
-                //rowRGB[j].red == 0)) {
+            if (!(rowRGB[j].blue == 0 &&
+                rowRGB[j].green == 0 &&
+                rowRGB[j].red == 0)) {
                 if (row[j].saturation > row[j].value) {
-                  this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+row[j].value, colorFrame.x+row[j].hue) = cv::Vec3b(255,255,255);
+                  this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+(h2*row[j].value)/255, colorFrame.x+(colorFrame.width*row[j].hue)/255) = cv::Vec3b(255,255,255);
                 } else {
                   //this->_colorDetailsFrame.at<cv::Vec3b>(colorFrame.y+(255-(((row[j].saturation-h2)*255)/h2)), colorFrame.x+row[j].hue) = cv::Vec3b(255,255,255);
-                  cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x+row[j].hue,colorFrame.y+(colorFrame.height-(row[j].saturation*h2/255)),2,2),cv::Vec3b(255,255,255),-1);
+                  //cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x+row[j].hue,colorFrame.y+(colorFrame.height-(row[j].saturation*h2/255)),2,2),cv::Vec3b(255,255,255),-1);
                 }
-            //}
+            }
            }
         }
     }
