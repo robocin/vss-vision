@@ -311,3 +311,8 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
   } //else this->ui->visualizationLabel->setCursor(Qt::ArrowCursor);
   return false;
 }
+
+void MaggicSegmentationDialog::on_vectorscopeCheckBox_toggled(bool checked)
+{
+    this->maggicSegmentation->setVectorscopeEnabled(checked);
+}

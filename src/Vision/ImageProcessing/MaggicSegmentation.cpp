@@ -1495,3 +1495,10 @@ void MaggicSegmentation::doDetails() {
     mut.unlock();
   }
 }
+
+
+void MaggicSegmentation::setVectorscopeEnabled(bool enabled) {
+ this->mut.lock();
+ this->colorDistribution = enabled;
+ this->mut.unlock();
+}

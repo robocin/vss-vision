@@ -23,7 +23,6 @@ class MaggicSegmentationDialog : public QDialog
 public:
   explicit MaggicSegmentationDialog(QWidget *parent = 0);
   ~MaggicSegmentationDialog();
-
 private slots:
 
 void updateFrame();
@@ -55,6 +54,8 @@ void on_fixCameraButton_clicked();
 void on_buttonBox_accepted();
 
 void on_loadButton_clicked();
+
+void on_vectorscopeCheckBox_toggled(bool checked);
 
 private:
   Ui::MaggicSegmentationDialog *ui;

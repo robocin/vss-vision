@@ -182,6 +182,7 @@ public:
 
   void setMouseButtonRelease(int btnId);
 
+  void setVectorscopeEnabled(bool enabled);
 
 private:
   int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40, _intervalGrayThreshold = 30;
@@ -240,6 +241,7 @@ private:
 
 
 
+
   /**
    * @brief    Gets the color Label to a given YUV color
    *
@@ -280,7 +282,7 @@ private:
   int dragpivotId = -1;
   bool pressedMouse = false, releasedMouse = false;
   bool mouseDrag = false;
-  bool colorDistribution = true;
+  bool colorDistribution = false;
 
   std::string _colorLabels[NUMBEROFCOLOR] = { NOCOLLABEL,
                         ORANGELABEL,
