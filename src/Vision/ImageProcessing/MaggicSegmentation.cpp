@@ -1275,6 +1275,7 @@ void MaggicSegmentation::setMousePosition(cv::Point2f mpos) {
   if (!this->_detailsFrame.empty()) {
     this->lastCursorPos.push_back(this->cursorPos);
     this->cursorPos = cv::Point2d (mpos.x*this->_detailsFrame.cols, mpos.y*this->_detailsFrame.rows);
+    this->mouseDrag = this->pressedMouse;
   }
   mut.unlock();
 }
@@ -1284,8 +1285,12 @@ void MaggicSegmentation::setMouseButtonPress(int btnId) {
   if (!this->_detailsFrame.empty()) {
     this->pressedId = btnId;
     this->releasedId = 0;
-    //std::cout << "pressed " << btnId << std::endl;
-    this->pressedMouse = true;
+    this->pressedLeft = btnId == 1;
+    this->pressedRight = btnId == 2;
+    this->pressedMouse = this->pressedLeft || this->pressedRight;
+    this->releasedLeft = false;
+    this->releasedRight = false;
+    this->mouseDrag = false;
   }
   mut.unlock();
 }
@@ -1294,8 +1299,12 @@ void MaggicSegmentation::setMouseButtonRelease(int btnId) {
   if (!this->_detailsFrame.empty()) {
     this->releasedId = btnId;
     this->pressedId = 0;
+    this->releasedLeft = btnId == 1;
+    this->releasedRight = btnId == 2;
+    this->releasedMouse = this->releasedLeft || this->releasedRight;
+    this->pressedLeft = false;
+    this->pressedRight = false;
     this->mouseDrag = false;
-    this->releasedMouse = true;
   }
   mut.unlock();
 }
@@ -1306,12 +1315,15 @@ void MaggicSegmentation::doDetails() {
   static cv::Rect colorFrame(30,30,512,400);
   static cv::Rect colorSelectionRecRef(colorFrame.x+colorFrame.width+16,colorFrame.y+2,32,32);
   static std::vector<cv::Rect> colorSelection;
+  static cv::Rect tmpFilterRect;
   static bool colorSelectionReady = false;
-  static bool pressedRight = false, pressedLeft = false;
   static int pivotForPaletteId = 0;
   static int colorSelectionId = -1;
   static int h2 = colorFrame.height >> 1;
   static int w2 = colorFrame.width >> 1;
+
+
+
 
   if (!colorSelectionReady) {
     colorSelectionReady = true;
@@ -1432,8 +1444,7 @@ void MaggicSegmentation::doDetails() {
       }
     }
     //std::cout << "pressedId " << this->pressedId << std::endl;
-    if (this->pressedId == 2) pressedRight = true;
-    else if(pressedRight && this->releasedId == 2) {
+    if(pressedRight && this->releasedId == 2) {
       //std::cout << "Right Clicked" << std::endl;
       if (pivotId != -1) {
         pivotForPaletteId = pivotId+1;

@@ -281,6 +281,8 @@ private:
   int pressedId = 0, releasedId = 0;
   int dragpivotId = -1;
   bool pressedMouse = false, releasedMouse = false;
+  bool pressedLeft = false, pressedRight = false;
+  bool releasedLeft = false, releasedRight = false;
   bool mouseDrag = false;
   bool colorDistribution = false;
 
