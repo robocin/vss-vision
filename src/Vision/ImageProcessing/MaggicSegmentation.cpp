@@ -375,8 +375,8 @@ void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
       }
       else {
         color = coloro;
+        res.at<cv::Vec3b>(r, c) = color;
       }
-      res.at<cv::Vec3b>(r, c) = color;
     }
   }
 
