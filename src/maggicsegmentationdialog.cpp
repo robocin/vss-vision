@@ -316,3 +316,8 @@ void MaggicSegmentationDialog::on_vectorscopeCheckBox_toggled(bool checked)
 {
     this->maggicSegmentation->setVectorscopeEnabled(checked);
 }
+
+void MaggicSegmentationDialog::on_FilterCheckBox_toggled(bool checked)
+{
+    this->maggicSegmentation->setFilterEnabled(checked);
+}

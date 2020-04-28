@@ -184,6 +184,8 @@ public:
 
   void setVectorscopeEnabled(bool enabled);
 
+  void setFilterEnabled(bool enabled);
+
 private:
   int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40, _intervalGrayThreshold = 30;
   static constexpr float div255 = 1.0f / 255.0f;
@@ -275,8 +277,8 @@ private:
   cv::Mat _segmentationFrame;
   cv::Mat _extremeSaturation, _multipliedResults, _firstThreshold, _secondThreshold;
   cv::Mat _detailsFrame, _colorDetailsFrame;
-  cv::Point2d cursorPos;
-  std::vector<cv::Point2d> lastCursorPos;
+  cv::Point2i cursorPos;
+  std::vector<cv::Point2i> lastCursorPos;
   std::mutex mut;
   int pressedId = 0, releasedId = 0;
   int dragpivotId = -1;
@@ -285,6 +287,7 @@ private:
   bool releasedLeft = false, releasedRight = false;
   bool mouseDrag = false;
   bool colorDistribution = false;
+  bool enableFilter = false;
 
   std::string _colorLabels[NUMBEROFCOLOR] = { NOCOLLABEL,
                         ORANGELABEL,

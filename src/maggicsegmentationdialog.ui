@@ -463,8 +463,8 @@
   <widget class="QPushButton" name="playpauseButton">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>545</y>
+     <x>120</x>
+     <y>520</y>
      <width>110</width>
      <height>30</height>
     </rect>
@@ -504,11 +504,24 @@
      <x>10</x>
      <y>510</y>
      <width>110</width>
-     <height>30</height>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>Vectorscope</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="FilterCheckBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>530</y>
+     <width>55</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Filter</string>
    </property>
   </widget>
  </widget>

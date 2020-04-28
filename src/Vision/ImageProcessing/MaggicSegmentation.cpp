@@ -1274,8 +1274,9 @@ void MaggicSegmentation::setMousePosition(cv::Point2f mpos) {
   mut.lock();
   if (!this->_detailsFrame.empty()) {
     this->lastCursorPos.push_back(this->cursorPos);
-    this->cursorPos = cv::Point2d (mpos.x*this->_detailsFrame.cols, mpos.y*this->_detailsFrame.rows);
-    this->mouseDrag = this->pressedMouse;
+    this->cursorPos = cv::Point2i (mpos.x*this->_detailsFrame.cols, mpos.y*this->_detailsFrame.rows);
+    std::cout << "moved\n";
+    this->mouseDrag = true;
   }
   mut.unlock();
 }
@@ -1290,7 +1291,7 @@ void MaggicSegmentation::setMouseButtonPress(int btnId) {
     this->pressedMouse = this->pressedLeft || this->pressedRight;
     this->releasedLeft = false;
     this->releasedRight = false;
-    this->mouseDrag = false;
+    this->mouseDrag = true;
   }
   mut.unlock();
 }
@@ -1305,6 +1306,7 @@ void MaggicSegmentation::setMouseButtonRelease(int btnId) {
     this->pressedLeft = false;
     this->pressedRight = false;
     this->mouseDrag = false;
+    std::cout << (btnId == 1 ? "Left" : "Right") << " Clicked" << std::endl;
   }
   mut.unlock();
 }
@@ -1316,6 +1318,7 @@ void MaggicSegmentation::doDetails() {
   static cv::Rect colorSelectionRecRef(colorFrame.x+colorFrame.width+16,colorFrame.y+2,32,32);
   static std::vector<cv::Rect> colorSelection;
   static cv::Rect tmpFilterRect;
+  static cv::Point firstPress(-1,-1);
   static bool colorSelectionReady = false;
   static int pivotForPaletteId = 0;
   static int colorSelectionId = -1;
@@ -1337,18 +1340,18 @@ void MaggicSegmentation::doDetails() {
     assert(selectionCircleRadius > 1);
     if (this->_colorDetailsFrame.empty() || this->updateColors) {
       this->_colorDetailsFrame = cv::Mat::zeros(cv::Size(colorFrame.width, colorFrame.height), CV_8UC3);
-      int h, s, v;
+      uchar h, s, v;
       for (int i=0;i<colorFrame.height;i++) {
         for(int j=0;j<colorFrame.width;j++) {
           if (i<h2) {
-            h = j*255/colorFrame.width;
-            s = 255;
-            v = i*255/h2;
+            h = static_cast<uchar>(j*255/colorFrame.width);
+            s = static_cast<uchar>(255);
+            v = static_cast<uchar>(i*255/h2);
           }
           else {
-            h = (j*255)/colorFrame.width;
-            s = (255-(((i-h2)*255)/h2));
-            v = 255;
+            h = static_cast<uchar>((j*255)/colorFrame.width);
+            s = static_cast<uchar>(255-(((i-h2)*255)/h2));
+            v = static_cast<uchar>(255);
           }
           this->_colorDetailsFrame.at<cv::Vec3b>(i,j) = cv::Vec3b(h,s,v);
         }
@@ -1365,7 +1368,7 @@ void MaggicSegmentation::doDetails() {
 
     // erase old lastCursors
     if (lastCursorPos.size()>0) {
-      for(cv::Point2d &last : this->lastCursorPos) {
+      for(cv::Point2i &last : this->lastCursorPos) {
         cv::circle(this->_detailsFrame,last,selectionCircleRadius+1,cv::Scalar(0,0,0),-1);
       }
       this->lastCursorPos.clear();
@@ -1398,8 +1401,8 @@ void MaggicSegmentation::doDetails() {
     }
 
     colorSelectionId = -1;
-    for(int i=0;i<7;i++) {
-      cv::Scalar cor(colorPalette.at<cv::Vec3b>(0,i+1));
+    for(unsigned long i=0;i<7;i++) {
+      cv::Scalar cor(colorPalette.at<cv::Vec3b>(0,static_cast<int>(i+1)));
       cv::rectangle(this->_detailsFrame,colorSelection[i],cor,-1);
         cv::Rect tr = colorSelection[i];
         tr.x-=1;
@@ -1409,7 +1412,7 @@ void MaggicSegmentation::doDetails() {
         if (colorSelection[i].contains(this->cursorPos)) {
           cv::rectangle(this->_detailsFrame,colorSelection[i],cv::Scalar(0,0,0),1);
           cv::rectangle(this->_detailsFrame,tr,cv::Scalar(255,255,255),1);
-          colorSelectionId = i;
+          colorSelectionId = static_cast<int>(i);
           //std::cout << "colorSelectionId " << colorSelectionId << std::endl;
         } else {
           cv::rectangle(this->_detailsFrame,colorSelection[i],cv::Scalar(0,0,0),1);
@@ -1424,43 +1427,90 @@ void MaggicSegmentation::doDetails() {
     for(int i =0;i<this->hueList.size();i++) {
       std::pair<float, int> &hue = this->hueList[i];
       int theX = hue.first*colorFrame.width/255 + colorFrame.x;
-      int theDist = abs(this->cursorPos.x-theX);
-      if (theDist < 6 && colorFrame.contains(this->cursorPos)) {
-        if (pivotId == -1 ||
-            theDist < abs(this->cursorPos.x - (this->hueList[pivotId].first*colorFrame.width/255 + colorFrame.x))) {
-          pivotId = i;
-        }
+      if (!this->enableFilter) {
+          int theDist = abs(this->cursorPos.x-theX);
+          if (theDist < 6 && colorFrame.contains(this->cursorPos)) {
+            if (pivotId == -1 ||
+                theDist < abs(this->cursorPos.x - (this->hueList[pivotId].first*colorFrame.width/255 + colorFrame.x))) {
+              pivotId = i;
+            }
 
+          }
       }
       if (pivotForPaletteId-1 == i) cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(255,0,255),2);
-      else cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y),cv::Point(theX,colorFrame.y+colorFrame.height-1), cv::Scalar(255,255,255),1);
+      else if (this->dragpivotId != i) cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y),cv::Point(theX,colorFrame.y+colorFrame.height-1), cv::Scalar(255,255,255),1);
+    }
+    if (this->dragpivotId != -1) pivotId = -1;
+    if (this->pressedLeft) {
+        if (pivotId != -1) {
+          std::cout << "start Drag" << std::endl;
+          this->dragpivotId = pivotId;
+        }
+        if (this->enableFilter && firstPress.x == -1) {
+            firstPress = this->cursorPos;
+        }
+    }
+    if (this->mouseDrag) {
+        if (dragpivotId != -1) {
+          std::cout << "dragging " << dragpivotId << std::endl;
+          int theX = this->cursorPos.x;
+          cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,0),2);
+        }
+        if (this->enableFilter && firstPress.x > -1) {
+            static int mx = colorFrame.x,
+                       mX = colorFrame.x + colorFrame.width,
+                       my = colorFrame.y,
+                       mY = colorFrame.y + colorFrame.height;
+
+            int x, X, y, Y;
+            x = min(this->cursorPos.x,firstPress.x);
+            X = max(this->cursorPos.x,firstPress.x);
+            y = min(this->cursorPos.y,firstPress.y);
+            Y = max(this->cursorPos.y,firstPress.y);
+
+            x = max(min(mX,x),mx);
+            X = max(min(mX,X),mx);
+            y = max(min(mY,y),my);
+            Y = max(min(mY,Y),my);
+
+            tmpFilterRect = cv::Rect2i(x, y, X-x, Y-y);
+
+            cv::rectangle(this->_detailsFrame,tmpFilterRect,cv::Scalar(0,0,0),-1,cv::LINE_4);
+            cv::rectangle(this->_detailsFrame,tmpFilterRect,cv::Scalar(255,255,0),1,cv::LINE_4);
+        }
     }
 
-    if (this->pressedId == 1 && this->pressedMouse && !this->mouseDrag) {
-      if (pivotId != -1) {
-        std::cout << "start Drag" << std::endl;
-        this->dragpivotId = pivotId;
-        this->mouseDrag = true;
-      }
-    }
+
     //std::cout << "pressedId " << this->pressedId << std::endl;
-    if(pressedRight && this->releasedId == 2) {
+    if(this->pressedRight) {
       //std::cout << "Right Clicked" << std::endl;
       if (pivotId != -1) {
         pivotForPaletteId = pivotId+1;
       } else pivotForPaletteId = 0;
       pressedRight = false;
     }
-    if (this->pressedId == 1) pressedLeft = true;
-    else if (pressedLeft && this->releasedId == 1) {
-      std::cout << "Left Clicked" << std::endl;
-      if (pivotForPaletteId && colorSelectionId != -1) {
-         this->hueList[pivotForPaletteId-1].second = colorSelectionId+1;
-        std::cout << "Selected color " << colorSelectionId+1 << " for " << pivotForPaletteId-1 << std::endl;
-        saveSession();
-        std::cout << "Saved session values" << std::endl;
-      }
+
+    if (this->releasedLeft) {
+        if (this->dragpivotId != -1) {
+            float newHue = (this->cursorPos.x-colorFrame.x)*255.0/colorFrame.width;
+            this->hueList[this->dragpivotId].first = newHue;
+            this->dragpivotId = -1;
+        }
+        if (this->enableFilter) {
+            firstPress.x = -1;
+
+        }
     }
+
+    if (this->releasedRight) {
+        if (pivotForPaletteId && colorSelectionId != -1) {
+          this->hueList[pivotForPaletteId-1].second = colorSelectionId+1;
+          std::cout << "Selected color " << colorSelectionId+1 << " for " << pivotForPaletteId-1 << std::endl;
+          saveSession();
+          std::cout << "Saved session values" << std::endl;
+        }
+    }
+
     if (pivotForPaletteId) {
       int colorForPaletteId = this->hueList[pivotForPaletteId-1].second-1;
       cv::Rect tr = colorSelection[colorForPaletteId];
@@ -1470,24 +1520,13 @@ void MaggicSegmentation::doDetails() {
       tr.height+=2;
       cv::rectangle(this->_detailsFrame,tr,cv::Scalar(255,0,255),1);
     }
-    if (this->pressedId == 1 && this->mouseDrag) {
-      std::cout << "dragging " << dragpivotId << std::endl;
-      if (dragpivotId != -1) {
-        //int theX = this->hueList[dragpivotId].x*colorFrame.width/255 + colorFrame.x;
-        int theX = this->cursorPos.x;
-        cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,0),2);
-      }
-    } else if (this->releasedId == 1 && this->releasedMouse && this->dragpivotId != -1) {
-      float newHue = (this->cursorPos.x-colorFrame.x)*255.0/colorFrame.width;
-      this->hueList[this->dragpivotId].first = newHue;
-      this->dragpivotId = -1;
-    } else {
+
       //std::cout << "hover" << std::endl;
-      if (pivotId != -1) {
+      if (pivotId != -1 && this->dragpivotId == -1) {
         int theX = this->hueList[pivotId].first*colorFrame.width/255 + colorFrame.x;
         cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,255),2);
       }
-    }
+
 
     // draw vertical line for reference, only when mouse over color frame and not over pivots
     /*if (colorFrame.contains(this->cursorPos) && pivotId == -1) {
@@ -1511,5 +1550,11 @@ void MaggicSegmentation::doDetails() {
 void MaggicSegmentation::setVectorscopeEnabled(bool enabled) {
  this->mut.lock();
  this->colorDistribution = enabled;
+ this->mut.unlock();
+}
+
+void MaggicSegmentation::setFilterEnabled(bool enabled) {
+ this->mut.lock();
+ this->enableFilter = enabled;
  this->mut.unlock();
 }
