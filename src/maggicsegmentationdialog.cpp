@@ -274,7 +274,7 @@ void MaggicSegmentationDialog::on_buttonBox_accepted()
 
 bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
 
-
+    static bool cursorInsideVisualization = false;
 //  if(f_event->type() == QEvent::MouseButtonPress) {
 
 //  }
@@ -291,24 +291,33 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
       this->maggicSegmentation->setMouseButtonRelease(mouseEvent->button());
     }
   }
-  if (f_event->type() == QEvent::MouseMove &&
-      f_object == this->ui->visualizationLabel) {
+  if (f_event->type() == QEvent::MouseMove) {
 
-    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
-    cv::Point2f mpos;
-    mpos.x = mouseEvent->x();
-    mpos.y = mouseEvent->y();
-    mpos.x = mpos.x / (float)this->ui->visualizationLabel->width();
-    mpos.y = mpos.y / (float)this->ui->visualizationLabel->height();
-    if (this->maggicSegmentation) {
-      this->maggicSegmentation->setMousePosition(mpos);
-    }
-    if (this->ui->tabWidget->currentIndex() == 4) this->ui->visualizationLabel->setCursor(Qt::BlankCursor);
-    else this->ui->visualizationLabel->setCursor(Qt::ArrowCursor);
+      if (f_object == this) {
 
+          cv::Point2f mpos(-1,-1);
+          QRect qrect = this->ui->visualizationLabel->frameRect();
+          QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
+          mpos.x = mouseEvent->x() - qrect.x();
+          mpos.y = mouseEvent->y() - qrect.y();
+          cursorInsideVisualization = qrect.contains(mpos.x,mpos.y);
+          std::cout << "cursor " << (cursorInsideVisualization ? "inside" : "outside") << std::endl;
 
-    //std::cout << "mpos " << mpos.x << " "<< mpos.y << std::endl;
-  } //else this->ui->visualizationLabel->setCursor(Qt::ArrowCursor);
+          if(cursorInsideVisualization) {
+              std::cout << "mpos " << mpos.x << " "<< mpos.y << std::endl;
+              mpos.x = mpos.x / (float)qrect.width();
+              mpos.y = mpos.y / (float)qrect.height();
+
+            if (this->ui->tabWidget->currentIndex() == 4) this->ui->visualizationLabel->setCursor(Qt::BlankCursor);
+            else this->ui->visualizationLabel->setCursor(Qt::ArrowCursor);
+
+          } else mpos.x = mpos.y = -1;
+          if (this->maggicSegmentation) {
+            this->maggicSegmentation->setMousePosition(mpos);
+          }
+      }
+
+  }
   return false;
 }
 

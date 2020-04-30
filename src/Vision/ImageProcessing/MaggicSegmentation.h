@@ -63,6 +63,8 @@ static MaggicVisionDebugSelection maggicVisionDebugSelectionVector[6] = {
   MaggicVisionDebugSelection_DetailsFrame
 };
 
+typedef std::vector<cv::Rect> Rectangles;
+
 /**
  * @brief    Class for segmentation using a Look Up Table (LUT).
  */
@@ -208,7 +210,7 @@ private:
   std::vector<cv::Point2i> componentsCentroids;
 
   // @TODO : vector with the rectangles of estimated robots
-  std::vector<cv::Rect> componentsRectangles;
+  Rectangles componentsRectangles;
 
   struct RobotDescriptor {
     ColorDescriptor colors;
@@ -241,6 +243,7 @@ private:
 
   void doDetails();
 
+  void removeTopRectangle(Rectangles& rects, cv::Point& p);
 
 
 
@@ -279,6 +282,7 @@ private:
   cv::Mat _detailsFrame, _colorDetailsFrame;
   cv::Point2i cursorPos;
   std::vector<cv::Point2i> lastCursorPos;
+  Rectangles filterRectangles;
   std::mutex mut;
   int pressedId = 0, releasedId = 0;
   int dragpivotId = -1;

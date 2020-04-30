@@ -1284,29 +1284,33 @@ void MaggicSegmentation::setMousePosition(cv::Point2f mpos) {
 void MaggicSegmentation::setMouseButtonPress(int btnId) {
   mut.lock();
   if (!this->_detailsFrame.empty()) {
-    this->pressedId = btnId;
-    this->releasedId = 0;
-    this->pressedLeft = btnId == 1;
-    this->pressedRight = btnId == 2;
-    this->pressedMouse = this->pressedLeft || this->pressedRight;
-    this->releasedLeft = false;
-    this->releasedRight = false;
-    this->mouseDrag = true;
+    if (cv::Rect(0,0,this->_detailsFrame.cols,this->_detailsFrame.rows).contains(this->cursorPos)) {
+        this->pressedId = btnId;
+        this->releasedId = 0;
+        this->pressedLeft = btnId == 1;
+        this->pressedRight = btnId == 2;
+        this->pressedMouse = this->pressedLeft || this->pressedRight;
+        this->releasedLeft = false;
+        this->releasedRight = false;
+        this->mouseDrag = true;
+        }
   }
   mut.unlock();
 }
 void MaggicSegmentation::setMouseButtonRelease(int btnId) {
   mut.lock();
   if (!this->_detailsFrame.empty()) {
-    this->releasedId = btnId;
-    this->pressedId = 0;
-    this->releasedLeft = btnId == 1;
-    this->releasedRight = btnId == 2;
-    this->releasedMouse = this->releasedLeft || this->releasedRight;
-    this->pressedLeft = false;
-    this->pressedRight = false;
-    this->mouseDrag = false;
-    std::cout << (btnId == 1 ? "Left" : "Right") << " Clicked" << std::endl;
+      if (cv::Rect(0,0,this->_detailsFrame.cols,this->_detailsFrame.rows).contains(this->cursorPos)) {
+        this->releasedId = btnId;
+        this->pressedId = 0;
+        this->releasedLeft = btnId == 1;
+        this->releasedRight = btnId == 2;
+        this->releasedMouse = this->releasedLeft || this->releasedRight;
+        this->pressedLeft = false;
+        this->pressedRight = false;
+        this->mouseDrag = false;
+        std::cout << (btnId == 1 ? "Left" : "Right") << " Clicked" << std::endl;
+      }
   }
   mut.unlock();
 }
@@ -1398,6 +1402,11 @@ void MaggicSegmentation::doDetails() {
             }
            }
         }
+    }
+
+    for (cv::Rect &r : this->filterRectangles) {
+        cv::rectangle(this->_detailsFrame,r,cv::Scalar(0,0,0),-1,cv::LINE_4);
+        cv::rectangle(this->_detailsFrame,r,cv::Scalar(50,50,0),1,cv::LINE_4);
     }
 
     colorSelectionId = -1;
@@ -1496,9 +1505,13 @@ void MaggicSegmentation::doDetails() {
             this->hueList[this->dragpivotId].first = newHue;
             this->dragpivotId = -1;
         }
-        if (this->enableFilter) {
+        if (this->enableFilter && firstPress.x > -1) {
             firstPress.x = -1;
 
+            if (tmpFilterRect.width > 0 &&
+                tmpFilterRect.height > 0)
+                this->filterRectangles.push_back(tmpFilterRect);
+            else removeTopRectangle(this->filterRectangles, this->cursorPos);
         }
     }
 
@@ -1557,4 +1570,15 @@ void MaggicSegmentation::setFilterEnabled(bool enabled) {
  this->mut.lock();
  this->enableFilter = enabled;
  this->mut.unlock();
+}
+
+void MaggicSegmentation::removeTopRectangle(Rectangles& rects, cv::Point& p) {
+ Rectangles::iterator it = rects.begin();
+ Rectangles::iterator it_to_remove = rects.end();
+ for(; it != rects.end(); it++) {
+    if (it->contains(p)) {
+        it_to_remove = it;
+    }
+ }
+ if (it_to_remove != rects.end()) rects.erase(it_to_remove);
 }
