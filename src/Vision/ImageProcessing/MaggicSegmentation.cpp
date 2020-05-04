@@ -575,6 +575,30 @@ void MaggicSegmentation::generateLUTFromHUE() {
     int b = i&0x000000ff;
     cv::Vec3b &coloro = LUT_BGR2HSV.at<cv::Vec3b>(0,i);
 
+    bool filter = false;
+    if (!this->_filterMask.empty())  {
+        // saturation 1 > value 2
+        if (coloro[1] > coloro[2]) {
+            // value 2, hue 0
+           int ii = coloro[2]/2;
+           int jj = coloro[0];
+
+           filter = static_cast<bool>(this->_filterMask.at<uchar>(ii,jj));
+
+        } else {
+          // saturation 1, hue 0
+          int ii = 127 + (255-coloro[1])/2;
+          int jj = coloro[0];
+
+          filter = static_cast<bool>(this->_filterMask.at<uchar>(ii,jj));
+
+        }
+        if (filter) {
+            this->_LUT[i] = 0; // black
+            continue;
+        }
+    }
+
     float x = b;
     float y = g;
     float z = r;
@@ -1512,6 +1536,17 @@ void MaggicSegmentation::doDetails() {
                 tmpFilterRect.height > 0)
                 this->filterRectangles.push_back(tmpFilterRect);
             else removeTopRectangle(this->filterRectangles, this->cursorPos);
+
+            // regenerate mask
+            if (this->_filterMask.empty()) this->_filterMask = cv::Mat::zeros(256,256,CV_8U);
+            cv::rectangle(this->_filterMask,cv::Rect(0,0,255,255),cv::Scalar(0),-1,cv::LINE_4);
+            for (cv::Rect &r : this->filterRectangles) {
+                cv::Rect rt((r.x - colorFrame.x)*255/colorFrame.width,
+                            (r.y - colorFrame.y)*255/colorFrame.height,
+                            r.width*255/colorFrame.width,
+                            r.height*255/colorFrame.height);
+                cv::rectangle(this->_filterMask,rt,cv::Scalar(255),-1,cv::LINE_4);
+            }
         }
     }
 

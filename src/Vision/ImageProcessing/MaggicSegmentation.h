@@ -280,6 +280,7 @@ private:
   cv::Mat _segmentationFrame;
   cv::Mat _extremeSaturation, _multipliedResults, _firstThreshold, _secondThreshold;
   cv::Mat _detailsFrame, _colorDetailsFrame;
+  cv::Mat _filterMask;
   cv::Point2i cursorPos;
   std::vector<cv::Point2i> lastCursorPos;
   Rectangles filterRectangles;
