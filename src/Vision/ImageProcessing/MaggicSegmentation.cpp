@@ -1,4 +1,6 @@
 #include "MaggicSegmentation.h"
+#include "LUTSegmentation.h"
+#include "Vision/Vision.h"
 #if CV_MAJOR_VERSION == 2
   #include "Vision/ImageProcessing/OpenCV/connectedcomponents.hpp"
 #endif
@@ -1548,6 +1550,10 @@ void MaggicSegmentation::doDetails() {
                 cv::rectangle(this->_filterMask,rt,cv::Scalar(255),-1,cv::LINE_4);
             }
         }
+        this->generateLUTFromHUE();
+        int* dst_LUT = ((LUTSegmentation*)Vision::singleton().getSegmentationObject())->getLUT();
+        int* src_LUT = this->getLUT();
+        memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
     }
 
     if (this->releasedRight) {
