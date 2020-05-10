@@ -1422,7 +1422,7 @@ void MaggicSegmentation::doDetails() {
                 if (row[j].saturation > row[j].value) {
                   this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+(h2*row[j].value)/255, colorFrame.x+(colorFrame.width*row[j].hue)/255) = cv::Vec3b(255,255,255);
                 } else {
-                  this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+h2+((255-row[j].saturation)*h2)/255, colorFrame.x+(w2*row[j].hue)/255) = cv::Vec3b(255,255,255);
+                  this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+h2+((255-row[j].saturation)*h2)/255, colorFrame.x+(colorFrame.width*row[j].hue)/255) = cv::Vec3b(255,255,255);
                   //cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x+row[j].hue,colorFrame.y+(colorFrame.height-(row[j].saturation*h2/255)),2,2),cv::Vec3b(255,255,255),-1);
                 }
             }
@@ -1488,7 +1488,7 @@ void MaggicSegmentation::doDetails() {
     if (this->mouseDrag) {
         if (dragpivotId != -1) {
           std::cout << "dragging " << dragpivotId << std::endl;
-          int theX = this->cursorPos.x;
+          int theX = max(colorFrame.x+1,min(colorFrame.x + colorFrame.width-2, this->cursorPos.x));
           cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,0),2);
         }
         if (this->enableFilter && firstPress.x > -1) {
@@ -1526,10 +1526,12 @@ void MaggicSegmentation::doDetails() {
     }
 
     if (this->releasedLeft) {
+        bool changed = false;
         if (this->dragpivotId != -1) {
             float newHue = (this->cursorPos.x-colorFrame.x)*255.0/colorFrame.width;
             this->hueList[this->dragpivotId].first = newHue;
             this->dragpivotId = -1;
+            changed = true;
         }
         if (this->enableFilter && firstPress.x > -1) {
             firstPress.x = -1;
@@ -1549,11 +1551,14 @@ void MaggicSegmentation::doDetails() {
                             r.height*255/colorFrame.height);
                 cv::rectangle(this->_filterMask,rt,cv::Scalar(255),-1,cv::LINE_4);
             }
+            changed = true;
         }
-        this->generateLUTFromHUE();
-        int* dst_LUT = ((LUTSegmentation*)Vision::singleton().getSegmentationObject())->getLUT();
-        int* src_LUT = this->getLUT();
-        memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
+        if (changed) {
+            this->generateLUTFromHUE();
+            int* dst_LUT = ((LUTSegmentation*)Vision::singleton().getSegmentationObject())->getLUT();
+            int* src_LUT = this->getLUT();
+            memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
+        }
     }
 
     if (this->releasedRight) {
