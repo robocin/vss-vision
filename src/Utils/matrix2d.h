@@ -12,9 +12,9 @@ class Matrix2d {
         Matrix2d& operator=(const Matrix2d&);
 
         inline double& operator()(int x, int y) { return _value[x][y]; }
-        inline const double operator()(int x,int y) const {return _value[x][y];}
-        inline const int row() const { return _row; }
-        inline const int column() const { return _column; }
+        inline double operator()(int x,int y) const {return _value[x][y];}
+        inline int row() const { return _row; }
+        inline int column() const { return _column; }
         Matrix2d& operator+=(const Matrix2d&);
         Matrix2d& operator-=(const Matrix2d&);
         Matrix2d& operator*=(const Matrix2d&);

@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include "matrix2d.h"
 #include <cassert>
+#include <cmath>
 #include <algorithm>
 #define EPS 1e-10
 using std::ostream;
@@ -22,7 +23,7 @@ Matrix2d::Matrix2d(int rows, int cols) : _row(rows), _column(cols) {
 }
 Matrix2d::Matrix2d(int row, int column, std::initializer_list<double> vals): _row(row), _column(column) {
     allocSpace();
-    assert(row * column == vals.size());
+    assert(static_cast<size_t>(row * column) == vals.size());
     int i = 0;
     for (auto v : vals) {
         _value[i / column][i % column] = v;
@@ -171,7 +172,7 @@ Matrix2d Matrix2d::createIdentity(int row, int column) {
 Matrix2d Matrix2d::solve(Matrix2d A, Matrix2d b) {
     // Gaussian elimination
     for (int i = 0; i < A._row; ++i) {
-        if (A._value[i][i] == 0) {
+        if (A._value[i][i] == 0.0) {
             // pivot 0 - throw error
             throw domain_error("Error: the coefficient Matrix2d has 0 as a pivot. Please fix the input and try again.");
         }
@@ -210,13 +211,13 @@ Matrix2d Matrix2d::bandSolve(Matrix2d A, Matrix2d b, int k) {
     // optimized Gaussian elimination
     int bandsBelow = (k - 1) / 2;
     for (int i = 0; i < A._row; ++i) {
-        if (A._value[i][i] == 0) {
+        if (A._value[i][i] == 0.0) {
             // pivot 0 - throw exception
             throw domain_error("Error: the coefficient Matrix2d has 0 as a pivot. Please fix the input and try again.");
         }
         for (int j = i + 1; j < A._row && j <= i + bandsBelow; ++j) {
             int k = i + 1;
-            while (k < A._column && A._value[j][k]) {
+            while (k < A._column && fabs(A._value[j][k]) > 0.0) {
                 A._value[j][k] -= A._value[i][k] * (A._value[j][i] / A._value[i][i]);
                 k++;
             }
@@ -276,7 +277,7 @@ Matrix2d Matrix2d::gaussianEliminate() {
         // find a pivot for the row
         bool pivot_found = false;
         while (j < Acols && !pivot_found) {
-            if (Ab(i, j) != 0) { // pivot not equal to 0
+            if (Ab(i, j) != 0.0) { // pivot not equal to 0
                 pivot_found = true;
             } else { // check for a possible swap
                 int max_row = i;
@@ -329,13 +330,13 @@ Matrix2d Matrix2d::rowReduceFromGaussian() {
         // find the pivot column
         int k = j - 1;
         while (k >= 0) {
-            if (R(i, k) != 0)
+            if (R(i, k) != 0.0)
                 j = k;
             k--;
         }
 
         // zero out elements above pivots if pivot not 0
-        if (R(i, j) != 0) {
+        if (R(i, j) != 0.0) {
 
             for (int t = i - 1; t >= 0; --t) {
                 for (int s = 0; s < cols; ++s) {
@@ -375,14 +376,14 @@ void Matrix2d::readSolutionsFromRREF(ostream& os) {
     while (!doneSearching && i < _row) {
         bool allZeros = true;
         for (int j = 0; j < _column - 1; ++j) {
-            if (R(i, j) != 0)
+            if (R(i, j) != 0.0)
                 allZeros = false;
         }
-        if (allZeros && R(i, _column - 1) != 0) {
+        if (allZeros && R(i, _column - 1) != 0.0) {
             hasSolutions = false;
             os << "NO SOLUTIONS" << endl << endl;
             doneSearching = true;
-        } else if (allZeros && R(i, _column - 1) == 0) {
+        } else if (allZeros && R(i, _column - 1) == 0.0) {
             os << "INFINITE SOLUTIONS" << endl << endl;
             doneSearching = true;
         } else if (_row < _column - 1) {
@@ -403,7 +404,7 @@ void Matrix2d::readSolutionsFromRREF(ostream& os) {
             bool pivotFound = false;
             bool specialCreated = false;
             for (int j = 0; j < _column - 1; ++j) {
-                if (R(i, j) != 0) {
+                if (R(i, j) != 0.0) {
                     // if pivot variable, add b to particular
                     if (!pivotFound) {
                         pivotFound = true;
