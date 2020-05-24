@@ -68,7 +68,6 @@ private:
   bool paused;
 
   MaggicSegmentation *maggicSegmentation;
-  Ui::FieldPointsCalibrateDialog *_fieldDialog;
 
   QPushButton *entities[8];
 

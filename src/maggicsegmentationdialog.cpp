@@ -23,7 +23,6 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   ui->setupUi(this);
 
   this->maggicSegmentation = new MaggicSegmentation();
-  this->_fieldDialog = NULL;
 
   qApp->installEventFilter(this);
   this->_updateFrameTimer = new QTimer(this);
@@ -32,7 +31,7 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
 
   this->maggicSegmentation->setFilterGrayThresholdValues(FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM,FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM);
   this->maggicSegmentation->setDebugSelection(MaggicVisionDebugSelection_ExtremeSaturation);
-  this->maggicSegmentation->setLearningThresholdFrames(ui->learnSpinBox->value());
+  this->maggicSegmentation->setLearningThresholdFrames(static_cast<uint>(ui->learnSpinBox->value()));
 
   int m, M;
   this->maggicSegmentation->openLastSession();
@@ -43,7 +42,7 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   ui->maximumLcdNumber->display(M);
   ui->minimumVerticalSlider->setValue(m);
   ui->maximumVerticalSlider->setValue(M);
-  entities[0] = NULL;
+  entities[0] = nullptr;
   entities[1] = ui->entitiesButton_1;
   entities[2] = ui->entitiesButton_2;
   entities[3] = ui->entitiesButton_3;
@@ -62,7 +61,7 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   //this->maggicSegmentation->setHUETable(this->maggicSegmentation->useLoadedValues);
   //this->maggicSegmentation->generateLUTFromHUE();
 
-  int* dst_LUT = ((LUTSegmentation*)Vision::singleton().getSegmentationObject())->getLUT();
+  int* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
   int* src_LUT = this->maggicSegmentation->getLUT();
   memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
 }
@@ -86,7 +85,6 @@ MaggicSegmentationDialog::~MaggicSegmentationDialog()
   delete this->_updateFrameTimer;
   delete this->ui;
   delete this->maggicSegmentation;
-  if (this->_fieldDialog) delete this->_fieldDialog;
 }
 
 void MaggicSegmentationDialog::updateFrame()
@@ -108,35 +106,16 @@ void MaggicSegmentationDialog::updateFrame()
   if (!this->_actualFrame.empty()) {
     cv::resize(this->_actualFrame,this->_actualFrame,cv::Size(640,480),0,0);
 
-//    cv::imshow("before segmentation", this->_actualFrame);
-    std::chrono::high_resolution_clock::time_point timeupdate, timeend;
-    std::chrono::nanoseconds::rep nanoseconds;
-    timeupdate = std::chrono::high_resolution_clock::now();
     Timer timerFPS;
     timerFPS.start();
-
 
     maggicSegmentation->run(this->_actualFrame);
     maggicSegmentation->calibrate(this->_actualFrame);
     maggicSegmentation->getDebugFrame(this->_segmentedFrame);
 
     timerFPS.stop();
-    timeend = std::chrono::high_resolution_clock::now();
-    nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(timeend - timeupdate).count();
-    //float times = static_cast<float>(nanoseconds / 1000LL);
-    //printf("MaggicVision us %.0f fps %.0f\n", times, 1000000.0 / (double)(times > 0 ? times : 1.0));
     //printf("MaggicVision us %.0f fps %.0f\n", timerFPS.getMicroseconds(), timerFPS.getInFPS());
 
-    //int kkk = cv::waitKey(1);
-    /*if (kkk == 'p') {
-      maggicSegmentation->paused = !maggicSegmentation->paused;
-    } else if (kkk == 'e') {
-      maggicSegmentation->enableEstimateRobots = !maggicSegmentation->enableEstimateRobots;
-    }*/
-
-
-
-    /////this->_actualFrame = this->segmentFrameWithIntervals(this->_actualFrame);
     static bool defineThresholdValue = true;
 
     uint calibratedFrames, totalCalibrationFrames;
@@ -170,7 +149,7 @@ void MaggicSegmentationDialog::setFrameOnScreen()
     cv::Size newSize(this->ui->visualizationLabel->width(), this->ui->visualizationLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
     cv::cvtColor(tempFrame, tempFrame, CV_BGR2RGB);
-    QImage qimg2((uchar*)tempFrame.data, tempFrame.cols, tempFrame.rows, tempFrame.step, QImage::Format_RGB888);
+    QImage qimg2(reinterpret_cast<uchar*>(tempFrame.data), tempFrame.cols, tempFrame.rows, static_cast<int>(tempFrame.step), QImage::Format_RGB888);
     this->ui->visualizationLabel->setPixmap(QPixmap::fromImage(qimg2));
   } else {
     spdlog::get("General")->warn("You are setting a empty frame to QT Interface (function : SegmentationConfigDialog::setFrameOnScreen)");
@@ -202,7 +181,7 @@ void MaggicSegmentationDialog::clearEntitiesCheck() {
 
 void MaggicSegmentationDialog::on_tabWidget_currentChanged(int index)
 {
-  this->maggicSegmentation->setDebugSelection((MaggicVisionDebugSelection)maggicVisionDebugSelectionVector[index+1]);
+  this->maggicSegmentation->setDebugSelection(static_cast<MaggicVisionDebugSelection>(maggicVisionDebugSelectionVector[index+1]));
 }
 void MaggicSegmentationDialog:: on_minimumVerticalSlider_valueChanged()
 {
@@ -239,7 +218,7 @@ void MaggicSegmentationDialog::on_loadButton_clicked()
 void MaggicSegmentationDialog::on_resetButton_clicked() {
   this->maggicSegmentation->setFilterGrayThresholdValues(FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM,FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM);
   this->maggicSegmentation->setDebugSelection(maggicVisionDebugSelectionVector[ui->tabWidget->currentIndex()]);
-  this->maggicSegmentation->setLearningThresholdFrames(ui->learnSpinBox->value());
+  this->maggicSegmentation->setLearningThresholdFrames(static_cast<uint>(ui->learnSpinBox->value()));
 
   int m, M;
   this->maggicSegmentation->getFilterGrayThresholdValues(m,M);
@@ -259,7 +238,7 @@ void MaggicSegmentationDialog::on_applyLUTButton_clicked()
   this->maggicSegmentation->saveSession();
   this->maggicSegmentation->setHUETable(true);
   this->maggicSegmentation->generateLUTFromHUE();
-  int* dst_LUT = ((LUTSegmentation*)Vision::singleton().getSegmentationObject())->getLUT();
+  int* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
   int* src_LUT = this->maggicSegmentation->getLUT();
   memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
 
@@ -291,13 +270,13 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
   if (f_event->type() == QEvent::MouseButtonPress) {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
     if (this->maggicSegmentation) {
-      this->maggicSegmentation->setMouseButtonPress(mouseEvent->button());
+      this->maggicSegmentation->setMouseButtonPress(static_cast<int>(mouseEvent->button()));
     }
   }
   if (f_event->type() == QEvent::MouseButtonRelease) {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
     if (this->maggicSegmentation) {
-      this->maggicSegmentation->setMouseButtonRelease(mouseEvent->button());
+      this->maggicSegmentation->setMouseButtonRelease(static_cast<int>(mouseEvent->button()));
     }
   }
   if (f_event->type() == QEvent::MouseMove) {
@@ -309,13 +288,13 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
           QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
           mpos.x = mouseEvent->x() - qrect.x();
           mpos.y = mouseEvent->y() - qrect.y();
-          cursorInsideVisualization = qrect.contains(mpos.x,mpos.y);
+          cursorInsideVisualization = qrect.contains(static_cast<int>(mpos.x),static_cast<int>(mpos.y));
           std::cout << "cursor " << (cursorInsideVisualization ? "inside" : "outside") << std::endl;
 
           if(cursorInsideVisualization) {
               std::cout << "mpos " << mpos.x << " "<< mpos.y << std::endl;
-              mpos.x = mpos.x / (float)qrect.width();
-              mpos.y = mpos.y / (float)qrect.height();
+              mpos.x = mpos.x / static_cast<float>(qrect.width());
+              mpos.y = mpos.y / static_cast<float>(qrect.height());
 
             if (this->ui->tabWidget->currentIndex() == 4) this->ui->visualizationLabel->setCursor(Qt::BlankCursor);
             else this->ui->visualizationLabel->setCursor(Qt::ArrowCursor);
