@@ -54,15 +54,6 @@ enum MaggicVisionDebugSelection {
   MaggicVisionDebugSelection_DetailsFrame
 };
 
-static MaggicVisionDebugSelection maggicVisionDebugSelectionVector[6] = {
-  MaggicVisionDebugSelection_Undefined,
-  MaggicVisionDebugSelection_ExtremeSaturation,
-  MaggicVisionDebugSelection_MultipliedResults,
-  MaggicVisionDebugSelection_Thresholded,
-  MaggicVisionDebugSelection_SegmentationFrame,
-  MaggicVisionDebugSelection_DetailsFrame
-};
-
 typedef std::vector<cv::Rect> Rectangles;
 
 /**
@@ -118,13 +109,6 @@ public:
    * @return   The debug frame.
    */
   void getDebugFrame(cv::Mat& frame) final;
-
-  /**
-   * @brief    Init the object using the parameters from a desired file
-   *
-   * @param[in]  path  The file's path
-   */
-  void initFromFile(std::string path);
 
   /**
    * @brief    Gets the segmentation frame from lut. Frame for debug).
@@ -244,17 +228,6 @@ private:
   void doDetails();
 
   void removeTopRectangle(Rectangles& rects, cv::Point& p);
-
-
-
-  /**
-   * @brief    Gets the color Label to a given YUV color
-   *
-   * @param    color  The  YUV color
-   *
-   * @return   The colorLabel
-   */
-  int getColorLabel(YUV& color);
 
   /**
    * @brief    Init the Look Up Table with the already loaded parameters

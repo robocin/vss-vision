@@ -6,6 +6,15 @@
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM 45
 
 
+static MaggicVisionDebugSelection maggicVisionDebugSelectionVector[6] = {
+  MaggicVisionDebugSelection_Undefined,
+  MaggicVisionDebugSelection_ExtremeSaturation,
+  MaggicVisionDebugSelection_MultipliedResults,
+  MaggicVisionDebugSelection_Thresholded,
+  MaggicVisionDebugSelection_SegmentationFrame,
+  MaggicVisionDebugSelection_DetailsFrame
+};
+
 MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   QDialog(parent),
   ui(new Ui::MaggicSegmentationDialog)

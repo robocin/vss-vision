@@ -1,4 +1,5 @@
 #include "MaggicSegmentation.h"
+#include <memory>
 #include "LUTSegmentation.h"
 #include "Vision/Vision.h"
 #if CV_MAJOR_VERSION == 2
@@ -81,8 +82,8 @@ MaggicSegmentation::MaggicSegmentation()
   /*puts("COLOR PALETTE\nHUE(f) TAG");
   defaultHueList.clear();
   for(int i=1;i<8;i++) {
-    int h = (int)colorPaletteHSV.at<cv::Vec3b>(0,i)[0];
-    float hf = (float) h/255.f;
+    int h = static_cast<int>(colorPaletteHSV.at<cv::Vec3b>(0,i)[0]);
+    float hf = static_cast<float>(h/255.f);
     defaultHueList.push_back(std::make_pair(hf,i));
     printf("%d(%.2f) %d\n", h, hf, i);
   }
@@ -107,11 +108,11 @@ MaggicSegmentation::MaggicSegmentation()
   }
   for(int i=0;i<10;++i) {
     cv::Vec3b vec = colorPaletteHSV.at<cv::Vec3b>(0,i);
-    float e = static_cast<float>(vec[0]);
+    int e = static_cast<int>(vec[0]);
      // std::cout << e << std::endl;
     cv::rectangle(cores,cv::Rect(32,i*32,32,32),cv::Scalar(e,255,255),-1);
     cv::rectangle(cores,cv::Rect(0,i*32,32,32),cv::Scalar(vec),-1);
-    cv::line(compara,cv::Point((int)e << 1,0),cv::Point((int)e << 1,20),cv::Scalar(vec),2);
+    cv::line(compara,cv::Point(e << 1,0),cv::Point(e << 1,20),cv::Scalar(vec),2);
 
     cv::circle(colorPlane,cv::Point(vec[0] << 1,vec[2] << 1),5,cv::Scalar(255,0,255),-1);
   }
@@ -190,7 +191,7 @@ void MaggicSegmentation::openLastSession() {
         fin >> numa >> numb;
         //std::cout << "numa numb " << numa << " " << numb << std::endl;
         if (fin.eof()) break;
-        this->hueList.push_back(std::make_pair((float)numa,(int)numb));
+        this->hueList.push_back(std::make_pair(static_cast<float>(numa),static_cast<int>(numb)));
       }
     }
     this->setHUETable(true);
@@ -217,7 +218,7 @@ void MaggicSegmentation::saveSession() {
      fout << this->_minimumGrayThreshold << " " << this->_maximumGrayThreshold << "\n";
      fout << this->getFilterGrayThresholdValue() << "\n";
      for(size_t i=0;i<this->hueList.size();i++) {
-      fout << (int)this->hueList[i].first << " " << (int)this->hueList[i].second << "\n";
+      fout << static_cast<int>(this->hueList[i].first) << " " << static_cast<int>(this->hueList[i].second) << "\n";
      }
 
   } else {
@@ -351,10 +352,10 @@ void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
         x *= x;
         y *= y;
         z *= z;
-        float a = 1.f / (float)sqrt(x + y + z);
-        coloro[0] = (uchar)(x*a);
-        coloro[1] = (uchar)(y*a);
-        coloro[2] = (uchar)(z*a);
+        float a = 1.f / static_cast<float>(sqrt(x + y + z));
+        coloro[0] = static_cast<uchar>(x*a);
+        coloro[1] = static_cast<uchar>(y*a);
+        coloro[2] = static_cast<uchar>(z*a);
       }
       /*float dx = coloro[0] - coloro[1];
       float dy = coloro[1] - coloro[2];
@@ -405,7 +406,7 @@ void MaggicSegmentation::filterExtremeSaturation(cv::Mat &d, cv::Mat &o) {
     for (int r = 0; r < o.rows; ++r) {
       for (int c = 0; c < o.cols; ++c) {
         cv::Vec3b color = o.at<cv::Vec3b>(r, c);
-        color[2] = (uchar)255;
+        color[2] = static_cast<uchar>(255);
         res.at<cv::Vec3b>(r, c) = color;
       }
     }
@@ -427,7 +428,7 @@ void MaggicSegmentation::updateHistogramDescriptors() {
       }
     }
   }
-  if (colorDescriptors.size() == 0 || colorDescriptors.back() != last) colorDescriptors.push_back(last*div255);
+  if (colorDescriptors.size() == 0 || static_cast<int>(colorDescriptors.back()) != last) colorDescriptors.push_back(last*div255);
 }
 
 void MaggicSegmentation::filterGrain(ColorDescriptor &dest, ColorDescriptor &orig) {
@@ -497,7 +498,7 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
 
     // get all default color palette into hueList
     //puts("setting hue table");
-    for(int i=0;i<defaultHueList.size();i++) {
+    for(size_t i=0;i<defaultHueList.size();i++) {
       float hueChannel = defaultHueList[i].first*255.0f;
       //printf("%.0f %d\n", hueChannel, defaultHueList[i].second);
       hueList.push_back(std::make_pair(hueChannel,defaultHueList[i].second));
@@ -511,7 +512,7 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
         float hueChannel = colors[j]*255.f;
         float bd = 1000.f;
         int bid = 0;
-        for (int k=0;k<defaultHueList.size();k++) {
+        for (size_t k=0;k<defaultHueList.size();k++) {
           //float d = fabs(colorPaletteHSV.at<cv::Vec3b>(0,k)[0] - hueChannel);
           float x = defaultHueList[k].first*255.0f;
           float y = hueChannel;
@@ -521,7 +522,7 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
             bid = defaultHueList[k].second;
           }
         }
-        hueList.push_back(std::make_pair(hueChannel, (int)bid));
+        hueList.push_back(std::make_pair(hueChannel, static_cast<int>(bid)));
       }
     }
 
@@ -536,7 +537,7 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
 
     for (size_t j=0;j<hueList.size();j++) {
       int l = hueList[j].second;
-      int x = hueList[j].first;
+      int x = static_cast<int>(hueList[j].first);
       int d = min(abs(x- i),min(abs((256 + x) - i), abs(x - i-256)));
 
       if (d < bd) {
@@ -558,9 +559,9 @@ void MaggicSegmentation::generateLUTFromHUE() {
   if (!preprocessed) {
 
     for (int i=0;i<LUT_SIZE/3;i++) {
-      int r = (i&0x00ff0000) >> 16;
-      int g = (i&0x0000ff00) >> 8;
-      int b = i&0x000000ff;
+      uchar r = static_cast<uchar>((i&0x00ff0000) >> 16);
+      uchar g = static_cast<uchar>((i&0x0000ff00) >> 8);
+      uchar b = static_cast<uchar>(i&0x000000ff);
       LUT_BGR2HSV.at<cv::Vec3b>(0,i) = cv::Vec3b(b,g,r);
     }
 
@@ -572,9 +573,9 @@ void MaggicSegmentation::generateLUTFromHUE() {
   }
 
   for (int i=0;i<LUT_SIZE/3;i++) {
-    int r = (i&0x00ff0000) >> 16;
-    int g = (i&0x0000ff00) >> 8;
-    int b = i&0x000000ff;
+    uchar r = static_cast<uchar>((i&0x00ff0000) >> 16);
+    uchar g = static_cast<uchar>((i&0x0000ff00) >> 8);
+    uchar b = static_cast<uchar>(i&0x000000ff);
     cv::Vec3b &coloro = LUT_BGR2HSV.at<cv::Vec3b>(0,i);
 
     bool filter = false;
@@ -672,7 +673,7 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
       //filterBinarizeColored(t,d);
       //imshow("binarized", t);
       t = t > 0;
-      uint erosion_size = 1;
+      int erosion_size = 1;
       cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,
         cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
         cv::Point(erosion_size, erosion_size));
@@ -724,7 +725,7 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
         {
           for (int i = 1; i < n_components; ++i)
           {
-            componentsCentroids.push_back(cv::Point2i(centroids.at<double>(i, 0), centroids.at<double>(i, 1)));
+            componentsCentroids.push_back(cv::Point2i(static_cast<int>(centroids.at<double>(i, 0)), static_cast<int>(centroids.at<double>(i, 1))));
 
             //int area = stats.at<int>(i, cv::CC_STAT_AREA);
             int top = stats.at<int>(i, cv::CC_STAT_TOP);
@@ -873,7 +874,7 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
           //std::cout << "componentsRectangles.size() " << componentsRectangles.size() <<  std::endl;
           // Third pass
           for (size_t i = 0; i < componentsRectangles.size(); ++i) {
-            memset(histo.data, 0, sizeof(float)*histo.cols*histo.rows*histo.channels());
+            memset(histo.data, 0, sizeof(float)*static_cast<uint>(histo.cols*histo.rows*histo.channels()));
 
             cv::Rect &r = componentsRectangles[i];
             r.x = max(r.x-2,0);
@@ -884,13 +885,13 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
 
             for (int x = (r.x << 1); x < (r.x << 1) + (r.width << 1); x++) {
               for (int y = (r.y << 1); y < (r.y << 1) + (r.height << 1); y++) {
-                histo.at<float>(0, (int)d.at<cv::Vec3b>(y, x)[0]) += 1;
+                histo.at<float>(0, static_cast<int>(d.at<cv::Vec3b>(y, x)[0])) += 1;
               }
             }
             // doHistogram(d, r, t);
-            float maior = max_element_of<float>((float*)histo.data, histo.cols*histo.rows);
+            float maior = max_element_of<float>(reinterpret_cast<float*>(histo.data), static_cast<uint>(histo.cols*histo.rows));
             //std::cout << "maior : " << maior <<  std::endl;
-            histo /= (maior > 0 ? maior : 1);
+            histo /= static_cast<double>(maior > 0 ? maior : 1);
             //std::cout << histo <<  std::endl;
             updateHistogramDescriptors();
             //std::cout << "colors size " << colorDescriptors.size() <<  std::endl;
@@ -904,17 +905,17 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
 
           }
           int colorsize = 0;
-          for(int i=0;i<7;++i) colorsize = max(colorsize,(int)robotsDescriptors[i].colors.size());
+          for(int i=0;i<7;++i) colorsize = max(colorsize,static_cast<int>(robotsDescriptors[i].colors.size()));
           colorsize++;
           cv::Mat cores = cv::Mat::zeros(cv::Size(colorsize*32,32*7), CV_8UC3);
 
           cv::cvtColor(t, t, cv::COLOR_BGR2HSV_FULL);
-          for(int i=0;i<7;++i) {
-          cv::rectangle(cores,cv::Rect(0,i*32,32,32),cv::Scalar(i*255/7,255,255),-1);
+          for(size_t i=0;i<7;++i) {
+          cv::rectangle(cores,cv::Rect(0,static_cast<int>(i*32),32,32),cv::Scalar(i*255/7,255,255),-1);
           cv::rectangle(t,componentsRectangles[i],cv::Scalar(i*255/7,255,255),-1);
             for (size_t ii=0;ii<robotsDescriptors[i].colors.size();++ii) {
-              float &e = robotsDescriptors[i].colors[ii];
-              cv::rectangle(cores,cv::Rect(ii*32+32,i*32,32,32),cv::Scalar(e*255,255,255),-1);
+              uchar e = static_cast<uchar>(robotsDescriptors[i].colors[ii]);
+              cv::rectangle(cores,cv::Rect(static_cast<int>(ii*32+32),static_cast<int>(i*32),32,32),cv::Scalar(e*255,255,255),-1);
             }
           }
           cv::cvtColor(cores, cores, cv::COLOR_HSV2BGR_FULL);
@@ -947,7 +948,7 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
             for(int i=0;i<8;i++) {
               for (size_t j=0;j<robotsDescriptors[i].colors.size();j++) {
                 cv::Vec3b vec;
-                vec[0] = robotsDescriptors[i].colors[j]*255;
+                vec[0] = static_cast<uchar>(robotsDescriptors[i].colors[j]*255);
                 vec[1] = 0;
                 vec[2] = 255;
                 cv::circle(colorPlane,cv::Point(vec[0] << 1,vec[2] << 1),5,cv::Scalar(255,0,255),-1);
@@ -967,7 +968,7 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
           int end = 1;
           for(size_t i=0;i<hueList.size();i++) {
             while (i+1 < hueList.size() && hueList[i+1].second == hueList[i].second) i++;
-            end = (int)hueList[i].first << 1;
+            end = static_cast<int>(hueList[i].first) << 1;
 
             cv::line(colorPlane,cv::Point(begin, 500), cv::Point(end, 500), blackAndWhite[i%2],4);
 
@@ -1106,7 +1107,7 @@ cv::Mat MaggicSegmentation::run(cv::Mat &frame)
     for (int j = 0; j < frame.cols; j++) {
       label = this->_LUT[(row[j].red<<16) + (row[j].green<<8) + row[j].blue];
       this->_segmentationFrame.ptr<RGB>(i)[j] = ColorSpace::markerColors[label];
-      returnFrame.ptr<uchar>(i)[j] = (uchar) label;
+      returnFrame.ptr<uchar>(i)[j] = static_cast<uchar>(label);
      }
   }
 
@@ -1118,57 +1119,6 @@ cv::Mat MaggicSegmentation::run(cv::Mat &frame)
 void MaggicSegmentation::initLUT()
 {
   return;
-#define USE_LEGACY
-#ifdef USE_LEGACY
-  int index;
-  YUV color;
-
-  for (int r = 0; r < 256; r++) {
-    for (int g = 0; g < 256; g++) {
-      for (int b = 0; b < 256; b++) {
-
-        color.y = (9798 * r + 19235 * g + 3736 * b) >> 15;
-        color.u = (18514 * (b - color.y) >> 15) + 128;
-        color.v = (23364 * (r - color.y) >> 15) + 128;
-
-        index = r * 65536 + g * 256 + b;
-
-        *(((RGB*)this->_LUT) + (index)) = ColorSpace::markerColors[this->getColorLabel(color)];
-      }
-    }
-  }
-#else
-    int colorsSize = NUMBEROFCOLOR;
-    cv::Mat colors = cv::Mat::zeros(1,colorsSize,CV_8UC3);
-    for (int i=0;i<colorsSize;i++) {
-      colors.ptr<RGB>(0)[i] = ColorSpace::markerColors[i];
-    }
-    cv::cvtColor(colors,colors,CV_BGR2HSV_FULL);
-    int index = 0;
-    cv::Mat cor = cv::Mat::zeros(1,1,CV_8UC3);
-
-    for (int r = 0; r < 256; r++) {
-      for (int g = 0; g < 256; g++) {
-        for (int b = 0; b < 256; b++) {
-          cor.ptr<cv::Vec3b>(0)[0][0] = b;
-          cor.ptr<cv::Vec3b>(0)[0][1] = g;
-          cor.ptr<cv::Vec3b>(0)[0][2] = r;
-          cv::cvtColor(cor,cor,CV_BGR2HSV_FULL);
-          index++;
-          int bc = 0, bd = 1024;
-          for (int c = 0; c < colorsSize; c++) {
-            int d = abs(colors.ptr<cv::Vec3b>(0)[c][0] - cor.ptr<cv::Vec3b>(0)[0][0]);
-            if (d < bd) {
-              bc = c;
-              bd = d;
-            }
-          }
-          //this->_LUT[index] = bc;// saving indexes
-          *(((RGB*)this->_LUT)+index) = ColorSpace::markerColors[bc];
-        }
-      }
-    }
-#endif
 
 #ifdef USE_CUDA
   LUT_GPU_V = new uchar[LUT_SIZE];
@@ -1201,68 +1151,11 @@ void MaggicSegmentation::getDebugFrame(cv::Mat& frame)
       break;
     case MaggicVisionDebugSelection_DetailsFrame:
       this->_detailsFrame.copyTo(frame);
-    break;
+      break;
+    default:
+      break;
   }
   mut.unlock();
-}
-
-//void MaggicSegmentation::setLUTPixel(YUV &color, int id)
-//{
-//  if (id < LUT_SIZE) {
-//    this->_LUT[id] = this->getColorLabel(color);
-//  }
-//}
-
-int MaggicSegmentation::getColorLabel(YUV& color)
-{
-  for (int i = 0; i < NUMBEROFCOLOR; i++) {
-
-
-    if (color.y >= this->_calibrationParameters[i].min.y
-     && color.y <= this->_calibrationParameters[i].max.y) {
-
-      if (color.u >= this->_calibrationParameters[i].min.u
-       && color.u <= this->_calibrationParameters[i].max.u) {
-
-        if (color.v >= this->_calibrationParameters[i].min.v
-         && color.v <= this->_calibrationParameters[i].max.v) {
-
-          return i;
-        }
-      }
-
-    }
-  }
-
-  return -1;
-}
-
-void MaggicSegmentation::initFromFile(std::string path)
-{
-
-  cv::FileStorage fs(path, cv::FileStorage::READ);
-  if(!fs.isOpened()) {
-    spdlog::get("Vision")->error("MaggicSegmentation::initFromFile: Diretorio não encontrado {}",path);
-  }
-  cv::FileNode n;
-
-  for (int i = 0; i < NUMBEROFCOLOR; i++) {
-
-    n = fs[this->_colorLabels[i]];
-
-    this->_calibrationParameters[i].max.y = (int) n[YMAXLABEL];
-    this->_calibrationParameters[i].max.u = (int) n[UMAXLABEL];
-    this->_calibrationParameters[i].max.v = (int) n[VMAXLABEL];
-
-    this->_calibrationParameters[i].min.y = (int) n[YMINLABEL];
-    this->_calibrationParameters[i].min.u = (int) n[UMINLABEL];
-    this->_calibrationParameters[i].min.v = (int) n[VMINLABEL];
-
-  }
-
-  fs.release();
-
-  this->initLUT();
 }
 
 void MaggicSegmentation::getSegmentationFrameFromLUT(cv::Mat& frame)
@@ -1282,7 +1175,7 @@ void MaggicSegmentation::loadDefaultHue() {
     while(true) {
       int h, l;
       if (fscanf(f,"%d %d", &h, &l) == EOF) break;
-      float hf = (float) h/255.f;
+      float hf = static_cast<float>(h/255.f);
       hf = h;
       defaultHueList.push_back(std::make_pair(hf,l));
       //printf("%d(%.2f) %d\n", h, hf, l);
@@ -1300,8 +1193,7 @@ void MaggicSegmentation::setMousePosition(cv::Point2f mpos) {
   mut.lock();
   if (!this->_detailsFrame.empty()) {
     this->lastCursorPos.push_back(this->cursorPos);
-    this->cursorPos = cv::Point2i (mpos.x*this->_detailsFrame.cols, mpos.y*this->_detailsFrame.rows);
-    std::cout << "moved\n";
+    this->cursorPos = cv::Point2i (static_cast<int>(mpos.x*this->_detailsFrame.cols), static_cast<int>(mpos.y*this->_detailsFrame.rows));
     this->mouseDrag = true;
   }
   mut.unlock();
@@ -1423,7 +1315,6 @@ void MaggicSegmentation::doDetails() {
                   this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+(h2*row[j].value)/255, colorFrame.x+(colorFrame.width*row[j].hue)/255) = cv::Vec3b(255,255,255);
                 } else {
                   this->_detailsFrame.at<cv::Vec3b>(colorFrame.y+h2+((255-row[j].saturation)*h2)/255, colorFrame.x+(colorFrame.width*row[j].hue)/255) = cv::Vec3b(255,255,255);
-                  //cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x+row[j].hue,colorFrame.y+(colorFrame.height-(row[j].saturation*h2/255)),2,2),cv::Vec3b(255,255,255),-1);
                 }
             }
            }
@@ -1459,21 +1350,21 @@ void MaggicSegmentation::doDetails() {
     cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x-borderDistance,colorFrame.y-borderDistance, colorFrame.width+(borderDistance<<1), colorFrame.height+(borderDistance<<1)),cv::Scalar(255,255,255),1);
     cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x-borderDistance+1,colorFrame.y-borderDistance+1, colorFrame.width+(borderDistance<<1)-2, colorFrame.height+(borderDistance<<1)-2),cv::Scalar(0,0,0),1);
     int pivotId = -1;
-    for(int i =0;i<this->hueList.size();i++) {
+    for(size_t i =0;i<this->hueList.size();i++) {
       std::pair<float, int> &hue = this->hueList[i];
-      int theX = hue.first*colorFrame.width/255 + colorFrame.x;
+      int theX = static_cast<int>(hue.first*colorFrame.width/255 + colorFrame.x);
       if (!this->enableFilter) {
           int theDist = abs(this->cursorPos.x-theX);
           if (theDist < 6 && colorFrame.contains(this->cursorPos)) {
             if (pivotId == -1 ||
-                theDist < abs(this->cursorPos.x - (this->hueList[pivotId].first*colorFrame.width/255 + colorFrame.x))) {
-              pivotId = i;
+                theDist < abs(this->cursorPos.x - (this->hueList[static_cast<size_t>(pivotId)].first*colorFrame.width/255 + colorFrame.x))) {
+              pivotId = static_cast<int>(i);
             }
 
           }
       }
-      if (pivotForPaletteId-1 == i) cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(255,0,255),2);
-      else if (this->dragpivotId != i) cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y),cv::Point(theX,colorFrame.y+colorFrame.height-1), cv::Scalar(255,255,255),1);
+      if (pivotForPaletteId-1 == static_cast<int>(i)) cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(255,0,255),2);
+      else if (this->dragpivotId != static_cast<int>(i)) cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y),cv::Point(theX,colorFrame.y+colorFrame.height-1), cv::Scalar(255,255,255),1);
     }
     if (this->dragpivotId != -1) pivotId = -1;
     if (this->pressedLeft) {
@@ -1528,8 +1419,8 @@ void MaggicSegmentation::doDetails() {
     if (this->releasedLeft) {
         bool changed = false;
         if (this->dragpivotId != -1) {
-            float newHue = (this->cursorPos.x-colorFrame.x)*255.0/colorFrame.width;
-            this->hueList[this->dragpivotId].first = newHue;
+            float newHue = static_cast<float>(this->cursorPos.x-colorFrame.x)*255.0f/static_cast<float>(colorFrame.width);
+            this->hueList[static_cast<size_t>(this->dragpivotId)].first = newHue;
             this->dragpivotId = -1;
             changed = true;
         }
@@ -1555,7 +1446,7 @@ void MaggicSegmentation::doDetails() {
         }
         if (changed) {
             this->generateLUTFromHUE();
-            int* dst_LUT = ((LUTSegmentation*)Vision::singleton().getSegmentationObject())->getLUT();
+            int* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
             int* src_LUT = this->getLUT();
             memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
         }
@@ -1563,7 +1454,7 @@ void MaggicSegmentation::doDetails() {
 
     if (this->releasedRight) {
         if (pivotForPaletteId && colorSelectionId != -1) {
-          this->hueList[pivotForPaletteId-1].second = colorSelectionId+1;
+          this->hueList[static_cast<size_t>(pivotForPaletteId-1)].second = colorSelectionId+1;
           std::cout << "Selected color " << colorSelectionId+1 << " for " << pivotForPaletteId-1 << std::endl;
           saveSession();
           std::cout << "Saved session values" << std::endl;
@@ -1571,8 +1462,8 @@ void MaggicSegmentation::doDetails() {
     }
 
     if (pivotForPaletteId) {
-      int colorForPaletteId = this->hueList[pivotForPaletteId-1].second-1;
-      cv::Rect tr = colorSelection[colorForPaletteId];
+      int colorForPaletteId = this->hueList[static_cast<size_t>(pivotForPaletteId-1)].second-1;
+      cv::Rect tr = colorSelection[static_cast<size_t>(colorForPaletteId)];
       tr.x-=1;
       tr.y-=1;
       tr.width+=2;
@@ -1582,7 +1473,7 @@ void MaggicSegmentation::doDetails() {
 
       //std::cout << "hover" << std::endl;
       if (pivotId != -1 && this->dragpivotId == -1) {
-        int theX = this->hueList[pivotId].first*colorFrame.width/255 + colorFrame.x;
+        int theX = static_cast<int>(static_cast<float>(this->hueList[static_cast<size_t>(pivotId)].first*colorFrame.width)/255.0f + static_cast<float>(colorFrame.x));
         cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,255),2);
       }
 
