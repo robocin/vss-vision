@@ -92,7 +92,7 @@ int main(int argc, char **argv)
             // UDP socket:
             sf::UdpSocket socket;
             sf::IpAddress sender = "0.0.0.0";
-            sf::Uint16 oport = 10000, port = oport;
+            sf::Uint16 oport = 54000, port = oport;
             sf::Clock clock;
             sf::Time time;
             float fps = 0;
@@ -118,12 +118,17 @@ int main(int argc, char **argv)
                 port = oport;
                 if (socket.receive(packet, sender, port) != sf::Socket::Done)
                 {
-                    fprintf(stderr,"[%s] Error trying to receive data from socket.", APP_NAME);
+                    fprintf(stderr,"[%s] Error trying to receive data from socket.\n", APP_NAME);
+                    usleep(10000);
                     continue;
                 }
                 //std::cout << "[" << APP_NAME << "] Received from " << sender << " on port " << port << std::endl;
                 sf::Uint8 entitiesSize, id;
                 double posX, posY, angle;
+                sf::Uint8 message_char;
+                sf::Uint32 timestamp;
+                packet >> message_char;
+                packet >> timestamp;
 
                 // Extract frameId from packet and verify if receveid packed has outdated frame
                 packet >> frameId;
