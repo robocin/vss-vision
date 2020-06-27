@@ -1,4 +1,5 @@
 #include "Network/Network.h"
+#include "spdlog/spdlog.h"
 
 sf::Uint16 Network::port = static_cast<sf::Uint16>(54000);
 sf::IpAddress Network::recipient = "0.0.0.0";
@@ -8,7 +9,7 @@ sf::Int32 Network::frameId = 0;
 void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_msec) {
     if (!entities.size()) return;
     if (entities.size() > 255) {
-        spdlog::get("Network")->info("sendFrame:: I cannot send more than 255 entities. You asked {}.\n", entities.size());
+        printf("Network:: sendFrame:: I cannot send more than 255 entities. You asked %d.\n", static_cast<int>(entities.size()));
         return;
     }
 
@@ -19,7 +20,7 @@ void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_mse
     ++frameId;
     packet << static_cast<sf::Uint8>(entities.size());
 
-    for (int i=0; i < entities.size(); ++i) {
+    for (size_t i=0; i < entities.size(); ++i) {
         packet  << static_cast<sf::Uint8>(entities[i].id())
                 << static_cast<Float>(entities[i].position().x)
                 << static_cast<Float>(entities[i].position().y)
@@ -28,8 +29,8 @@ void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_mse
     
     if (Network::socket.send(packet, recipient, port) != sf::Socket::Done)
     {
-        spdlog::get("Network")->info("sendFrame:: Something went wrong when trying to send the frame.\n");
-    }
+        printf("Network:: sendFrame:: Something went wrong when trying to send the frame.\n");
+    } else printf("Network:: sendFrame:: Frame sent.\n");
 }
 
 void Network::buttonsMessageTeamColor(bool teamColor)

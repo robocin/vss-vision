@@ -105,9 +105,11 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   entities.insert(entities.end(),players.begin(),players.end());
 
     // NETWORK
-    if (this->_isProcessingEnabled)
+    if (this->_isProcessingEnabled) {
+        spdlog::get("Vision")->info("update:: Seding frame.\n");
         Network::sendFrame(entities, actualTime);
-    else {
+        spdlog::get("Vision")->info("update:: Frame sent.\n");
+    } else {
         Network::frameId = 0;
         this->firstTime = timeStamp.currentTime();
     }
