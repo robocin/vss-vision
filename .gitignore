@@ -3,6 +3,7 @@ build-*
 src/build-*
 src/*.o
 src/moc*
+src/ui_*.h
 src/VSS-VISION
 src/VSS-VISION.pro.user
 src/Makefile
