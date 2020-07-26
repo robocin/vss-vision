@@ -99,8 +99,6 @@ MaggicSegmentation::MaggicSegmentation()
   cv::Mat compara = cv::Mat::zeros(cv::Size(512,20), CV_8UC3);
   cv::Mat colorPlane = cv::Mat::zeros(cv::Size(512,512), CV_8UC3);
 
-  //std::cout << "Cores from color palette HSV" << std::endl;
-
   for (int i=0;i<256;i++) {
     for(int j=0;j<256;j++) {
       cv::rectangle(colorPlane,cv::Rect(j << 1,i << 1,2,2),cv::Scalar(j,255,i),-1);
@@ -153,7 +151,7 @@ MaggicSegmentation::MaggicSegmentation()
 
   //std::cout << "THRESHOLD FROM MAGGIC SEGMENTATION ON CONSTRUCTING" << this->getFilterGrayThresholdValue() << std::endl;
 
-  //this->openLastSession();
+  this->openLastSession();
 
   //std::cout << "THRESHOLD FROM MAGGIC SEGMENTATION ON CONSTRUCTING AFTER " << this->getFilterGrayThresholdValue() << std::endl;
 
@@ -197,9 +195,10 @@ void MaggicSegmentation::openLastSession() {
     this->setHUETable(true);
     this->generateLUTFromHUE();
     this->useLoadedValues = true;
+    spdlog::get("Vision")->info("MaggicSegmentation:: openLastSession: Loaded session from '{}'.",this->_maggicSegmentationSessionFileName);
   } else {
     this->useLoadedValues = false;
-    spdlog::get("Vision")->info("MaggicSegmentation::openFromLastSession: Arquivo não encontrado {}",this->_maggicSegmentationSessionFileName);
+    spdlog::get("Vision")->warn("MaggicSegmentation:: openLastSession: File access denied '{}'.",this->_maggicSegmentationSessionFileName);
   }
 
   fin.close();
@@ -213,74 +212,19 @@ void MaggicSegmentation::saveSession() {
   fout.open(this->_maggicSegmentationSessionFileName);
   // write all the number's pairs
   if (fout.is_open()) {
-     std::cout << "Opened " << this->_maggicSegmentationSessionFileName << std::endl;
      fout << "Maggic\n";
      fout << this->_minimumGrayThreshold << " " << this->_maximumGrayThreshold << "\n";
      fout << this->getFilterGrayThresholdValue() << "\n";
      for(size_t i=0;i<this->hueList.size();i++) {
       fout << static_cast<int>(this->hueList[i].first) << " " << static_cast<int>(this->hueList[i].second) << "\n";
      }
-
+     spdlog::get("Vision")->info("MaggicSegmentation:: saveSession: Successfully saved in '{}'.",this->_maggicSegmentationSessionFileName);
   } else {
-     spdlog::get("Vision")->error("MaggicSegmentation::saveSession: Acesso negado ao arquivo {}",this->_maggicSegmentationSessionFileName);
+     spdlog::get("Vision")->error("MaggicSegmentation:: saveSession: File access denied '{}'.",this->_maggicSegmentationSessionFileName);
   }
   fout.close();
   mut.unlock();
 }
-
-void MaggicSegmentation::init(std::map<std::string, int> paramaters)
-{
-  for (int i = 0; i < 11; i++) {
-
-     this->_calibrationParameters[i].max.y = paramaters[this->_colorLabels[i]+YMAXLABEL];
-     this->_calibrationParameters[i].max.u = paramaters[this->_colorLabels[i]+UMAXLABEL];
-     this->_calibrationParameters[i].max.v = paramaters[this->_colorLabels[i]+VMAXLABEL];
-
-     this->_calibrationParameters[i].min.y = paramaters[this->_colorLabels[i]+YMINLABEL];
-     this->_calibrationParameters[i].min.u = paramaters[this->_colorLabels[i]+UMINLABEL];
-     this->_calibrationParameters[i].min.v = paramaters[this->_colorLabels[i]+VMINLABEL];
-
-  }
-
-  this->initLUT();
-}
-
-void MaggicSegmentation::setup(std::string parameter, int value)
-{
-
-  for (int i = 0; i < NUMBEROFCOLOR; i++) {
-
-    if (!parameter.compare(this->_colorLabels[i]+YMAXLABEL)) {
-
-      this->_calibrationParameters[i].max.y = value;
-
-    } else if (!parameter.compare(this->_colorLabels[i]+UMAXLABEL)) {
-
-      this->_calibrationParameters[i].max.u = value;
-
-    } else if (!parameter.compare(this->_colorLabels[i]+VMAXLABEL)) {
-
-      this->_calibrationParameters[i].max.v = value;
-
-    } else if (!parameter.compare(this->_colorLabels[i]+YMINLABEL)) {
-
-      this->_calibrationParameters[i].min.y = value;
-
-    } else if (!parameter.compare(this->_colorLabels[i]+UMINLABEL)) {
-
-      this->_calibrationParameters[i].min.u = value;
-
-    } else if (!parameter.compare(this->_colorLabels[i]+VMINLABEL)) {
-
-      this->_calibrationParameters[i].min.v = value;
-
-    }
-
-  }
-
-  this->initLUT();
-}
-
 
 void MaggicSegmentation::calibrate(cv::Mat &frame) {
   if (!paused) {
@@ -490,17 +434,14 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
 
   if (!fromFile) {// if it's not from file run normally
 
-    //std::cout << "Loading default hue list" << std::endl;
-    spdlog::get("Vision")->info("MaggicSegmentation::Loading default hue list\n");
+    spdlog::get("Vision")->info("MaggicSegmentation:: Loading Default HUE list\n");
 
     // clear the vector of pair
     hueList.clear();
 
     // get all default color palette into hueList
-    //puts("setting hue table");
     for(size_t i=0;i<defaultHueList.size();i++) {
       float hueChannel = defaultHueList[i].first*255.0f;
-      //printf("%.0f %d\n", hueChannel, defaultHueList[i].second);
       hueList.push_back(std::make_pair(hueChannel,defaultHueList[i].second));
     }
 
@@ -513,7 +454,6 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
         float bd = 1000.f;
         int bid = 0;
         for (size_t k=0;k<defaultHueList.size();k++) {
-          //float d = fabs(colorPaletteHSV.at<cv::Vec3b>(0,k)[0] - hueChannel);
           float x = defaultHueList[k].first*255.0f;
           float y = hueChannel;
           float d = min(fabs(x- y),min(fabs((256 + x) - y), fabs(x - y-256)));
@@ -546,10 +486,9 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
       }
 
     }
-     // std::cout << i << " " << _colorLabels[bl] << std::endl;
     this->_HUETable[i] = bl;
   }
-
+  spdlog::get("Vision")->info("MaggicSegmentation:: Default HUE list loaded.\n");
 }
 
 void MaggicSegmentation::generateLUTFromHUE() {
@@ -623,7 +562,7 @@ void MaggicSegmentation::generateLUTFromHUE() {
 
   }
   //std::cout << "Done generating LUT from Hue.\n";
-  spdlog::get("Vision")->info("MaggicSegmentation::Done generating LUT from Hue.\n");
+  //spdlog::get("Vision")->info("MaggicSegmentation::Done generating LUT from Hue.\n");
   this->isLUTReady = true;
 }
 
@@ -1167,10 +1106,10 @@ void MaggicSegmentation::getSegmentationFrameFromLUT(cv::Mat& frame)
 void MaggicSegmentation::loadDefaultHue() {
   const static char* defaultHueListFileName = "Config/Segmentation/DefaultMaggicSegmentation.txt";
   FILE *f = fopen(defaultHueListFileName, "rt");
+  bool error = true;
   if (f) {
-    fscanf(f,"Maggic\n");
-    fscanf(f,"%*d %*d %*d");
-    //puts("COLOR PALETTE\nHUE(f) TAG");
+    error = (fscanf(f,"Maggic\n") == EOF);
+    error = (fscanf(f,"%*d %*d %*d") == EOF);
     defaultHueList.clear();
     while(true) {
       int h, l;
@@ -1178,13 +1117,13 @@ void MaggicSegmentation::loadDefaultHue() {
       float hf = static_cast<float>(h/255.f);
       hf = h;
       defaultHueList.push_back(std::make_pair(hf,l));
-      //printf("%d(%.2f) %d\n", h, hf, l);
     }
     hueList.assign(defaultHueList.begin(), defaultHueList.end());
-    //puts("\n\n");
     fclose(f);
-  } else {
-    spdlog::get("Vision")->error("MaggicSegmentation::loadDefaultHue: Acesso negado ao arquivo {}",defaultHueListFileName);
+    f = nullptr;
+  }
+  if (error) {
+    spdlog::get("Vision")->error("MaggicSegmentation:: loadDefaultHue: File access denied {}",defaultHueListFileName);
   }
 }
 
@@ -1245,10 +1184,6 @@ void MaggicSegmentation::doDetails() {
   static int pivotForPaletteId = 0;
   static int colorSelectionId = -1;
   static int h2 = colorFrame.height >> 1;
-  static int w2 = colorFrame.width >> 1;
-
-
-
 
   if (!colorSelectionReady) {
     colorSelectionReady = true;

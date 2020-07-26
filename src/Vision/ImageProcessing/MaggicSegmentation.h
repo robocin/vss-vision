@@ -80,21 +80,6 @@ public:
   ~MaggicSegmentation();
 
   /**
-   * @brief    init the object with the given parameters
-   *
-   * @param[in]  paramaters  The paramaters
-   */
-  void init(std::map<std::string, int> paramaters) final;
-
-  /**
-   * @brief    Change some parameter's value
-   *
-   * @param[in]  parameter  The parameter to be changed
-   * @param[in]  value    The value to be placed
-   */
-  void setup(std::string parameter, int value) final;
-
-  /**
    * @brief    Apply the algorithm on the given frame
    *
    * @param[in]  frame  The frame to be processed in BGR

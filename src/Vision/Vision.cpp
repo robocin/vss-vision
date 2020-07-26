@@ -148,16 +148,16 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
 
     if (this->_deepLogFile) {
       // any other frame
-      fprintf(this->_deepLogFile,"%d;%d;%lf;",entities[ROBOT1].position().x, entities[ROBOT1].position().y, entities[ROBOT1].angle());
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ROBOT2].position().x, entities[ROBOT2].position().y, entities[ROBOT2].angle());
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ROBOT3].position().x, entities[ROBOT3].position().y, entities[ROBOT3].angle());
+      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT1].position().x, entities[ROBOT1].position().y, entities[ROBOT1].angle());
+      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT2].position().x, entities[ROBOT2].position().y, entities[ROBOT2].angle());
+      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT3].position().x, entities[ROBOT3].position().y, entities[ROBOT3].angle());
 
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV1].position().x, entities[ADV1].position().y, entities[ADV1].angle());
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV2].position().x, entities[ADV2].position().y, entities[ADV2].angle());
-      fprintf(this->_deepLogFile,"%d;%d;%lf;", entities[ADV3].position().x, entities[ADV3].position().y, entities[ADV3].angle());
+      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV1].position().x, entities[ADV1].position().y, entities[ADV1].angle());
+      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV2].position().x, entities[ADV2].position().y, entities[ADV2].angle());
+      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV3].position().x, entities[ADV3].position().y, entities[ADV3].angle());
 
-      fprintf(this->_deepLogFile,"%d;%d;", entities[BALL].position().x, entities[BALL].position().y, entities[BALL].angle());
-      fprintf(this->_deepLogFile,"%d\n", actualTime - this->_deepLogInitialTime);
+      fprintf(this->_deepLogFile,"%lf;%lf;%lf", entities[BALL].position().x, entities[BALL].position().y, entities[BALL].angle());
+      fprintf(this->_deepLogFile,"%u\n", actualTime - this->_deepLogInitialTime);
     }
 
    }

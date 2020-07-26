@@ -34,7 +34,6 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   this->maggicSegmentation->setLearningThresholdFrames(static_cast<uint>(ui->learnSpinBox->value()));
 
   int m, M;
-  this->maggicSegmentation->openLastSession();
   this->maggicSegmentation->getFilterGrayThresholdValues(m,M);
   this->ui->threshGrayHorizontalSlider->setValue(this->maggicSegmentation->getFilterGrayThresholdValue());
   //std::cout << "THRESHOLD FROM MAGGIC SEGMENTATION " << this->maggicSegmentation->getFilterGrayThresholdValue() << std::endl;
@@ -92,9 +91,6 @@ void MaggicSegmentationDialog::updateFrame()
   if (this->isHidden()) return;
   if (this->_updateFrameTimer->isActive() == false) return;
 
-
-
-
   if (Vision::singleton().isCorrectionEnabled()) {
       if (!this->paused)
         Vision::singleton().getCorrectedDebugFrame(this->_actualFrame);
@@ -114,7 +110,7 @@ void MaggicSegmentationDialog::updateFrame()
     maggicSegmentation->getDebugFrame(this->_segmentedFrame);
 
     timerFPS.stop();
-    //printf("MaggicVision us %.0f fps %.0f\n", timerFPS.getMicroseconds(), timerFPS.getInFPS());
+    printf("MaggicVision us %.0f fps %.0f\n", timerFPS.getMicroseconds(), timerFPS.getInFPS());
 
     static bool defineThresholdValue = true;
 
@@ -263,9 +259,6 @@ void MaggicSegmentationDialog::on_buttonBox_accepted()
 bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
 
     static bool cursorInsideVisualization = false;
-//  if(f_event->type() == QEvent::MouseButtonPress) {
-
-//  }
 
   if (f_event->type() == QEvent::MouseButtonPress) {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);

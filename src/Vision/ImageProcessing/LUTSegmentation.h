@@ -52,7 +52,7 @@ class LUTSegmentation : public ImageProcessing {
    *
    * @param[in]  paramaters  The paramaters
    */
-  void init(std::map<std::string, int> parameters) final;
+  void init(std::map<std::string, int> parameters);
 
   /**
    * @brief    Change some parameter's value
@@ -60,7 +60,7 @@ class LUTSegmentation : public ImageProcessing {
    * @param[in]  parameter  The parameter to be changed
    * @param[in]  value    The value to be placed
    */
-  void setup(std::string parameter, int value) final;
+  void setup(std::string parameter, int value);
 
   /**
    * @brief    Apply the algorithm on the given frame

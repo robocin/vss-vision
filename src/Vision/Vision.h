@@ -134,7 +134,7 @@ private:
 
   std::string _deepLogFileName, _deepLogFilePath, _deepLogFileFolder;
   FILE* _deepLogFile;
-  int _deepLogInitialTime;
+  unsigned int _deepLogInitialTime;
   Timer _visionTimer, _visionFrameTimer;
   double _visionRunTime;
   std::mutex _currentFrameLocker, _visionStatusLocker;
