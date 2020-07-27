@@ -95,6 +95,13 @@ void GameInfo::setPlayers(Players& t_players) {
     setLockedFrame(false);
 }
 
+void GameInfo::setEntities(Entity &t_ball, Players &t_players) {
+    setLockedFrame(true);
+    m_ball = t_ball;
+    m_players.assign(t_players.begin(),t_players.end());
+    setLockedFrame(false);
+}
+
 Timer GameInfo::time() {
   setLockedFrame(true);
   Timer ret(m_time);

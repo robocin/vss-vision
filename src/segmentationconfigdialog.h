@@ -38,7 +38,7 @@ class SegmentationConfigDialog : public QDialog
   Q_OBJECT
 
 public:
-  explicit SegmentationConfigDialog(const bool videoFlag, QWidget *parent = 0);
+  explicit SegmentationConfigDialog(const bool videoFlag, QWidget *parent = nullptr);
   ~SegmentationConfigDialog();
   bool getQuantizationBool();
 
@@ -144,8 +144,8 @@ private:
                         BROWNLABEL,
                         COLORSTRANGELABEL };
 
-  void readFromFile(std::string path);
-  void saveInFile(std::string path);
+  void readFromFile();
+  void saveInFile();
   void setup(int color,int minY,int minU,int minV,int maxY,int maxU,int maxV);
   void attSliders();
   void setFrameOnScreen();

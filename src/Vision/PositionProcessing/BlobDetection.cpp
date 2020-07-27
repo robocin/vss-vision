@@ -7,14 +7,14 @@ BlobDetection::BlobDetection()
   this->debugSrc = cv::Mat::zeros(480,640,CV_8UC3);
 }
 
-void BlobDetection::run(std::vector<Entity> &entities, std::vector< std::vector<Run> > runs, int rows, int cols)
+void BlobDetection::run(std::vector< std::vector<Run> > runs, int rows, int cols)
 {
   //std::cout << rows <<" aqui "<< cols << std::endl;
   cv::Mat currentFrame = cv::Mat::zeros(rows,cols,CV_8UC3);
 
   this->_runs = runs;
   this->findBlobs(currentFrame);
-  this->matchBlobs(entities,currentFrame);
+  this->matchBlobs(currentFrame);
 
   this->_frameLocker.lock();
   currentFrame.copyTo(this->debugSrc);

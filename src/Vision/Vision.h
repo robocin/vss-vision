@@ -153,11 +153,9 @@ private:
   void setFrame(cv::Mat &frame);
 
   /**
-   * @brief    Process the frame , generating as output a entity's vector with velocity and position of all detected robots .
-   *
-   * @param[in]   vector<Entity> Entity's vector with updated positions
+   * @brief    Process the frame , generating as output to (VSS) GameInfo entity's vector with velocity and position of all detected robots .
    */
-  void update(std::vector<Entity>& currentPositions);
+  void update();
 
 public:
   /**

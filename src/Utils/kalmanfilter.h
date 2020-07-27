@@ -10,10 +10,10 @@ class  KalmanFilter {
   public:
     KalmanFilter();
     ~KalmanFilter();
-    void init(float, float, float, float);
-    const Matrix2d& update(float, float);
+    void init(Float, Float, Float, Float);
+    const Matrix2d& update(Float, Float);
     const Matrix2d& update(Geometry::PT pos);
-    const Matrix2d& follow(float, float);
+    const Matrix2d& follow(Float, Float);
     const Matrix2d& follow(Geometry::PT pos);
 
   private:

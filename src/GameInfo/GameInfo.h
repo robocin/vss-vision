@@ -45,6 +45,8 @@ public:
 
   void setPlayers(Players& t_players);
 
+  void setEntities(Entity &t_ball, Players &t_players);
+
   Timer time();
 
   void setTime(Timer& t_timer);

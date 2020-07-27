@@ -87,7 +87,6 @@ SOURCES += main.cpp\
 
 HEADERS  += \
   Entity/Entity.h \
-    Planning/PUnivector.h \
   Utils/Utils.h \
     Utils/kalmanfilter.h \
     Utils/matrix2d.h \
@@ -104,7 +103,6 @@ HEADERS  += \
   segmentationconfigdialog.h \
   cameraconfigurationdialog.h \
   Logging/logging.h \
-  Communication/nrf.h \
   maggicsegmentationdialog.h \
   Timer/Timer.h \
   visionthread.h \
@@ -123,7 +121,6 @@ HEADERS  += \
     Utils/Geometry.h \
     Utils/Draw.h \
     Windows/RobotWidget.h \
-    Utils/SmartEnum.h \
     Utils/BetterEnum.h \
     trackconfigdialog.h \
     Windows/FileConstants.h\

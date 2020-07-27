@@ -98,7 +98,7 @@ Points Geometry::circleCircleIntersection(const Point &t_p, const Float &t_r1, c
 }
 
 
-int Geometry::cmp(float a, float b) {
+int Geometry::cmp(Float a, Float b) {
     if (fabs(a-b) < EPS) return 0;
     else if (a < b) return -1;
     return 1;
@@ -106,7 +106,7 @@ int Geometry::cmp(float a, float b) {
 
 Geometry::PT Geometry::rotateCCW90(Geometry::PT p) { return Geometry::PT(-p.y,p.x); }
 Geometry::PT Geometry::rotateCW90(Geometry::PT p)  { return Geometry::PT(p.y,-p.x); }
-Geometry::PT Geometry::rotateCCW(Geometry::PT p, float t) {
+Geometry::PT Geometry::rotateCCW(Geometry::PT p, Float t) {
     return Geometry::PT(p.x * cos(t) - p.y * sin(t), p.x * sin(t) + p.y * cos(t));
 }
 
@@ -117,7 +117,7 @@ Geometry::PT Geometry::projPtLine(Geometry::PT a, Geometry::PT b, Geometry::PT c
 
 Geometry::PT Geometry::projPtSeg(Geometry::PT a, Geometry::PT b, Geometry::PT c) {
     b = b - a; c = c - a;
-    float r = b * b;
+    Float r = b * b;
     if (cmp(r) == 0) return a;
     r = c * b / r;
     if (r < 0) return a;
@@ -125,11 +125,11 @@ Geometry::PT Geometry::projPtSeg(Geometry::PT a, Geometry::PT b, Geometry::PT c)
     return a + b * r;
 }
 
-float Geometry::distPtSeg(Geometry::PT a, Geometry::PT b, Geometry::PT c) {
+Float Geometry::distPtSeg(Geometry::PT a, Geometry::PT b, Geometry::PT c) {
     return !(c - projPtSeg(a, b, c));
 }
 
-float Geometry::distPtPlane(float x, float y, float z, float a, float b, float c, float d) {
+Float Geometry::distPtPlane(Float x, Float y, Float z, Float a, Float b, Float c, Float d) {
     return fabs(a*x + b*y + c*z - d) / sqrt(a*a + b*b + c*c);
 }
 
@@ -193,14 +193,14 @@ bool Geometry::PointOnPolygon(const std::vector<Geometry::PT> &p, Geometry::PT q
     return false;
 }
 
-std::vector<Geometry::PT> Geometry::circleLine(Geometry::PT a, Geometry::PT b, Geometry::PT c, float r) {
+std::vector<Geometry::PT> Geometry::circleLine(Geometry::PT a, Geometry::PT b, Geometry::PT c, Float r) {
     std::vector<Geometry::PT> ret;
     b = b-a;
     a = a-c;
-    float A = b*b;
-    float B = a*b;
-    float C = a*a - r*r;
-    float D = B*B - A*C;
+    Float A = b*b;
+    Float B = a*b;
+    Float C = a*a - r*r;
+    Float D = B*B - A*C;
     if (D < -EPS) return ret;
     ret.push_back(c + a + b*(-B + sqrt(D + EPS)) / A);
     if (D > EPS)
@@ -208,12 +208,12 @@ std::vector<Geometry::PT> Geometry::circleLine(Geometry::PT a, Geometry::PT b, G
     return ret;
 }
 
-std::vector<Geometry::PT> Geometry::circleCircle(Geometry::PT a, Geometry::PT b, float r, float R) {
+std::vector<Geometry::PT> Geometry::circleCircle(Geometry::PT a, Geometry::PT b, Float r, Float R) {
     std::vector<Geometry::PT> ret;
-    float d = !(a-b);
+    Float d = !(a-b);
     if (d > r + R || d + std::min(r, R) < std::max(r, R)) return ret;
-    float x = (d*d - R*R + r*r) / (2*d);
-    float y = sqrt(r*r - x*x);
+    Float x = (d*d - R*R + r*r) / (2*d);
+    Float y = sqrt(r*r - x*x);
     Geometry::PT v = (b - a)/d;
     ret.push_back(a + v*x + rotateCCW90(v)*y);
     if (y > 0)
@@ -221,8 +221,8 @@ std::vector<Geometry::PT> Geometry::circleCircle(Geometry::PT a, Geometry::PT b,
     return ret;
 }
 
-float Geometry::signedArea(const std::vector<Geometry::PT> &p) {
-    float area = 0;
+Float Geometry::signedArea(const std::vector<Geometry::PT> &p) {
+    Float area = 0;
     for(unsigned int i = 0; i < p.size(); i++) {
         int j = (i+1) % p.size();
         area += p[i] % p[j];
@@ -230,13 +230,13 @@ float Geometry::signedArea(const std::vector<Geometry::PT> &p) {
     return area / 2.0;
 }
 
-float Geometry::area(const std::vector<Geometry::PT> &p) {
+Float Geometry::area(const std::vector<Geometry::PT> &p) {
     return fabs(signedArea(p));
 }
 
 Geometry::PT Geometry::centroid(const std::vector<Geometry::PT> &p) {
     Geometry::PT c(0,0);
-    float scale = 6.0 * signedArea(p);
+    Float scale = 6.0 * signedArea(p);
     for (unsigned int i = 0; i < p.size(); i++){
         int j = (i+1) % p.size();
         c = c + (p[i] + p[j]) * (p[i].x * p[j].y - p[j].x * p[i].y);
@@ -257,12 +257,12 @@ bool Geometry::isSimple(const std::vector<Geometry::PT> &p) {
     return true;
 }
 
-bool Geometry::circle2PtsRad(Geometry::PT p1, Geometry::PT p2, float r, Geometry::PT &c) {
-    float d2 = !(p1 - p2);
+bool Geometry::circle2PtsRad(Geometry::PT p1, Geometry::PT p2, Float r, Geometry::PT &c) {
+    Float d2 = !(p1 - p2);
     d2 *= d2;
-    float det = r * r / d2 - 0.25;
+    Float det = r * r / d2 - 0.25;
     if (det < 0.0) return false;
-    float h = sqrt(det);
+    Float h = sqrt(det);
     c.x = (p1.x + p2.x) * 0.5 + (p1.y - p2.y) * h;
     c.y = (p1.y + p2.y) * 0.5 + (p2.x - p1.x) * h;
     return true;
@@ -272,17 +272,17 @@ bool Geometry::areClockwise(Geometry::PT p1, Geometry::PT p2) {
     return (-p1.x*p2.y + p1.y*p2.x) > 0;
 }
 
-bool Geometry::isWithinRadius(Geometry::PT p1, float sectorRadius) {
-    float sectorRadiusSquared = sectorRadius*sectorRadius;
+bool Geometry::isWithinRadius(Geometry::PT p1, Float sectorRadius) {
+    Float sectorRadiusSquared = sectorRadius*sectorRadius;
     return p1.x*p1.x + p1.y*p1.y <= sectorRadiusSquared;
 }
 
-bool Geometry::isPointInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, float sectorRadius) {
+bool Geometry::isPointInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, Float sectorRadius) {
     Geometry::PT relPoint(p1.x-center.x, p1.y-center.y);
     return !areClockwise(sectorStart, relPoint) && areClockwise(sectorEnd, relPoint) && isWithinRadius(relPoint, sectorRadius);
 }
 
-bool Geometry::isRangeInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, float sectorRadius, float rangeRadius) {
+bool Geometry::isRangeInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, Float sectorRadius, Float rangeRadius) {
     return isPointInsideSector(Geometry::PT(p1.x,p1.y-rangeRadius), center, sectorStart, sectorEnd, sectorRadius)
             || isPointInsideSector(Geometry::PT(p1.x,p1.y), center, sectorStart, sectorEnd, sectorRadius)
             || isPointInsideSector(Geometry::PT(p1.x,p1.y+rangeRadius), center, sectorStart, sectorEnd, sectorRadius);

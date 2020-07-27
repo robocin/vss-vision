@@ -36,7 +36,7 @@ SegmentationConfigDialog::SegmentationConfigDialog(const bool videoFlag,
     this->_visibleColors[i] = true;
   }
 
-  this->readFromFile(SEGMENTATION_DEFAULT_FILE);
+  this->readFromFile();
   this->attSliders();
   this->_click = false;
   this->initList();
@@ -61,24 +61,7 @@ SegmentationConfigDialog::~SegmentationConfigDialog() {
   delete ui;
 }
 
-void SegmentationConfigDialog::readFromFile(std::string path) {
-  /*
-  cv::FileStorage fs;
-  cv::FileNode node;
-
-  fs.open(path,cv::FileStorage::READ);
-
-  if(!fs.isOpened()) {
-    spdlog::get("General")->error("SegmentationConfigDialog Xml: Error folder
-  {}",path); return;
-  }
-  node = fs[OPENCV_STORAGE];
-  this->_grayTrashHoldLevel = (int)node[GRAY_SCALE];
-  for(int i = 0; i< NUMBEROFCOLOR; i++) {
-    node = fs[this->_colorLabels[i]];
-    this->setup(i,(int)node[YMINLABEL],(int)node[UMINLABEL],(int)node[VMINLABEL],(int)node[YMAXLABEL],(int)node[UMAXLABEL],(int)node[VMAXLABEL]);
-  }
-  fs.release();*/
+void SegmentationConfigDialog::readFromFile() {
   QFile file(QString::fromStdString(FileConstants::segmentationConfig));
 
   if (!file.open(QIODevice::ReadOnly)) {
@@ -101,24 +84,7 @@ void SegmentationConfigDialog::readFromFile(std::string path) {
   }
 }
 
-void SegmentationConfigDialog::saveInFile(std::string path) {
-  /*
-  cv::FileStorage file(path,cv::FileStorage::WRITE);
-  for(int i = 0 ; i < NUMBEROFCOLOR ; i++) {
-    file << this->_colorLabels[i];
-    file << "{";
-    file << YMAXLABEL << this->_calibrationParameters[i].max.y;
-    file << UMAXLABEL << this->_calibrationParameters[i].max.u;
-    file << VMAXLABEL << this->_calibrationParameters[i].max.v;
-    file << YMINLABEL << this->_calibrationParameters[i].min.y;
-    file << UMINLABEL << this->_calibrationParameters[i].min.u;
-    file << VMINLABEL << this->_calibrationParameters[i].min.v;
-    file << "}";
-  }
-  file<<GRAY_SCALE<<this->_grayTrashHoldLevel;
-
-  file.release();
-*/
+void SegmentationConfigDialog::saveInFile() {
   QFile file(QString::fromStdString(FileConstants::segmentationConfig));
 
   if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate |
@@ -193,9 +159,7 @@ void SegmentationConfigDialog::attSliders() {
 }
 
 void SegmentationConfigDialog::on_ParametersListWidget_clicked() {
-  this->readFromFile(
-      SEGMENTATION_XML +
-      this->ui->ParametersListWidget->currentItem()->text().toStdString());
+  this->readFromFile();
   this->attSliders();
 }
 
@@ -266,20 +230,20 @@ cv::Mat SegmentationConfigDialog::segmentFrameWithIntervals(cv::Mat frame) {
           abs(colorRGB.blue - colorRGB.green) < this->_grayTrashHoldLevel) {
         frame.ptr<RGB>(j)[i] = ColorSpace::markerColors[ColorStrange];
       } else {
-        colorYUV.y = Utils::bound(
+        colorYUV.y = static_cast<int>(Utils::bound(
             (306 * colorRGB.red + 601 * colorRGB.green + 117 * colorRGB.blue) >>
                 10,
-            0, 255);
-        colorYUV.u = Utils::bound(((-172 * colorRGB.red - 340 * colorRGB.green +
+            0, 255));
+        colorYUV.u = static_cast<int>(Utils::bound(((-172 * colorRGB.red - 340 * colorRGB.green +
                                     512 * colorRGB.blue) >>
                                    10) +
                                       128,
-                                  0, 255);
-        colorYUV.v = Utils::bound(
+                                  0, 255));
+        colorYUV.v = static_cast<int>(Utils::bound(
             ((512 * colorRGB.red - 419 * colorRGB.green - 83 * colorRGB.blue) >>
              10) +
                 128,
-            0, 255);
+            0, 255));
 
         for (int k = 0; k < NUMBEROFCOLOR; k++) {
           if (colorYUV.y >= this->_calibrationParameters[k].min.y &&
@@ -328,8 +292,8 @@ void SegmentationConfigDialog::setFrameOnScreen() {
         cv::rectangle(tempFrame, rect1, rect2, cv::Scalar(63, 27, 181));
       }
     }
-    QImage qimg2((uchar *)tempFrame.data, tempFrame.cols, tempFrame.rows,
-                 tempFrame.step, QImage::Format_RGB888);
+    QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
+                 static_cast<int>(tempFrame.step), QImage::Format_RGB888);
     this->ui->visualizationLabel->setPixmap(QPixmap::fromImage(qimg2));
   } else {
     spdlog::get("General")->warn(
@@ -345,7 +309,7 @@ void SegmentationConfigDialog::on_selectColorComboBox_currentIndexChanged(
 }
 
 void SegmentationConfigDialog::on_buttonBox_accepted() {
-  this->saveInFile(SEGMENTATION_DEFAULT_FILE);
+  this->saveInFile();
   Vision::singleton().resetSegmentation();
   this->_updateFrameTimer->stop();
 }
@@ -370,8 +334,8 @@ void SegmentationConfigDialog::putZoom(cv::Mat Frame) {
     this->_zoom = this->_zoom(roi);
     cv::resize(this->_zoom, this->_zoom, cv::Size(100, 100));
   }
-  QImage q_zoom((uchar *)this->_zoom.data, this->_zoom.cols, this->_zoom.rows,
-                this->_zoom.step, QImage::Format_RGB888);
+  QImage q_zoom(reinterpret_cast<uchar *>(this->_zoom.data), this->_zoom.cols, this->_zoom.rows,
+                static_cast<int>(this->_zoom.step), QImage::Format_RGB888);
   ui->zoomlabel->setPixmap(QPixmap::fromImage(q_zoom));
 }
 
@@ -401,12 +365,12 @@ void SegmentationConfigDialog::on_saveSegmentationPushButton_clicked() {
       this, tr("Save Segmentation XML"), "./Config/Segmentation",
       tr("Vision Segmentation config file (*.xml)"));
 
-  if (newSegmentationFile != NULL) {
+  if (newSegmentationFile != nullptr) {
     this->_newSegmentationStdFile = newSegmentationFile.toStdString();
     if (newSegmentationFile.right(4).toStdString() != ".xml") {
       this->_newSegmentationStdFile.append(".xml");
     }
-    this->saveInFile(this->_newSegmentationStdFile);
+    this->saveInFile();
   }
 
   this->initList();
@@ -418,8 +382,8 @@ void SegmentationConfigDialog::initList() {
   dpdf = opendir("./Config/Segmentation/");
   this->ui->ParametersListWidget->clear();
 
-  if (dpdf != NULL) {
-    while ((epdf = readdir(dpdf)) != NULL) {
+  if (dpdf != nullptr) {
+    while ((epdf = readdir(dpdf)) != nullptr) {
       QString newSegmentationFile = epdf->d_name;
 
       if (newSegmentationFile.right(4) == ".xml") {
@@ -516,8 +480,8 @@ void SegmentationConfigDialog::setOriginalFrameOnScreen() {
     cv::resize(tempFrame, tempFrame, newSize);
     cv::cvtColor(tempFrame, tempFrame, CV_BGR2RGB);
 
-    QImage qimg2((uchar *)tempFrame.data, tempFrame.cols, tempFrame.rows,
-                 tempFrame.step, QImage::Format_RGB888);
+    QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
+                 static_cast<int>(tempFrame.step), QImage::Format_RGB888);
     this->ui->originalLabel->setPixmap(QPixmap::fromImage(qimg2));
   } else {
     spdlog::get("General")->warn(

@@ -20,7 +20,7 @@ void PositionProcessing::saveXML()
 
 }
 
-void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debugFrame){
+void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
 
   FieldRegions groupedBlobs = pairBlobs();
   static Players empty_players;
@@ -29,9 +29,11 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
   // printf("Team Color %d\n", getTeamColor());
 
   // Settting team positions
-  Players teamA = findTeam(entities, debugFrame, groupedBlobs.team);
+  Players teamA;
+  findTeam(teamA, debugFrame, groupedBlobs.team);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
-  Players teamB = findEnemys(entities, debugFrame, groupedBlobs.enemys);
+  Players teamB;
+  findEnemys(teamB, debugFrame, groupedBlobs.enemys);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
   Players allPlayers;
@@ -39,18 +41,16 @@ void PositionProcessing::matchBlobs(std::vector<Entity>& entities, cv::Mat& debu
   allPlayers.insert(allPlayers.end(),teamB.begin(),teamB.end());
   sort(allPlayers.begin(),allPlayers.end());
 
-  Entity ball = findBall(entities, debugFrame);
+  Entity ball;
+  findBall(ball,debugFrame);
 
-  vss.setPlayers(allPlayers);
-  vss.setBall(ball);
+  vss.setEntities(ball,allPlayers);
 }
 
-Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
-
-    Entities players;
+void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
+    players.clear();
 
     std::bitset<MAX_PLAYERS> markedColors;
-    int teamCounter = 0;
     uint teamColor = static_cast<uint>(getTeamColor());
 
     for (Region &region : teamRegions) {
@@ -69,7 +69,7 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
         markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player robot((teamColor-1)*100 + colorIndex - Color::RED);
+        Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED);
         robot.team(teamColor);
         Point lastPosition = robot.position();
         Point newPositionInPixels = (b1.position + b2.position) * 0.5;
@@ -82,7 +82,6 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
           newPosition = lastPosition;
         }
 
-        Float newTime = vss.time().getMilliseconds();
         Float newAngle = Utils::angle(b1.position, b2.position);
 
         auto & playerPosVel = _kalmanFilterRobots[0][robot.id()%100].update(newPosition.x,newPosition.y);
@@ -99,14 +98,13 @@ Players PositionProcessing::findTeam(std::vector<Entity> &entities, cv::Mat& deb
       }
     }
 
-    return players;
 }
 
-Players PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &enemyRegions) {
+void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std::vector<Region> &enemyRegions) {
 
-    Entities players;
+    players.clear();
 
-    std::bitset<MAX_PLAYERS> markedColors;
+    //std::bitset<MAX_PLAYERS> markedColors;
     uint teamColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
 
 
@@ -115,7 +113,7 @@ Players PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& d
         int colorIndex = region.color;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
-        Player robot((teamColor-1)*100 + colorIndex - Color::RED);
+        Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED);
         robot.team(teamColor);
         Point lastPosition = robot.position();
         Point newPositionInPixels = b2.position ;
@@ -137,42 +135,9 @@ Players PositionProcessing::findEnemys(std::vector<Entity> &entities, cv::Mat& d
         players.push_back(robot);
       }
     }
-    return players;
 }
 
-void PositionProcessing::findEnemysWithPrimary(std::vector<Entity> &entities, cv::Mat& debugFrame) {
-  int enemyIndex=3;
-  cv::Point currentPos, lastPos;
-  /*
-  for(int i = 0 ; i < 3 ; i++)
-  {
-    if(blob[this->_enemyTeam][i].valid)
-    {
-      lastPos.x = entities[enemyIndex].getPositionPixel().x;
-      lastPos.y = entities[enemyIndex].getPositionPixel().y;
-
-      currentPos.x = (blob[this->_enemyTeam][i].position.x);
-      currentPos.y = (blob[this->_enemyTeam][i].position.y);
-
-      if(abs(lastPos.x-currentPos.x) < 2 && abs(lastPos.y-currentPos.y) < 2)
-       {
-         currentPos.x = lastPos.x;
-         currentPos.y = lastPos.y;
-       }
-
-      cv::circle(debugFrame, currentPos,15,this->_colorCar[this->_enemyTeam],1, CV_AA);
-
-      entities[enemyIndex].setPosition(currentPos.x,currentPos.y);
-      entities[enemyIndex].setUpdated(true);
-      entities[enemyIndex].setColor(this->_enemyTeam);
-      enemyIndex++;
-    }
-  }
-  */
-}
-
-Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debugFrame) {
-    Entity ball;
+void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
     // Desativar, so ativar quando encontrar
     // a bola no frame atual
     ball.outdate();
@@ -206,15 +171,13 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
         filtPoint.x = Utils::bound(filtPoint.x, 0, 170);
         filtPoint.y = Utils::bound(filtPoint.y, 0, 130);
 
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)), 9, _colorCar[OrangeCOL], 2, CV_AA);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(filtPoint.x),static_cast<int>(filtPoint.y))), 9, _colorCar[OrangeCOL], 2, CV_AA);
         //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
 
         ball.id(0);
         ball.update(Point(filtPoint.x,filtPoint.y),atan2(ballVel.y,ballVel.x));
         this->_ballLastPosition.x = filtPoint.x;
         this->_ballLastPosition.y = filtPoint.y;
-
-      return ball;
     }
 
     // Debug
@@ -234,21 +197,21 @@ Entity PositionProcessing::findBall(std::vector<Entity> &entities, cv::Mat& debu
     newPosition.x = Utils::bound(newPosition.x, 0, 170);
     newPosition.y = Utils::bound(newPosition.y, 0, 130);
 
-    cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(newPosition.x,newPosition.y)), 9, _colorCar[OrangeCOL], 2, CV_AA);
+    cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(newPosition.x),static_cast<int>(newPosition.y))), 9, _colorCar[OrangeCOL], 2, CV_AA);
     //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
-    this->_ballLastPosition = cv::Point(newPosition.x,newPosition.y);
-    return ball;
+    this->_ballLastPosition = cv::Point(static_cast<int>(newPosition.x),
+                                        static_cast<int>(newPosition.y));
 }
 
 std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> PositionProcessing::getNearestPrimary(Blob current) {
-  int dMin = INT_MAX, distance, team;
+  int dMin = INT_MAX, distance, team = 0;
   Blob choosen;
   NearestBlobInfo result;
 
   for(int teamColor = Color::BLUE ; teamColor <= Color::YELLOW ; teamColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ;i++) {
       if(blob[teamColor][i].valid) {
-        distance = Utils::sumOfSquares(current.position,blob[teamColor][i].position);
+        distance = static_cast<int>(Utils::sumOfSquares(current.position,blob[teamColor][i].position));
 
         if(distance < dMin) {
           dMin = distance;

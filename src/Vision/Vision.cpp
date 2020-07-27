@@ -20,7 +20,7 @@ Vision::Vision()
     this->_currentFrame = cv::Mat::zeros(640,480,CV_8UC3);
     this->_lastPositions = std::vector<std::queue<std::pair<cv::Point2d,QTime>>>(7);
     this->_firstFrameDeepLog = true;
-    this->_deepLogFile = NULL;
+    this->_deepLogFile = nullptr;
     this->_deepLogFileName = "log"; // default file name
     this->_deepLogFileFolder = "Log/deep/"; // default file folder
     this->_deepLogRecordingVideo = false;
@@ -66,7 +66,7 @@ Point Vision::getFrameDimensions(){
     return ret;
 }
 
-void Vision::update(std::vector<Entity> &currentPositions)
+void Vision::update()
 {
     Global::setConvertRatio(_convert);
 
@@ -77,7 +77,7 @@ void Vision::update(std::vector<Entity> &currentPositions)
         this->_processingFrame = this->_segmentation->run(this->_processingFrame);
         std::vector< std::vector <Run> > runs = this->_compression->run(this->_processingFrame);
         saveFrameDimensions(this->_processingFrame);
-        this->_detection->run(currentPositions, runs, this->_processingFrame.rows, this->_processingFrame.cols);
+        this->_detection->run(runs, this->_processingFrame.rows, this->_processingFrame.cols);
     }
 }
 
@@ -85,20 +85,13 @@ void Vision::update(std::vector<Entity> &currentPositions)
 
 void Vision::update(cv::Mat &frame, QTime timeStamp)
 {
-    this->_visionStatusLocker.lock();
-  //vss.setFrame(frame);
-  //vss.m_enemies.clear();
-  //vss.m_allies.clear();
+  this->_visionStatusLocker.lock();
   this->_visionFrameTimer.start();
-  std::vector<Entity> &currentPositions = this->_robotPositions;
   this->setFrame(frame);
-  this->update(currentPositions);
-  //this->setObjectsSpeed(timeStamp, currentPositions);
-  //this->_robotPositions = currentPositions;
+  this->update();
   uint32_t actualTime = static_cast<uint32_t>(this->firstTime.msecsTo(timeStamp));
-//  printf("%u\n", actualTime);
-  std::vector<Entity> &entities = currentPositions;
-  //entities.resize(1 + vss.players().size());
+  //printf("%u\n", actualTime);
+  std::vector<Entity> entities;
   entities.resize(1);
   entities[0] = vss.ball();
   Players players = vss.players();
@@ -130,7 +123,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
       pclose(f);
 
       std::stringstream ss;
-      int ini = actualTime;
+      uint ini = actualTime;
       ss << this->_deepLogFilePath << "_" << timeStamp.hour() << "." << timeStamp.minute() << "." << timeStamp.second() << ".csv";
       std::cout << "Creating file " << ss.str() << std::endl;
       this->_deepLogFile = fopen(ss.str().c_str(),"w");
@@ -431,7 +424,7 @@ void Vision::setDeepLogFileName(std::string fileName) {
     this->_deepLogFilePath = fileName;
 
     this->_deepLogFileName = fileName.substr(
-        std::max(0,(int)fileName.rfind('/')+1));
+        std::max(static_cast<uint>(0),static_cast<uint>(fileName.rfind('/')+1)));
     this->_visionStatusLocker.unlock();
 }
 

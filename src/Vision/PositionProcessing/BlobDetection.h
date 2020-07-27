@@ -21,7 +21,6 @@ public:
   /**
    * @brief    Basic function to run the algoritmh
    *
-   * @param    entities  Vector of positions
    * @param[in]  matrix  src matrix, already segmented
    * @param[in]  rows    Number of rows
    * @param[in]  cols    Number of cols
@@ -29,7 +28,7 @@ public:
    * @return   Vector of positions
    */
 
-  void run(std::vector<Entity>& entities, std::vector<std::vector<Run> > runs, int rows = DEFAULT_ROWS, int cols = DEFAULT_COLS);
+  void run(std::vector<std::vector<Run> > runs, int rows = DEFAULT_ROWS, int cols = DEFAULT_COLS);
 
 	/**
    * @brief    Initialize the algorithm

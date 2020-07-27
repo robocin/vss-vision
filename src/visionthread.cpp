@@ -48,7 +48,7 @@ void VisionThread::run()
     cv::Mat frame = CameraManager::singleton().getCurrentFrame();
     QTime timeStamp = CameraManager::singleton().getCurrentFrameTimeStamp();
 
-   // Vision::singleton().update(frame,timeStamp);
+    Vision::singleton().update(frame,timeStamp);
 
 
     if (this->_resultSignalEnabled) {

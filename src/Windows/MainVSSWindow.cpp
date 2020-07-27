@@ -159,8 +159,8 @@ void MainVSSWindow::setCameraFrame() {
                      this->m_ui->cameraLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
     cv::cvtColor(tempFrame, tempFrame, CV_BGR2RGB);
-    QImage qimg2((uchar *)tempFrame.data, tempFrame.cols, tempFrame.rows,
-                 tempFrame.step, QImage::Format_RGB888);
+    QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
+                 static_cast<int>(tempFrame.step), QImage::Format_RGB888);
     this->m_ui->cameraLabel->setPixmap(QPixmap::fromImage(qimg2));
   }
 }
@@ -196,7 +196,7 @@ void MainVSSWindow::setFrame() {
 }
 
 void MainVSSWindow::clearFrame() {
-  m_currentFrame = cv::Mat::zeros(Field::size().x, Field::size().y, CV_8UC3);
+  m_currentFrame = cv::Mat::zeros(static_cast<int>(Field::size().x), static_cast<int>(Field::size().y), CV_8UC3);
   this->setFrame();
 }
 
@@ -454,7 +454,7 @@ void MainVSSWindow::saveColorFile() {
 }
 
 bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
-  if (f_event->type() == QEvent::MouseButtonPress) {
+  if (f_event->type() == QEvent::MouseButtonPress && f_object != nullptr) {
     static size_t listSize = 0;
     std::vector<int> cameraListAux =
       CameraManager::singleton().returnCameraList();
@@ -646,7 +646,7 @@ void MainVSSWindow::keyPressEvent(QKeyEvent *e) {
 }
 
 void MainVSSWindow::on_numberOfPlayersSpinBox_valueChanged(int arg1) {
-  m_ui->numbetOfPlayersConfirm->setEnabled(true);
+   m_ui->numbetOfPlayersConfirm->setEnabled(arg1 > 0);
 }
 
 void MainVSSWindow::on_numbetOfPlayersConfirm_clicked() {

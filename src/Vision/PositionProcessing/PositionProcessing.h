@@ -81,11 +81,12 @@ public:
    * @brief    Basic struct to a object to be detected
    */
 
-  typedef struct Blob{
+  typedef struct Blob {
     cv::Point position;
     double  angle;
     bool    valid;
     int     area;
+    Blob():angle(0),valid(false),area(0) {}
   } Blob;
 
   typedef struct NearestBlobInfo{
@@ -108,7 +109,6 @@ public:
   /**
    * @brief    Basic function to run the algoritmh
    *
-   * @param    entities  Vector of positions
    * @param[in]  matriz  src matriz, already segmented
    * @param[in]  rows    Number of rows
    * @param[in]  cols    Number of cols
@@ -116,8 +116,7 @@ public:
    * @return   Vector of positions
    */
 
-  virtual void run(std::vector<Entity>& entities,
-           std::vector< std::vector< Run > > runs,
+  virtual void run(std::vector< std::vector< Run > > runs,
            int rows = DEFAULT_ROWS,
            int cols = DEFAULT_COLS) = 0;
 
@@ -171,11 +170,11 @@ protected:
   void saveXML();
 
   /**
-   * @brief    Identifies the ball, and updates its position in entities.
+   * @brief    Identifies the ball, and updates its position in entity.
    *
-   * @param    entities  The entity
+   * @param    ball  The entity to be returned
    */
-  Entity findBall(std::vector<Entity> &entities, cv::Mat &debugFrame);
+  void findBall(Entity &ball, cv::Mat &debugFrame);
 
    /**
   * @brief    Identifies from which team the blob belongs to.
@@ -188,32 +187,25 @@ protected:
   std::pair<Blob, NearestBlobInfo> getNearestPrimary(Blob current);
 
    /**
-  * @brief    Identifies a robot
+  * @brief    Identifies all robots
   *
-  * @param    entities  The entity
+  * @param    debugFrame  The debugFrame to draw the blob's positions
   */
-  void matchBlobs(std::vector<Entity>& entities, cv::Mat &debugFrame);
-
-   /**
-  * @brief    Updates the enemys positions, using just the team patch.
-  *
-  * @param    entities  The entity
-  */
-  void findEnemysWithPrimary(std::vector<Entity> &entities, cv::Mat& debugFrame);
+  void matchBlobs(cv::Mat &debugFrame);
 
    /**
   * @brief    Updates the teammates positions.
   *
-  * @param    entities  The entity
+  * @param    players  The players entities
   */
-  Players findTeam(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region>& teamRegions);
+  void findTeam(Players &players, cv::Mat& debugFrame, std::vector<Region>& teamRegions);
 
   /**
    * @brief    Updates the enemys positions.
    *
-   * @param    entities  The entity
+   * @param    players  The players entities
    */
-  Players findEnemys(std::vector<Entity> &entities, cv::Mat& debugFrame, std::vector<Region> &enemyRegions);
+  void findEnemys(Players &players, cv::Mat& debugFrame, std::vector<Region> &enemyRegions);
 
 
   /**

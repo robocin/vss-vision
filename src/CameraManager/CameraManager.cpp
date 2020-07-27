@@ -59,7 +59,7 @@ bool CameraManager::init(int cameraIndex) {
 
   try {
     this->_capture >> this->_currentFrame;
-  } catch (cv::Exception& e) {
+  } catch (cv::Exception&) {
     this->_capture.release();
     this->_errorInFrame = ERROR_FRAME_FROM_IMAGE;
 
@@ -108,14 +108,14 @@ bool CameraManager::init(std::string videoPath) {
 
   try {
     this->_capture >> this->_currentFrame;
-  } catch (cv::Exception& e) {
+  } catch (cv::Exception&) {
     this->_capture.release();
     this->_errorInFrame = ERROR_FRAME_FROM_IMAGE;
 
     return false;
   }
 
-  this->_frameRate = (int)this->_capture.get(CV_CAP_PROP_FPS);
+  this->_frameRate = static_cast<int>(this->_capture.get(CV_CAP_PROP_FPS));
   this->_captureType = videoCapture;
   return true;
 }
@@ -445,7 +445,7 @@ int CameraManager::searchInRegex(std::string line, QString regexString) {
     pos += rx.matchedLength();
   }
 
-  if ((int)list.size() >= 1) {
+  if (static_cast<int>(list.size()) >= 1) {
     std::stringstream ss;
     ss << list.at(0).toLocal8Bit().constData();
     ss >> numberToReturn;
@@ -513,7 +513,7 @@ QString CameraManager::getLastVideoUrl() {
     return QString("Error");
   }
 
-  this->_lastVideoUrl = ((std::string)fs[VIDEO_URL]).c_str();
+  this->_lastVideoUrl = std::string(fs[VIDEO_URL]).c_str();
   fs.release();
 
   return QString(this->_lastVideoUrl.c_str());
@@ -617,6 +617,8 @@ void CameraManager::setDistortionOption(Distortions distortionOption) {
 
 void CameraManager::getDistortionParameters() {
   switch (this->_distortionOption) {
+    case NULO:
+      break;
     case ELP:
       cv::FileStorage opencv_file(
           "CameraManager/radialDistortion/camera_matrices.xml",

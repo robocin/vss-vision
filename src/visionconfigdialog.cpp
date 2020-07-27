@@ -7,8 +7,8 @@ VisionConfigDialog::VisionConfigDialog(bool videoFlag, QWidget *parent) :
   ui(new Ui::VisionConfigDialog) {
   this->_vision = &this->_vision->singleton();
   ui->setupUi(this);
-  this->_segmentationDialog = NULL;
-  this->_trackDialog = NULL;
+  this->_segmentationDialog = nullptr;
+  this->_trackDialog = nullptr;
   this->_videoFlag = videoFlag;
   this->_fieldPixmap = QPixmap("Images/field.png");
   this->_fieldPixmap = this->_fieldPixmap.scaled(this->ui->projectionLabel->width(),
@@ -64,36 +64,37 @@ void VisionConfigDialog::updateLabels() {
   QColor allyColor, enemyColor, currentColor;
 
   if (Vision::singleton().getTeamColor() == BlueCOL) {
-    allyColor = QColor((int)ColorSpace::markerColors[BlueCOL].red,
-                       (int)ColorSpace::markerColors[BlueCOL].green,
-                       (int)ColorSpace::markerColors[BlueCOL].blue);
-    enemyColor = QColor((int)ColorSpace::markerColors[YellowCOL].red,
-                        (int)ColorSpace::markerColors[YellowCOL].green,
-                        (int)ColorSpace::markerColors[YellowCOL].blue);
+    allyColor = QColor(static_cast<int>(ColorSpace::markerColors[BlueCOL].red),
+                       static_cast<int>(ColorSpace::markerColors[BlueCOL].green),
+                       static_cast<int>(ColorSpace::markerColors[BlueCOL].blue));
+    enemyColor = QColor(static_cast<int>(ColorSpace::markerColors[YellowCOL].red),
+                        static_cast<int>(ColorSpace::markerColors[YellowCOL].green),
+                        static_cast<int>(ColorSpace::markerColors[YellowCOL].blue));
   } else {
-    allyColor = QColor((int)ColorSpace::markerColors[YellowCOL].red,
-                       (int)ColorSpace::markerColors[YellowCOL].green,
-                       (int)ColorSpace::markerColors[YellowCOL].blue);
-    enemyColor = QColor((int)ColorSpace::markerColors[BlueCOL].red,
-                        (int)ColorSpace::markerColors[BlueCOL].green,
-                        (int)ColorSpace::markerColors[BlueCOL].blue);
+    allyColor = QColor(static_cast<int>(ColorSpace::markerColors[YellowCOL].red),
+                       static_cast<int>(ColorSpace::markerColors[YellowCOL].green),
+                       static_cast<int>(ColorSpace::markerColors[YellowCOL].blue));
+    enemyColor = QColor(static_cast<int>(ColorSpace::markerColors[BlueCOL].red),
+                        static_cast<int>(ColorSpace::markerColors[BlueCOL].green),
+                        static_cast<int>(ColorSpace::markerColors[BlueCOL].blue));
   }
 
-  for (int i = 0; i < this->_robotPositions.size(); i++) {
+  for (Entities::size_type i = 0; i < this->_robotPositions.size(); i++) {
     if (this->_robotPositions[i].updated()) {
       x = this->_robotPositions[i].position().x;
       y = this->_robotPositions[i].position().y;
       //velx = this->_robotPositions[i].getObjectSpeed().x;
       //vely = this->_robotPositions[i].getObjectSpeed().y;
+      velx = vely = 0;
       angle = this->_robotPositions[i].angle();
-      p1.setX(std::floor(x * 3));
-      p1.setY(std::floor(390 - y * 3));
-      p2.setX(p1.x() + velx);
-      p2.setY(p1.y() - vely);
-      colorIndex = this->_robotPositions[i].id();
-      currentColor = QColor((int)ColorSpace::markerColors[colorIndex].red,
-                            (int)ColorSpace::markerColors[colorIndex].green,
-                            (int)ColorSpace::markerColors[colorIndex].blue);
+      p1.setX(static_cast<int>(std::floor(x * 3)));
+      p1.setY(static_cast<int>(std::floor(390 - y * 3)));
+      p2.setX(static_cast<int>(p1.x() + velx));
+      p2.setY(static_cast<int>(p1.y() - vely));
+      colorIndex = static_cast<int>(this->_robotPositions[i].id());
+      currentColor = QColor(static_cast<int>(ColorSpace::markerColors[colorIndex].red),
+                            static_cast<int>(ColorSpace::markerColors[colorIndex].green),
+                            static_cast<int>(ColorSpace::markerColors[colorIndex].blue));
       painter.setPen(robotSidePen);
 
       if (this->_robotPositions[i].id() == 0) { // ball
@@ -113,7 +114,10 @@ void VisionConfigDialog::updateLabels() {
         painter.rotate(angle);
         painter.translate(-p1);
         painter.setBrush(QBrush(currentColor));
-        painter.drawRect(p1.x() - robotWidth / 2, p1.y() - robotWidth / 2, robotWidth, robotWidth / 2);
+        painter.drawRect(static_cast<int>(p1.x() - robotWidth / 2),
+                         static_cast<int>(p1.y() - robotWidth / 2),
+                         static_cast<int>(robotWidth),
+                         static_cast<int>(robotWidth / 2));
 
         if (this->_robotPositions[i].id()/100 == 1) {
           painter.setBrush(QBrush(allyColor));
@@ -121,7 +125,10 @@ void VisionConfigDialog::updateLabels() {
           painter.setBrush(QBrush(enemyColor));
         }
 
-        painter.drawRect(p1.x() - robotWidth / 2, p1.y(), robotWidth, robotWidth / 2);
+        painter.drawRect(static_cast<int>(p1.x() - robotWidth / 2),
+                         static_cast<int>(p1.y()),
+                         static_cast<int>(robotWidth),
+                         static_cast<int>(robotWidth / 2));
         painter.resetTransform();
         painter.setPen(velocityPen);
         painter.drawLine(p1, p2);
