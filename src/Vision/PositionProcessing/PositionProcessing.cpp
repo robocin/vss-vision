@@ -52,11 +52,12 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
 
     std::bitset<MAX_PLAYERS> markedColors;
     uint teamColor = static_cast<uint>(getTeamColor());
-
+    printf("color Index : ");
     for (Region &region : teamRegions) {
       if (region.distance < blobMaxDist()) {
         //int colorIndex = Utils::convertOldColorToNewColor(region.color);
         int colorIndex = region.color;
+        printf(" %d", colorIndex);
         if (!Utils::isRobotColor(colorIndex)) {
           // cor invalida
           continue;
@@ -253,12 +254,13 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
   if(result.enemys.empty() || result.enemys.size() < 3)
   {
       int idColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
+      int qnt = 0;
       for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
         if(blob[idColor][i].valid) {
 
           current.blobs = std::make_pair(blob[idColor][i], blob[idColor][i]);
           current.team = idColor;
-          current.color = idColor;
+          current.color = Color::RED + qnt++;
           current.distance = 0.0;
           result.enemys.push_back(current);
         }
