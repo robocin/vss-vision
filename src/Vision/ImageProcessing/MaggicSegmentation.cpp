@@ -1387,11 +1387,13 @@ void MaggicSegmentation::doDetails() {
         }
     }
 
-    if (this->releasedRight) {
+    if (this->releasedLeft) {
         if (pivotForPaletteId && colorSelectionId != -1) {
           this->hueList[static_cast<size_t>(pivotForPaletteId-1)].second = colorSelectionId+1;
           std::cout << "Selected color " << colorSelectionId+1 << " for " << pivotForPaletteId-1 << std::endl;
+          mut.unlock();
           saveSession();
+          mut.lock();
           std::cout << "Saved session values" << std::endl;
         }
     }
