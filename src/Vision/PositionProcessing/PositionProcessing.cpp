@@ -52,12 +52,12 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
 
     std::bitset<MAX_PLAYERS> markedColors;
     uint teamColor = static_cast<uint>(getTeamColor());
-    printf("color Index : ");
+    //printf("color Index : ");
     for (Region &region : teamRegions) {
       if (region.distance < blobMaxDist()) {
         //int colorIndex = Utils::convertOldColorToNewColor(region.color);
         int colorIndex = region.color;
-        printf(" %d", colorIndex);
+        //printf(" %d", colorIndex);
         if (!Utils::isRobotColor(colorIndex)) {
           // cor invalida
           continue;

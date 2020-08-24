@@ -110,7 +110,7 @@ void MaggicSegmentationDialog::updateFrame()
     maggicSegmentation->getDebugFrame(this->_segmentedFrame);
 
     timerFPS.stop();
-    printf("MaggicVision us %.0f fps %.0f\n", timerFPS.getMicroseconds(), timerFPS.getInFPS());
+    //printf("MaggicVision us %.0f fps %.0f\n", timerFPS.getMicroseconds(), timerFPS.getInFPS());
 
     static bool defineThresholdValue = true;
 
@@ -270,6 +270,11 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
     if (this->maggicSegmentation) {
       this->maggicSegmentation->setMouseButtonRelease(static_cast<int>(mouseEvent->button()));
+        if (static_cast<int>(mouseEvent->button()) == 2) { // right click
+            if (f_object == ui->tabWidget) {
+                std::cout << "Right click on Tab widget!" << std::endl;
+            }
+        }
     }
   }
   if (f_event->type() == QEvent::MouseMove) {
@@ -277,8 +282,9 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
       if (f_object == this) {
 
           cv::Point2f mpos(-1,-1);
-          QRect qrect = this->ui->visualizationLabel->frameRect();
+          QRect qrect = this->ui->visualizationLabel->geometry();
           QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
+          std::cout << "(" << qrect.x() << " " << qrect.y() << " " << qrect.width() << " " << qrect.height() << " )" << std::endl;
           mpos.x = mouseEvent->x() - qrect.x();
           mpos.y = mouseEvent->y() - qrect.y();
           cursorInsideVisualization = qrect.contains(static_cast<int>(mpos.x),static_cast<int>(mpos.y));

@@ -30,7 +30,7 @@ void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_mse
     if (Network::socket.send(packet, recipient, port) != sf::Socket::Done)
     {
         printf("Network:: sendFrame:: Something went wrong when trying to send the frame.\n");
-    } else printf("Network:: sendFrame:: Frame sent.\n");
+    } // else printf("Network:: sendFrame:: Frame sent.\n");
 }
 
 void Network::buttonsMessageTeamColor(bool teamColor)
