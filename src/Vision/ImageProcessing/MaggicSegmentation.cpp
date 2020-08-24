@@ -1324,7 +1324,7 @@ void MaggicSegmentation::doDetails() {
     if (this->dragpivotId != -1) pivotId = -1;
     if (this->pressedLeft) {
         if (pivotId != -1) {
-          std::cout << "start Drag" << std::endl;
+          //std::cout << "start Drag" << std::endl;
           this->dragpivotId = pivotId;
         }
         if (this->enableFilter && firstPress.x == -1) {
@@ -1333,7 +1333,7 @@ void MaggicSegmentation::doDetails() {
     }
     if (this->mouseDrag) {
         if (dragpivotId != -1) {
-          std::cout << "dragging " << dragpivotId << std::endl;
+          //std::cout << "dragging " << dragpivotId << std::endl;
           int theX = max(colorFrame.x+1,min(colorFrame.x + colorFrame.width-2, this->cursorPos.x));
           cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,0),2);
         }

@@ -279,14 +279,14 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
   }
   if (f_event->type() == QEvent::MouseMove) {
 
+      cv::Point2f mpos(-1,-1);
       if (f_object == this) {
 
-          cv::Point2f mpos(-1,-1);
           QRect qrect = this->ui->visualizationLabel->geometry();
           QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
-          std::cout << "(" << qrect.x() << " " << qrect.y() << " " << qrect.width() << " " << qrect.height() << " )" << std::endl;
+          //std::cout << "(" << qrect.x() << " " << qrect.y() << " " << qrect.width() << " " << qrect.height() << " )" << std::endl;
           cursorInsideVisualization = qrect.contains(static_cast<int>(mouseEvent->x()),static_cast<int>(mouseEvent->y()));
-          std::cout << "cursor " << (cursorInsideVisualization ? "inside" : "outside") << std::endl;
+          //std::cout << "cursor " << (cursorInsideVisualization ? "inside" : "outside") << std::endl;
           mpos.x = mouseEvent->x() - qrect.x();
           mpos.y = mouseEvent->y() - qrect.y();
 
@@ -299,9 +299,10 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
             else this->ui->visualizationLabel->setCursor(Qt::ArrowCursor);
 
           } else mpos.x = mpos.y = -1;
-          if (this->maggicSegmentation) {
-            this->maggicSegmentation->setMousePosition(mpos);
-          }
+
+      }
+      if (this->maggicSegmentation) {
+        this->maggicSegmentation->setMousePosition(mpos);
       }
 
   }
