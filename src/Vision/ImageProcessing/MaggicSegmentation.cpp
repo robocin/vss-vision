@@ -243,8 +243,28 @@ void MaggicSegmentation::calibrate(cv::Mat &frame) {
 enableEstimateRobots = !(this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame && this->paused);
 this->_manyTimes = 1;
 this->_entitiesCount = 7;
-  if (enableEstimateRobots) estimateRobots(image,this->_manyTimes, this->_entitiesCount);
-  doDetails();
+  //if (enableEstimateRobots) estimateRobots(image,this->_manyTimes, this->_entitiesCount);
+  cv::Mat d, t, extremeSaturation;
+  if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
+    image.copyTo(d);
+    filterGray(d, d);
+    cv::cvtColor(d, t, cv::COLOR_BGR2GRAY);
+    t = t > 0;
+    cv::cvtColor(t,this->_firstThreshold,cv::COLOR_GRAY2BGR);
+
+  } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
+    image.copyTo(d);
+    filterGray(d, d);
+    cv::cvtColor(d, extremeSaturation, cv::COLOR_BGR2HSV_FULL);
+    filterExtremeSaturation(extremeSaturation,extremeSaturation);
+    cv::cvtColor(extremeSaturation, this->_extremeSaturation, cv::COLOR_HSV2BGR_FULL);
+
+  } else if (this->_debugSelection == MaggicVisionDebugSelection_MultipliedResults) {
+      image.copyTo(this->_multipliedResults);
+
+  } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
+      doDetails();
+  }
 
   /*switch(this->_debugSelection) {
     case MaggicVisionDebugSelection_Thresholded:
