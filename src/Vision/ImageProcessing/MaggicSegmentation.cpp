@@ -1186,7 +1186,7 @@ void MaggicSegmentation::setMouseButtonRelease(int btnId) {
         this->pressedLeft = false;
         this->pressedRight = false;
         this->mouseDrag = false;
-        std::cout << (btnId == 1 ? "Left" : "Right") << " Clicked" << std::endl;
+        //std::cout << (btnId == 1 ? "Left" : "Right") << " Clicked" << std::endl;
       }
   }
   mut.unlock();

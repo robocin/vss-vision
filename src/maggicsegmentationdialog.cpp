@@ -285,13 +285,13 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
           QRect qrect = this->ui->visualizationLabel->geometry();
           QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
           std::cout << "(" << qrect.x() << " " << qrect.y() << " " << qrect.width() << " " << qrect.height() << " )" << std::endl;
+          cursorInsideVisualization = qrect.contains(static_cast<int>(mouseEvent->x()),static_cast<int>(mouseEvent->y()));
+          std::cout << "cursor " << (cursorInsideVisualization ? "inside" : "outside") << std::endl;
           mpos.x = mouseEvent->x() - qrect.x();
           mpos.y = mouseEvent->y() - qrect.y();
-          cursorInsideVisualization = qrect.contains(static_cast<int>(mpos.x),static_cast<int>(mpos.y));
-          std::cout << "cursor " << (cursorInsideVisualization ? "inside" : "outside") << std::endl;
 
           if(cursorInsideVisualization) {
-              std::cout << "mpos " << mpos.x << " "<< mpos.y << std::endl;
+              //std::cout << "mpos " << mpos.x << " "<< mpos.y << std::endl;
               mpos.x = mpos.x / static_cast<float>(qrect.width());
               mpos.y = mpos.y / static_cast<float>(qrect.height());
 
