@@ -1363,12 +1363,12 @@ void MaggicSegmentation::doDetails() {
 
 
     //std::cout << "pressedId " << this->pressedId << std::endl;
-    if(this->pressedRight) {
+    if(this->releasedRight) {
       //std::cout << "Right Clicked" << std::endl;
       if (pivotId != -1) {
         pivotForPaletteId = pivotId+1;
       } else pivotForPaletteId = 0;
-      pressedRight = false;
+      releasedRight = false;
     }
 
     if (this->releasedLeft) {
@@ -1415,6 +1415,8 @@ void MaggicSegmentation::doDetails() {
           saveSession();
           mut.lock();
           std::cout << "Saved session values" << std::endl;
+          pivotForPaletteId = 0;
+          firstPress = cv::Point(-1,-1);
         }
     }
 
@@ -1475,4 +1477,27 @@ void MaggicSegmentation::removeTopRectangle(Rectangles& rects, cv::Point& p) {
     }
  }
  if (it_to_remove != rects.end()) rects.erase(it_to_remove);
+}
+
+
+void MaggicSegmentation::saveSelectedDebug() {
+    this->mut.lock();
+    if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
+        cv::imwrite("maggic_thresholded.png", this->_firstThreshold);
+        std::cout << "Saved thresholded" << std::endl;
+
+    } else if (this->_debugSelection == MaggicVisionDebugSelection_SegmentationFrame) {
+        cv::imwrite("maggic_segmentation.png", this->_segmentationFrame);
+        std::cout << "Saved segmentation" << std::endl;
+
+    } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
+        cv::imwrite("maggic_extremeSaturation.png", this->_extremeSaturation);
+        std::cout << "Saved extreme saturation" << std::endl;
+
+    } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
+        cv::imwrite("maggic_detailsFrame.png", this->_detailsFrame);
+        std::cout << "Saved details frame" << std::endl;
+
+    }
+    this->mut.unlock();
 }

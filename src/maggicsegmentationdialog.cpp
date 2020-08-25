@@ -273,6 +273,7 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
         if (static_cast<int>(mouseEvent->button()) == 2) { // right click
             if (f_object == ui->tabWidget) {
                 std::cout << "Right click on Tab widget!" << std::endl;
+                this->maggicSegmentation->saveSelectedDebug();
             }
         }
     }
