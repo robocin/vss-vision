@@ -199,11 +199,13 @@ void MaggicSegmentationDialog::on_maximumVerticalSlider_valueChanged()
 
 void MaggicSegmentationDialog::on_threshGrayHorizontalSlider_valueChanged()
 {
+  this->maggicSegmentation->lock();
   int val = ui->threshGrayHorizontalSlider->value();
   this->maggicSegmentation->setFilterGrayThresholdValue(val);
   ui->threshGrayLcdNumber->display(val);
   this->maggicSegmentation->setHUETable(true);
   this->maggicSegmentation->generateLUTFromHUE();
+  this->maggicSegmentation->unlock();
 }
 
 void MaggicSegmentationDialog::on_loadButton_clicked()
@@ -212,12 +214,14 @@ void MaggicSegmentationDialog::on_loadButton_clicked()
 }
 
 void MaggicSegmentationDialog::on_resetButton_clicked() {
+  this->maggicSegmentation->lock();
   this->maggicSegmentation->setFilterGrayThresholdValues(FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM,FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM);
   this->maggicSegmentation->setDebugSelection(maggicVisionDebugSelectionVector[ui->tabWidget->currentIndex()]);
   this->maggicSegmentation->setLearningThresholdFrames(static_cast<uint>(ui->learnSpinBox->value()));
 
   int m, M;
   this->maggicSegmentation->getFilterGrayThresholdValues(m,M);
+  this->maggicSegmentation->unlock();
   ui->minimumLcdNumber->display(m);
   ui->maximumLcdNumber->display(M);
   ui->minimumVerticalSlider->setValue(m);
@@ -232,11 +236,13 @@ void MaggicSegmentationDialog::on_playpauseButton_clicked(bool checked)
 void MaggicSegmentationDialog::on_applyLUTButton_clicked()
 {
   this->maggicSegmentation->saveSession();
+  this->maggicSegmentation->lock();
   this->maggicSegmentation->setHUETable(true);
   this->maggicSegmentation->generateLUTFromHUE();
   int* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
   int* src_LUT = this->maggicSegmentation->getLUT();
   memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
+  this->maggicSegmentation->unlock();
 
 }
 void MaggicSegmentationDialog::on_fixCameraButton_clicked()

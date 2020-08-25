@@ -227,6 +227,7 @@ void MaggicSegmentation::saveSession() {
 }
 
 void MaggicSegmentation::calibrate(cv::Mat &frame) {
+    this->mut.lock();
   if (!paused) {
     frame.copyTo(this->_imageBuffer);
     this->_calibrationFrames++;
@@ -264,7 +265,9 @@ this->_entitiesCount = 7;
       image.copyTo(this->_multipliedResults);
 
   } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
+      this->mut.unlock();
       doDetails();
+      this->mut.lock();
   }
 
   /*switch(this->_debugSelection) {
@@ -281,7 +284,7 @@ this->_entitiesCount = 7;
       this->_segmentationFrame = cv::Mat::zeros(1,1,CV_8UC3);
 
   }*/
-
+    this->mut.unlock();
 }
 
 void MaggicSegmentation::setDebugSelection(MaggicVisionDebugSelection selection) {
@@ -302,7 +305,7 @@ int MaggicSegmentation::getEntitiesCount() {
 }
 
 void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
-  cv::Mat res = cv::Mat::zeros(o.size(), o.type());
+  if (d.empty()) d = cv::Mat::zeros(o.size(), o.type());
 
   for (int r = 0; r < o.rows; ++r) {
     for (int c = 0; c < o.cols; ++c) {
@@ -1501,4 +1504,12 @@ void MaggicSegmentation::saveSelectedDebug() {
 
     }
     this->mut.unlock();
+}
+
+void MaggicSegmentation::lock() {
+    mut.lock();
+}
+
+void MaggicSegmentation::unlock() {
+    mut.unlock();
 }

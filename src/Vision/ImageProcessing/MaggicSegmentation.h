@@ -159,6 +159,10 @@ public:
 
   void saveSelectedDebug();
 
+  void lock();
+
+  void unlock();
+
 private:
   int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40, _intervalGrayThreshold = 30;
   static constexpr float div255 = 1.0f / 255.0f;
