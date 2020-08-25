@@ -200,6 +200,8 @@ private:
 
   void filterGray(cv::Mat &d, cv::Mat &o);
 
+  inline void filterGray(cv::Vec3b &color, cv::Vec3b &coloro);
+
   void filterBinarizeColored(cv::Mat &d, cv::Mat &o);
 
   void filterExtremeSaturation(cv::Mat &d, cv::Mat &o);

@@ -248,9 +248,10 @@ this->_entitiesCount = 7;
   if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
     image.copyTo(d);
     filterGray(d, d);
-    cv::cvtColor(d, t, cv::COLOR_BGR2GRAY);
-    t = t > 0;
-    cv::cvtColor(t,this->_firstThreshold,cv::COLOR_GRAY2BGR);
+    //cv::cvtColor(d, t, cv::COLOR_BGR2GRAY);
+    //t = t > 0;
+    //cv::cvtColor(t,this->_firstThreshold,cv::COLOR_GRAY2BGR);
+    d.copyTo(this->_firstThreshold);
 
   } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
     image.copyTo(d);
@@ -303,51 +304,37 @@ int MaggicSegmentation::getEntitiesCount() {
 void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
   cv::Mat res = cv::Mat::zeros(o.size(), o.type());
 
-
   for (int r = 0; r < o.rows; ++r) {
     for (int c = 0; c < o.cols; ++c) {
-      cv::Vec3b coloro = o.at<cv::Vec3b>(r, c);
-      cv::Vec3b color;
-      //if (abs(coloro[0] - coloro[1]) < thre && abs(coloro[1] - coloro[2]) < thre && abs(coloro[2] - coloro[0]) < thre) {
-      if (normalized_color) {
-        float x = coloro[0];
-        float y = coloro[1];
-        float z = coloro[2];
-        x *= x;
-        y *= y;
-        z *= z;
-        float a = 1.f / static_cast<float>(sqrt(x + y + z));
-        coloro[0] = static_cast<uchar>(x*a);
-        coloro[1] = static_cast<uchar>(y*a);
-        coloro[2] = static_cast<uchar>(z*a);
-      }
-      /*float dx = coloro[0] - coloro[1];
-      float dy = coloro[1] - coloro[2];
-      float dz = coloro[2] - coloro[0];
-      if (filterGrayThreshold*filterGrayThreshold > dx*dx + dy*dy + dz*dz) {*/
-      float x = coloro[0];
-      float y = coloro[1];
-      float z = coloro[2];
-      float men = min(min(x, y), z);
-      float x1 = max(men - filterGrayThreshold, 0);
-      float y1 = max(men - filterGrayThreshold, 0);
-      float z1 = max(men - filterGrayThreshold, 0);
-      float x2 = min(men + filterGrayThreshold, 255);
-      float y2 = min(men + filterGrayThreshold, 255);
-      float z2 = min(men + filterGrayThreshold, 255);
-      if (x >= x1 && x <= x2 &&
-        y >= y1 && y <= y2 &&
-        z >= z1 && z <= z2) {
-
-      }
-      else {
-        color = coloro;
-        res.at<cv::Vec3b>(r, c) = color;
-      }
+      filterGray(d.at<cv::Vec3b>(r, c),o.at<cv::Vec3b>(r, c));
     }
   }
+}
 
-  d = res;
+inline void MaggicSegmentation::filterGray(cv::Vec3b &color, cv::Vec3b &coloro) {
+    float x = coloro[0];
+    float y = coloro[1];
+    float z = coloro[2];
+    if (normalized_color) {
+      x *= x;
+      y *= y;
+      z *= z;
+      float a = 1.f / static_cast<float>(sqrt(x + y + z));
+      x = static_cast<uchar>(x*a);
+      y = static_cast<uchar>(y*a);
+      z = static_cast<uchar>(z*a);
+    }
+    float men = min(min(x, y), z);
+    float lower_bound = max(men - filterGrayThreshold, 0.f);
+    float upper_bound = min(men + filterGrayThreshold, 255.f);
+    if (x >= lower_bound && x <= upper_bound &&
+      y >= lower_bound && y <= upper_bound &&
+      z >= lower_bound && z <= upper_bound) {
+      color = cv::Vec3b(0,0,0); // black
+    }
+    else {
+      color = coloro;
+    }
 }
 
 void MaggicSegmentation::filterBinarizeColored(cv::Mat &d, cv::Mat &o) {
@@ -561,7 +548,16 @@ void MaggicSegmentation::generateLUTFromHUE() {
         }
     }
 
-    float x = b;
+    cv::Vec3b bgr(b,g,r);
+    filterGray(bgr,bgr);
+    if (bgr[0] == 0 && bgr[1] == 0 && bgr[2] == 0) {
+      this->_LUT[i] = 0; // black
+    }
+    else {
+      this->_LUT[i] = this->_HUETable[coloro[0]];
+    }
+
+    /*float x = b;
     float y = g;
     float z = r;
     float men = min(min(x, y), z);
@@ -578,7 +574,7 @@ void MaggicSegmentation::generateLUTFromHUE() {
     }
     else {
       this->_LUT[i] = this->_HUETable[coloro[0]];
-    }
+    }*/
 
   }
   //std::cout << "Done generating LUT from Hue.\n";
@@ -1482,20 +1478,25 @@ void MaggicSegmentation::removeTopRectangle(Rectangles& rects, cv::Point& p) {
 
 void MaggicSegmentation::saveSelectedDebug() {
     this->mut.lock();
+    static char fileName[100];
     if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
-        cv::imwrite("maggic_thresholded.png", this->_firstThreshold);
+        sprintf(fileName,"maggic_thresholded_%03d.png",filterGrayThreshold);
+        cv::imwrite(fileName, this->_firstThreshold);
         std::cout << "Saved thresholded" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_SegmentationFrame) {
-        cv::imwrite("maggic_segmentation.png", this->_segmentationFrame);
+        sprintf(fileName,"maggic_segmentation_%03d.png",filterGrayThreshold);
+        cv::imwrite(fileName, this->_segmentationFrame);
         std::cout << "Saved segmentation" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
-        cv::imwrite("maggic_extremeSaturation.png", this->_extremeSaturation);
+        sprintf(fileName,"maggic_extremeSaturation_%03d.png",filterGrayThreshold);
+        cv::imwrite(fileName, this->_extremeSaturation);
         std::cout << "Saved extreme saturation" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
-        cv::imwrite("maggic_detailsFrame.png", this->_detailsFrame);
+        sprintf(fileName,"maggic_detailsFrame_%03d.png",filterGrayThreshold);
+        cv::imwrite(fileName, this->_detailsFrame);
         std::cout << "Saved details frame" << std::endl;
 
     }
