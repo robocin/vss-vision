@@ -524,6 +524,22 @@
     <string>Filter</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="NormalizedCheckBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>550</y>
+     <width>111</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Normalized</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+  </widget>
  </widget>
  <resources>
   <include location="image.qrc"/>

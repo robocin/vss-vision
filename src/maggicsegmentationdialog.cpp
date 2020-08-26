@@ -325,3 +325,8 @@ void MaggicSegmentationDialog::on_FilterCheckBox_toggled(bool checked)
 {
     this->maggicSegmentation->setFilterEnabled(checked);
 }
+
+void MaggicSegmentationDialog::on_NormalizedCheckBox_toggled(bool checked)
+{
+    this->maggicSegmentation->setNormalizedEnabled(checked);
+}

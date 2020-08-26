@@ -1467,6 +1467,13 @@ void MaggicSegmentation::setFilterEnabled(bool enabled) {
  this->mut.unlock();
 }
 
+void MaggicSegmentation::setNormalizedEnabled(bool enabled) {
+ this->mut.lock();
+ this->normalized_color = enabled;
+ this->updateColors = true;
+ this->mut.unlock();
+}
+
 void MaggicSegmentation::removeTopRectangle(Rectangles& rects, cv::Point& p) {
  Rectangles::iterator it = rects.begin();
  Rectangles::iterator it_to_remove = rects.end();

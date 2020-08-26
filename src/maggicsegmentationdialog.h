@@ -59,6 +59,8 @@ void on_vectorscopeCheckBox_toggled(bool checked);
 
 void on_FilterCheckBox_toggled(bool checked);
 
+void on_NormalizedCheckBox_toggled(bool checked);
+
 private:
   Ui::MaggicSegmentationDialog *ui;
   Vision* _vision;

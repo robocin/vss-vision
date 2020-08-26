@@ -157,6 +157,8 @@ public:
 
   void setFilterEnabled(bool enabled);
 
+  void setNormalizedEnabled(bool enabled);
+
   void saveSelectedDebug();
 
   void lock();
