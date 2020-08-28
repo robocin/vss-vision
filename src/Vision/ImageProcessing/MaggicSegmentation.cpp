@@ -237,38 +237,45 @@ void MaggicSegmentation::calibrate(cv::Mat &frame) {
   cv::Mat &image = this->_imageBuffer;
   //imwrite("robocin.png",image);
 
-  if (this->_calibrationFrames > this->_learningThresholdFrames) {
+  /*if (this->_calibrationFrames > this->_learningThresholdFrames) {
     this->setLearningThresholdValue(false);
     updateFilterGrayThresholdValue();
-  }
-enableEstimateRobots = !(this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame && this->paused);
-this->_manyTimes = 1;
-this->_entitiesCount = 7;
-  //if (enableEstimateRobots) estimateRobots(image,this->_manyTimes, this->_entitiesCount);
-  cv::Mat d, t, extremeSaturation;
-  if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
-    image.copyTo(d);
-    filterGray(d, d);
-    //cv::cvtColor(d, t, cv::COLOR_BGR2GRAY);
-    //t = t > 0;
-    //cv::cvtColor(t,this->_firstThreshold,cv::COLOR_GRAY2BGR);
-    d.copyTo(this->_firstThreshold);
+  }*/
+    //enableEstimateRobots = !(this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame && this->paused);
+    this->_manyTimes = 1;
+    this->_entitiesCount = 7;
+     //if (enableEstimateRobots) estimateRobots(image,this->_manyTimes, this->_entitiesCount);
+    if (this->m_updateFrame) {
+        this->m_updateFrame = false;
+      cv::Mat d, t, extremeSaturation;
 
-  } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
-    image.copyTo(d);
-    filterGray(d, d);
-    cv::cvtColor(d, extremeSaturation, cv::COLOR_BGR2HSV_FULL);
-    filterExtremeSaturation(extremeSaturation,extremeSaturation);
-    cv::cvtColor(extremeSaturation, this->_extremeSaturation, cv::COLOR_HSV2BGR_FULL);
+      if (this->_debugSelection == MaggicVisionDebugSelection_SegmentationFrame) {
+         this->run(this->_imageBuffer);
 
-  } else if (this->_debugSelection == MaggicVisionDebugSelection_MultipliedResults) {
-      image.copyTo(this->_multipliedResults);
+      } else if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
+        image.copyTo(d);
+        filterGray(d, d);
+        //cv::cvtColor(d, t, cv::COLOR_BGR2GRAY);
+        //t = t > 0;
+        //cv::cvtColor(t,this->_firstThreshold,cv::COLOR_GRAY2BGR);
+        d.copyTo(this->_firstThreshold);
 
-  } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
-      this->mut.unlock();
-      doDetails();
-      this->mut.lock();
-  }
+      } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
+        image.copyTo(d);
+        filterGray(d, d);
+        cv::cvtColor(d, extremeSaturation, cv::COLOR_BGR2HSV_FULL);
+        filterExtremeSaturation(extremeSaturation,extremeSaturation);
+        cv::cvtColor(extremeSaturation, this->_extremeSaturation, cv::COLOR_HSV2BGR_FULL);
+
+      } else if (this->_debugSelection == MaggicVisionDebugSelection_MultipliedResults) {
+          image.copyTo(this->_multipliedResults);
+
+      } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
+          this->mut.unlock();
+          doDetails();
+          this->mut.lock();
+      }
+    }
 
   /*switch(this->_debugSelection) {
     case MaggicVisionDebugSelection_Thresholded:
@@ -1042,7 +1049,7 @@ void MaggicSegmentation::getCalibrationFrames(uint &frames) {
 
 cv::Mat MaggicSegmentation::run(cv::Mat &frame)
 {
-  if (!paused) frame.copyTo(this->_imageBuffer);
+  //if (!paused) frame.copyTo(this->_imageBuffer);
   if (!this->isLUTReady)return cv::Mat::zeros(480,640,CV_8U);
 
 #ifdef USE_CUDA
@@ -1149,6 +1156,7 @@ void MaggicSegmentation::loadDefaultHue() {
 
 void MaggicSegmentation::setMousePosition(cv::Point2f mpos) {
   mut.lock();
+  //this->m_updateFrame = this->m_updateDetails = true;
   if (!this->_detailsFrame.empty()) {
     this->lastCursorPos.push_back(this->cursorPos);
     this->cursorPos = cv::Point2i (static_cast<int>(mpos.x*this->_detailsFrame.cols), static_cast<int>(mpos.y*this->_detailsFrame.rows));
@@ -1159,6 +1167,7 @@ void MaggicSegmentation::setMousePosition(cv::Point2f mpos) {
 
 void MaggicSegmentation::setMouseButtonPress(int btnId) {
   mut.lock();
+  //this->m_updateFrame = this->m_updateDetails = true;
   if (!this->_detailsFrame.empty()) {
     if (cv::Rect(0,0,this->_detailsFrame.cols,this->_detailsFrame.rows).contains(this->cursorPos)) {
         this->pressedId = btnId;
@@ -1175,6 +1184,7 @@ void MaggicSegmentation::setMouseButtonPress(int btnId) {
 }
 void MaggicSegmentation::setMouseButtonRelease(int btnId) {
   mut.lock();
+  //this->m_updateFrame = this->m_updateDetails = true;
   if (!this->_detailsFrame.empty()) {
       if (cv::Rect(0,0,this->_detailsFrame.cols,this->_detailsFrame.rows).contains(this->cursorPos)) {
         this->releasedId = btnId;
@@ -1192,6 +1202,8 @@ void MaggicSegmentation::setMouseButtonRelease(int btnId) {
 }
 
 void MaggicSegmentation::doDetails() {
+  if (!this->m_updateDetails) return;
+  this->m_updateDetails = false;
   static int selectionCircleRadius = 6;
   static int borderDistance = 3;
   static cv::Rect colorFrame(30,30,512,400);
@@ -1301,12 +1313,12 @@ void MaggicSegmentation::doDetails() {
     }
 
     // draw color frame border
+    cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x-borderDistance+1,colorFrame.y-borderDistance+1, colorFrame.width+(borderDistance<<1)-2, colorFrame.height+(borderDistance<<1)-2),cv::Scalar(0,0,0),4);
     cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x-borderDistance,colorFrame.y-borderDistance, colorFrame.width+(borderDistance<<1), colorFrame.height+(borderDistance<<1)),cv::Scalar(255,255,255),1);
-    cv::rectangle(this->_detailsFrame,cv::Rect(colorFrame.x-borderDistance+1,colorFrame.y-borderDistance+1, colorFrame.width+(borderDistance<<1)-2, colorFrame.height+(borderDistance<<1)-2),cv::Scalar(0,0,0),1);
     int pivotId = -1;
     for(size_t i =0;i<this->hueList.size();i++) {
       std::pair<float, int> &hue = this->hueList[i];
-      int theX = static_cast<int>(hue.first*colorFrame.width/255 + colorFrame.x);
+      int theX = static_cast<int>(hue.first*colorFrame.width/255 + colorFrame.x + 3);
       if (!this->enableFilter) {
           int theDist = abs(this->cursorPos.x-theX);
           if (theDist < 6 && colorFrame.contains(this->cursorPos)) {
@@ -1373,7 +1385,8 @@ void MaggicSegmentation::doDetails() {
     if (this->releasedLeft) {
         bool changed = false;
         if (this->dragpivotId != -1) {
-            float newHue = static_cast<float>(this->cursorPos.x-colorFrame.x)*255.0f/static_cast<float>(colorFrame.width);
+            int theX = max(colorFrame.x+1,min(colorFrame.x + colorFrame.width-2, this->cursorPos.x)) - colorFrame.x-3;
+            float newHue = static_cast<float>(theX)*255.0f/static_cast<float>(colorFrame.width);
             this->hueList[static_cast<size_t>(this->dragpivotId)].first = newHue;
             this->dragpivotId = -1;
             changed = true;
@@ -1431,7 +1444,7 @@ void MaggicSegmentation::doDetails() {
 
       //std::cout << "hover" << std::endl;
       if (pivotId != -1 && this->dragpivotId == -1) {
-        int theX = static_cast<int>(static_cast<float>(this->hueList[static_cast<size_t>(pivotId)].first*colorFrame.width)/255.0f + static_cast<float>(colorFrame.x));
+        int theX = static_cast<int>(static_cast<float>(this->hueList[static_cast<size_t>(pivotId)].first*colorFrame.width)/255.0f + static_cast<float>(colorFrame.x) + 3);
         cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,255),2);
       }
 
@@ -1524,4 +1537,17 @@ void MaggicSegmentation::lock() {
 
 void MaggicSegmentation::unlock() {
     mut.unlock();
+}
+
+void MaggicSegmentation::updateDetails() {
+    lock();
+    this->m_updateDetails = true;
+    this->m_updateFrame = true;
+    unlock();
+}
+
+void MaggicSegmentation::updateFrame() {
+    lock();
+    this->m_updateFrame = true;
+    unlock();
 }

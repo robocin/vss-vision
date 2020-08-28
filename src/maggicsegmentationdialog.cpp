@@ -27,7 +27,7 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   qApp->installEventFilter(this);
   this->_updateFrameTimer = new QTimer(this);
   connect(this->_updateFrameTimer,SIGNAL(timeout()),this,SLOT(updateFrame()));
-  this->_updateFrameTimer->start(1);
+  this->_updateFrameTimer->start(16);
 
   this->maggicSegmentation->setFilterGrayThresholdValues(FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM,FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM);
   this->maggicSegmentation->setDebugSelection(MaggicVisionDebugSelection_ExtremeSaturation);
@@ -105,7 +105,9 @@ void MaggicSegmentationDialog::updateFrame()
     Timer timerFPS;
     timerFPS.start();
 
-    maggicSegmentation->run(this->_actualFrame);
+    //maggicSegmentation->run(this->_actualFrame);
+    if (this->ui->tabWidget->currentIndex() == 4) this->maggicSegmentation->updateDetails();
+    else maggicSegmentation->updateFrame();
     maggicSegmentation->calibrate(this->_actualFrame);
     maggicSegmentation->getDebugFrame(this->_segmentedFrame);
 
@@ -265,7 +267,11 @@ void MaggicSegmentationDialog::on_buttonBox_accepted()
 bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
 
     static bool cursorInsideVisualization = false;
-
+   /*if (this->ui->tabWidget->currentIndex() == 4 && f_object == this) {
+       if (this->maggicSegmentation) {
+           this->maggicSegmentation->updateDetails();
+       }
+   }*/
   if (f_event->type() == QEvent::MouseButtonPress) {
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(f_event);
     if (this->maggicSegmentation) {

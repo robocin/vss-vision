@@ -68,6 +68,8 @@ class MaggicSegmentation : public ImageProcessing
 public:
   bool paused, enableEstimateRobots;
   bool useLoadedValues = false;
+  bool m_updateDetails = true;
+  bool m_updateFrame = true;
   
   /**
    * @brief    Default Constructor
@@ -164,6 +166,10 @@ public:
   void lock();
 
   void unlock();
+
+  void updateDetails();
+
+  void updateFrame();
 
 private:
   int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40, _intervalGrayThreshold = 30;
