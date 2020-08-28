@@ -1489,23 +1489,28 @@ void MaggicSegmentation::removeTopRectangle(Rectangles& rects, cv::Point& p) {
 void MaggicSegmentation::saveSelectedDebug() {
     this->mut.lock();
     static char fileName[100];
+    static char normalizedOrNot[100];
+
+    normalizedOrNot[0] = 0;
+    if (this->normalized_color) sprintf(normalizedOrNot,"normalized_");
+
     if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
-        sprintf(fileName,"maggic_thresholded_%03d.png",filterGrayThreshold);
+        sprintf(fileName,"maggic_thresholded_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_firstThreshold);
         std::cout << "Saved thresholded" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_SegmentationFrame) {
-        sprintf(fileName,"maggic_segmentation_%03d.png",filterGrayThreshold);
+        sprintf(fileName,"maggic_segmentation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_segmentationFrame);
         std::cout << "Saved segmentation" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
-        sprintf(fileName,"maggic_extremeSaturation_%03d.png",filterGrayThreshold);
+        sprintf(fileName,"maggic_extremeSaturation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_extremeSaturation);
         std::cout << "Saved extreme saturation" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
-        sprintf(fileName,"maggic_detailsFrame_%03d.png",filterGrayThreshold);
+        sprintf(fileName,"maggic_detailsFrame_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_detailsFrame);
         std::cout << "Saved details frame" << std::endl;
 

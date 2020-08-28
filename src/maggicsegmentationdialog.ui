@@ -67,9 +67,6 @@
       <property name="text">
        <string>1</string>
       </property>
-      <property name="shortcut">
-       <string>1</string>
-      </property>
       <property name="checkable">
        <bool>true</bool>
       </property>
@@ -81,9 +78,6 @@
     <item>
      <widget class="QPushButton" name="entitiesButton_2">
       <property name="text">
-       <string>2</string>
-      </property>
-      <property name="shortcut">
        <string>2</string>
       </property>
       <property name="checkable">
@@ -99,9 +93,6 @@
       <property name="text">
        <string>3</string>
       </property>
-      <property name="shortcut">
-       <string>3</string>
-      </property>
       <property name="checkable">
        <bool>true</bool>
       </property>
@@ -115,9 +106,6 @@
       <property name="text">
        <string>4</string>
       </property>
-      <property name="shortcut">
-       <string>4</string>
-      </property>
       <property name="checkable">
        <bool>true</bool>
       </property>
@@ -126,9 +114,6 @@
     <item>
      <widget class="QPushButton" name="entitiesButton_5">
       <property name="text">
-       <string>5</string>
-      </property>
-      <property name="shortcut">
        <string>5</string>
       </property>
       <property name="checkable">
@@ -141,9 +126,6 @@
       <property name="text">
        <string>6</string>
       </property>
-      <property name="shortcut">
-       <string>6</string>
-      </property>
       <property name="checkable">
        <bool>true</bool>
       </property>
@@ -152,9 +134,6 @@
     <item>
      <widget class="QPushButton" name="entitiesButton_7">
       <property name="text">
-       <string>7</string>
-      </property>
-      <property name="shortcut">
        <string>7</string>
       </property>
       <property name="checkable">
@@ -174,10 +153,19 @@
     </rect>
    </property>
    <property name="tabShape">
-    <enum>QTabWidget::Triangular</enum>
+    <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
     <number>0</number>
+   </property>
+   <property name="documentMode">
+    <bool>false</bool>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="tabBarAutoHide">
+    <bool>false</bool>
    </property>
    <widget class="QWidget" name="tab_1">
     <attribute name="title">
@@ -255,11 +243,14 @@
      <height>25</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Load default configuration (L)</string>
+   </property>
    <property name="text">
     <string>Load Config</string>
    </property>
    <property name="shortcut">
-    <string>T</string>
+    <string>L</string>
    </property>
   </widget>
   <widget class="Line" name="line">
@@ -331,6 +322,9 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Minimum threshold value</string>
+   </property>
    <property name="lineWidth">
     <number>0</number>
    </property>
@@ -381,6 +375,9 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Maximum threshold value</string>
+   </property>
    <property name="lineWidth">
     <number>0</number>
    </property>
@@ -409,8 +406,14 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Reset (R)</string>
+   </property>
    <property name="text">
     <string>Reset</string>
+   </property>
+   <property name="shortcut">
+    <string>R</string>
    </property>
   </widget>
   <widget class="QSlider" name="threshGrayHorizontalSlider">
@@ -441,6 +444,9 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Grayscale Threshold value</string>
+   </property>
    <property name="lineWidth">
     <number>0</number>
    </property>
@@ -469,6 +475,9 @@
      <height>30</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Play/Pause (P)</string>
+   </property>
    <property name="text">
     <string>Play/Pause</string>
    </property>
@@ -491,11 +500,14 @@
      <height>25</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Apply the LUT (A)</string>
+   </property>
    <property name="text">
     <string>Aplicar!</string>
    </property>
    <property name="shortcut">
-    <string>T</string>
+    <string>A</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="vectorscopeCheckBox">
@@ -507,8 +519,14 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Vectorscope (V)</string>
+   </property>
    <property name="text">
     <string>Vectorscope</string>
+   </property>
+   <property name="shortcut">
+    <string>V</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="FilterCheckBox">
@@ -520,8 +538,14 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Filter (F)</string>
+   </property>
    <property name="text">
     <string>Filter</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="NormalizedCheckBox">
@@ -533,8 +557,14 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Normalized (N)</string>
+   </property>
    <property name="text">
     <string>Normalized</string>
+   </property>
+   <property name="shortcut">
+    <string>N</string>
    </property>
    <property name="checked">
     <bool>true</bool>

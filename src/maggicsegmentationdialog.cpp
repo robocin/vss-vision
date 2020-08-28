@@ -311,7 +311,27 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
       if (this->maggicSegmentation) {
         this->maggicSegmentation->setMousePosition(mpos);
       }
+  }
 
+  if (f_event->type() == QEvent::KeyPress && f_object == this) {
+      QKeyEvent* keyEvent = reinterpret_cast<QKeyEvent*>(f_event);
+      int modifiers = QApplication::keyboardModifiers();
+      bool hasCtrl = (modifiers & Qt::ControlModifier) > 0;
+      bool hasShift = (modifiers & Qt::ShiftModifier) > 0;
+
+      bool hasTab = keyEvent->key() == Qt::Key_Tab;
+      if (hasCtrl && hasTab) {
+        int curr = this->ui->tabWidget->currentIndex();
+        int manyTabs = this->ui->tabWidget->count();
+        this->ui->tabWidget->setCurrentIndex((curr+1+manyTabs)%manyTabs);
+      } else if (hasShift) {
+          int curr = this->ui->tabWidget->currentIndex();
+          int manyTabs = this->ui->tabWidget->count();
+          this->ui->tabWidget->setCurrentIndex((curr-1+manyTabs)%manyTabs);
+      }
+      if (keyEvent->key() >= Qt::Key_1 && keyEvent->key() <= Qt::Key_5) {
+        this->ui->tabWidget->setCurrentIndex(keyEvent->key()- Qt::Key_1);
+      }
   }
   return false;
 }
