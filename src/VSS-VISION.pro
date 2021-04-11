@@ -139,9 +139,41 @@ FORMS  += \
 unix:!macx{
 
   INCLUDEPATH += ../include
-  INCLUDEPATH += /usr/local/include/opencv
-  INCLUDEPATH += /usr/local/include/opencv2
-  LIBS += `pkg-config opencv --cflags --libs`
+
+    # Configuring project for OpenCV 3.x (Ubuntu 18.04 or less) and OpenCV 4.x (Ubuntu 20.04)
+    OPENCV3 = pkg-config opencv --cflags --libs --silence-errors
+    OPENCV4 = pkg-config opencv4 --cflags --libs --silence-errors
+
+    OPENCV3_CMD = $$system($$OPENCV3)
+    OPENCV3_STATUS = true
+    equals(OPENCV3_CMD,"") {
+      OPENCV3_STATUS = false
+    }
+
+    OPENCV4_CMD = $$system($$OPENCV4)
+    OPENCV4_STATUS = true
+    equals(OPENCV4_CMD,"") {
+      OPENCV4_STATUS = false
+    }
+
+    message( OpenCV <= 3.x : $${OPENCV3_STATUS} )
+    message( OpenCV == 4.x : $${OPENCV4_STATUS} )
+
+    equals(OPENCV3_STATUS,"true") {
+          LIBS += `$${OPENCV3}`
+          INCLUDEPATH += /usr/local/include/opencv
+          INCLUDEPATH += /usr/local/include/opencv2
+          message(Using OpenCV 3.x or less)
+    } else {
+      equals(OPENCV4_STATUS,"true") {
+        LIBS += `$${OPENCV4}`
+        INCLUDEPATH += /usr/include/opencv4
+        message(Using OpenCV 4.x)
+      } else {
+          error(No viable OpenCV for project. Sorry.)
+      }
+    }
+
   equals(USE_CUDA,"1") {
     LIBS += -L/usr/local/cuda/lib64
     LIBS += -lcudart

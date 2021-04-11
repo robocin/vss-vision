@@ -158,7 +158,7 @@ void MainVSSWindow::setCameraFrame() {
     cv::Size newSize(this->m_ui->cameraLabel->width(),
                      this->m_ui->cameraLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
-    cv::cvtColor(tempFrame, tempFrame, CV_BGR2RGB);
+    cv::cvtColor(tempFrame, tempFrame, cv::COLOR_BGR2RGB);
     QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
                  static_cast<int>(tempFrame.step), QImage::Format_RGB888);
     this->m_ui->cameraLabel->setPixmap(QPixmap::fromImage(qimg2));
@@ -406,7 +406,7 @@ void MainVSSWindow::record() {
   if (!this->m_savedVideofileName.isEmpty()) {
     this->m_videoRecordManager.open(
       this->m_savedVideofileName.toStdString() + ".avi",
-      CV_FOURCC('M', 'J', 'P', 'G'), 30,
+      cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
       cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
     Vision::singleton().recordDeepLog();
   }
