@@ -66,16 +66,16 @@ bool CameraManager::init(int cameraIndex) {
     return false;
   }
 
-  this->_capture.set(CV_CAP_PROP_FOURCC, CV_FOURCC('M', 'J', 'P', 'G'));
+  this->_capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 
   if (this->_frameWidth !=
-          static_cast<int>(this->_capture.get(CV_CAP_PROP_FRAME_WIDTH)) ||
+          static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_WIDTH)) ||
       this->_frameHeight !=
-          static_cast<int>(this->_capture.get(CV_CAP_PROP_FRAME_HEIGHT))) {
+          static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_HEIGHT))) {
     this->_is60fps = false;
   }
 
-  double cameraFps = this->_capture.get(CV_CAP_PROP_FPS);
+  double cameraFps = this->_capture.get(cv::CAP_PROP_FPS);
 
   if (static_cast<int>(cameraFps) >= 60)
     this->_is60fps = true;
@@ -115,7 +115,7 @@ bool CameraManager::init(std::string videoPath) {
     return false;
   }
 
-  this->_frameRate = static_cast<int>(this->_capture.get(CV_CAP_PROP_FPS));
+  this->_frameRate = static_cast<int>(this->_capture.get(cv::CAP_PROP_FPS));
   this->_captureType = videoCapture;
   return true;
 }
@@ -147,6 +147,13 @@ void CameraManager::updateFrame() {
   this->_currentFrameTimeStamp = QTime::currentTime();
 
   // if (this->_is60fps) { // assuming it's 720p, always
+  if (this->_frameWidth == 1920 && this->_frameHeight == 1080 &&
+          frame.rows == 1080 && frame.cols == 1920) {
+      cv::resize(frame, frame,
+                 cv::Size(1280, 720), 0, 0);
+      this->_frameWidth = frame.cols;
+      this->_frameHeight = frame.rows;
+  }
   if (this->_frameWidth == 1280 && this->_frameHeight == 720 &&
       frame.rows == 720 && frame.cols == 1280) {
     cv::Rect cropRectangle(213, 0, 854, 720);
@@ -407,7 +414,7 @@ void CameraManager::getCurrentFrame(cv::Mat& frame) {
 }
 
 void CameraManager::setVideoFrameToBegin() {
-  this->_capture.set(CV_CAP_PROP_POS_FRAMES, 0);
+  this->_capture.set(cv::CAP_PROP_POS_FRAMES, 0);
 }
 
 CameraParameter CameraManager::returnParameterFromList(
