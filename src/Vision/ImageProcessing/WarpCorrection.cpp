@@ -121,7 +121,7 @@ void WarpCorrection::setup(std::string, int) {}
 cv::Mat WarpCorrection::run(cv::Mat& frame) {
   cv::Mat tmp = cv::Mat::zeros(this->_matrixSize, CV_8UC3);
   cv::remap(frame, tmp, this->_transformationX, this->_transformationY,
-            CV_INTER_LINEAR);
+            cv::INTER_LINEAR);
 
   // Masking corners
   int w = this->_matrixSize.width * (1 / (float)17);

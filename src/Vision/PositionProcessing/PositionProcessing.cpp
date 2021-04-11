@@ -77,7 +77,7 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
         // Debug
-        //cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, CV_AA);
+        //cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, cv::LINE_AA);
         if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
             std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
           newPosition = lastPosition;
@@ -95,7 +95,7 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
         robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
         players.push_back(robot);
 
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[colorIndex+1], 1, CV_AA);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[colorIndex+1], 1, cv::LINE_AA);
       }
     }
 
@@ -121,7 +121,7 @@ void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std:
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
         // Debug
-        cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, CV_AA);
+        cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, cv::LINE_AA);
         //cv::circle(debugFrame,Utils::convertPositionCmToPixel(Point(170/2,130/2)),10,cv::Scalar(0,255,0));
         // Para evitar ruido, se o robo se movimentar muito pouco,
         // ele permanece no mesmo local
@@ -172,7 +172,7 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
         filtPoint.x = Utils::bound(filtPoint.x, 0, 170);
         filtPoint.y = Utils::bound(filtPoint.y, 0, 130);
 
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(filtPoint.x),static_cast<int>(filtPoint.y))), 9, _colorCar[OrangeCOL], 2, CV_AA);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(filtPoint.x),static_cast<int>(filtPoint.y))), 9, _colorCar[OrangeCOL], 2, cv::LINE_AA);
         //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
 
         ball.id(0);
@@ -182,7 +182,7 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
     }
 
     // Debug
-    //cv::circle(debugFrame, blobBall.position, 9, _colorCar[OrangeCOL], 2, CV_AA);
+    //cv::circle(debugFrame, blobBall.position, 9, _colorCar[OrangeCOL], 2, cv::LINE_AA);
     Point newPosition = Utils::convertPositionPixelToCm(blobBall.position);
     this->_ballLastPosition = vss.ball().position();
 
@@ -198,7 +198,7 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
     newPosition.x = Utils::bound(newPosition.x, 0, 170);
     newPosition.y = Utils::bound(newPosition.y, 0, 130);
 
-    cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(newPosition.x),static_cast<int>(newPosition.y))), 9, _colorCar[OrangeCOL], 2, CV_AA);
+    cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(newPosition.x),static_cast<int>(newPosition.y))), 9, _colorCar[OrangeCOL], 2, cv::LINE_AA);
     //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
     this->_ballLastPosition = cv::Point(static_cast<int>(newPosition.x),
                                         static_cast<int>(newPosition.y));

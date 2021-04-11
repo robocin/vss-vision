@@ -112,7 +112,7 @@ void BlobDetection::findBlobs(cv::Mat& debugFrame) {
             _clusterCount[cor]++;
 
             //draw blob in screen
-            cv::circle(debugFrame,blob[cor][_clusterCount[cor]-1].position,5,cv::Scalar(255,255,255),1, CV_AA);
+            cv::circle(debugFrame,blob[cor][_clusterCount[cor]-1].position,5,cv::Scalar(255,255,255),1, cv::LINE_AA);
           }
         }
       }
