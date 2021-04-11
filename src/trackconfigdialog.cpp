@@ -139,7 +139,7 @@ void TrackConfigDialog::showFrame()
     this->_PositionFrame = cv::Mat::zeros(newSize,CV_8UC3);
   }
   cv::resize(this->_PositionFrame, this->_PositionFrame, newSize);
-  cv::cvtColor(this->_PositionFrame, this->_PositionFrame, CV_BGR2RGB);
+  cv::cvtColor(this->_PositionFrame, this->_PositionFrame, cv::COLOR_BGR2RGB);
   QImage qimg((uchar*)this->_PositionFrame.data, this->_PositionFrame.cols, this->_PositionFrame.rows, this->_PositionFrame.step, QImage::Format_RGB888);
 
   this->ui->videoLabel->setPixmap(QPixmap::fromImage(qimg));

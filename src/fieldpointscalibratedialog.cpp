@@ -110,7 +110,7 @@ void FieldPointsCalibrateDialog::updateFrame() {
     cv::Mat frameToImage = this->_cameraFrame.clone();
     cv::Size newSize(ui->videoLabel->width(), ui->videoLabel->height());
     cv::resize(frameToImage, frameToImage, newSize);
-    cv::cvtColor(frameToImage, frameToImage, CV_BGR2RGB);
+    cv::cvtColor(frameToImage, frameToImage, cv::COLOR_BGR2RGB);
     QImage qimg2((uchar *)frameToImage.data, frameToImage.cols,
                  frameToImage.rows, frameToImage.step, QImage::Format_RGB888);
     ui->videoLabel->setPixmap(QPixmap::fromImage(qimg2));
@@ -148,7 +148,7 @@ void FieldPointsCalibrateDialog::getPointsFromFile(std::string path) {
 void FieldPointsCalibrateDialog::drawPoints() {
   for (int i = 0; i < 4; i++) {
     cv::line(_cameraFrame, _limitPoints[i], _limitPoints[(i + 1) % 4],
-             YELLOW_SCALAR, LINE_THICKNESS, CV_AA);
+             YELLOW_SCALAR, LINE_THICKNESS, cv::LINE_AA);
   }
 
   for (int i = 0; i < 4; i++) {

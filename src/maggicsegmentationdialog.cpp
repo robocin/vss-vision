@@ -146,7 +146,7 @@ void MaggicSegmentationDialog::setFrameOnScreen()
     cv::Mat tempFrame = this->_segmentedFrame.clone();
     cv::Size newSize(this->ui->visualizationLabel->width(), this->ui->visualizationLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
-    cv::cvtColor(tempFrame, tempFrame, CV_BGR2RGB);
+    cv::cvtColor(tempFrame, tempFrame, cv::COLOR_BGR2RGB);
     QImage qimg2(reinterpret_cast<uchar*>(tempFrame.data), tempFrame.cols, tempFrame.rows, static_cast<int>(tempFrame.step), QImage::Format_RGB888);
     this->ui->visualizationLabel->setPixmap(QPixmap::fromImage(qimg2));
   } else {
@@ -355,4 +355,8 @@ void MaggicSegmentationDialog::on_FilterCheckBox_toggled(bool checked)
 void MaggicSegmentationDialog::on_NormalizedCheckBox_toggled(bool checked)
 {
     this->maggicSegmentation->setNormalizedEnabled(checked);
+    this->maggicSegmentation->lock();
+    this->maggicSegmentation->setHUETable(true);
+    this->maggicSegmentation->generateLUTFromHUE();
+    this->maggicSegmentation->unlock();
 }

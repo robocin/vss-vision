@@ -277,7 +277,7 @@ void SegmentationConfigDialog::setFrameOnScreen() {
     cv::Size newSize(this->ui->visualizationLabel->width(),
                      this->ui->visualizationLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
-    cv::cvtColor(tempFrame, tempFrame, CV_BGR2RGB);
+    cv::cvtColor(tempFrame, tempFrame, cv::COLOR_BGR2RGB);
     if (this->getClick()) {
       this->putZoom(tempFrame);
       if (this->_qpoint.x() + ZOOM_ADJUST_X_MAX <=
@@ -478,7 +478,7 @@ void SegmentationConfigDialog::setOriginalFrameOnScreen() {
     cv::Size newSize(this->ui->originalLabel->width(),
                      this->ui->originalLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
-    cv::cvtColor(tempFrame, tempFrame, CV_BGR2RGB);
+    cv::cvtColor(tempFrame, tempFrame, cv::COLOR_BGR2RGB);
 
     QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
                  static_cast<int>(tempFrame.step), QImage::Format_RGB888);
