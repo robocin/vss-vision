@@ -66,6 +66,9 @@ private:
   Vision* _vision;
   CameraManager* _cameraMan;
   cv::Mat _actualFrame, _segmentedFrame;
+  cv::Mat _inputFrame;
+  static String _inputFolderName;
+  String _inputFileName;
 
   bool paused;
 

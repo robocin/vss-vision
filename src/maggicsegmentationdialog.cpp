@@ -2,9 +2,26 @@
 #include "ui_maggicsegmentationdialog.h"
 #include <QMouseEvent>
 #include <chrono>
+#include <QDir>
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM 17
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM 45
 
+String MaggicSegmentationDialog::_inputFolderName = "Input";
+typedef std::vector<String> Strings;
+
+Strings getFileList(String &path){
+    Strings list;
+    QString qpath(path.c_str());
+    QDir dir(qpath);
+    if (dir.exists()) {
+        std::cout << dir.absolutePath().toStdString() << std::endl;
+        QStringList sl = dir.entryList(QDir::Files);
+        for (QString &e : sl) {
+            list.push_back(e.toStdString());
+        }
+    }
+    return list;
+}
 
 static MaggicVisionDebugSelection maggicVisionDebugSelectionVector[6] = {
   MaggicVisionDebugSelection_Undefined,
@@ -63,6 +80,13 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   int* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
   int* src_LUT = this->maggicSegmentation->getLUT();
   memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
+
+  Strings fl = getFileList(_inputFolderName);
+  std::cout << "Files:" << std::endl;
+  for (auto &e : fl) {
+      std::cout << " " << e << std::endl;
+  }
+
 }
 
 QTimer* MaggicSegmentationDialog::getUpdateFrameTimer() {
