@@ -115,6 +115,16 @@ public:
   void getSegmentationFrameFromLUT(cv::Mat& frame);
 
 
+  static uint BGR2RGBHash(cv::Vec3b &v);
+
+  static uint RGB2RGBHash(cv::Vec3b &v);
+
+  static cv::Vec3b RGBHash2BGR(uint);
+
+  static cv::Vec3b RGBHash2RGB(uint);
+
+  static String RGBHash2String(uint);
+
   void calibrate(cv::Mat &frame);
 
   int getFilterGrayThresholdValue();

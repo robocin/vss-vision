@@ -15,6 +15,20 @@ RGB ColorSpace::markerColors[NUMBEROFCOLOR] = {
         {0,0,0}//ColorStrange
 };
 
+String ColorSpace::colorNames[NUMBEROFCOLOR] = {
+    "black",
+    "orange",
+    "blue",
+    "yellow",
+    "red",
+    "green",
+    "magenta",
+    "cyan",
+    "purple",
+    "brown",
+    "colorStrange"
+};
+
 // LEGACY
 /*
 RGB ColorSpace::markerColors[NUMBEROFCOLOR] = {

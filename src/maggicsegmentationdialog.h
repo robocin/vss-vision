@@ -16,8 +16,10 @@ namespace Ui {
   class FieldPointsCalibrateDialog;
 }
 
+
 class MaggicSegmentationDialog : public QDialog
 {
+  typedef std::map<uint, uint> Statistics;
   Q_OBJECT
 
 public:
@@ -46,8 +48,13 @@ void clearEntitiesCheck();
 
 void on_playpauseButton_clicked(bool checked);
 
+void applyLUT();
 
 void on_applyLUTButton_clicked();
+
+void processImage(cv::Mat &ground_truth, cv::Mat &segmented, Statistics *gstats, Statistics *sstats);
+
+void processBatch();
 
 void processAndSave();
 
@@ -67,17 +74,20 @@ void on_FilterCheckBox_toggled(bool checked);
 
 void on_NormalizedCheckBox_toggled(bool checked);
 
+
+void saveStats(Statistics &gstats, Statistics &sstats);
+
 private:
   Ui::MaggicSegmentationDialog *ui;
   Vision* _vision;
   CameraManager* _cameraMan;
-  cv::Mat _actualFrame, _segmentedFrame;
+  cv::Mat _actualFrame, _segmentedFrame, _groundTruthFrame;
   cv::Mat _inputFrame;
-  static String _inputFolderName, _outputFolderName;
+  static String _inputFolderName, _outputFolderName, _groundTruthFolderName;
   String _inputFileName;
-  Strings _fileList;
+  Strings _inputFileList, _groundTruthFileList;
   int _selectedFileIndex;
-  QDir *_inputDir, *_outputDir;
+  QDir *_inputDir, *_outputDir, *_groundTruthDir;
 
   bool paused;
 

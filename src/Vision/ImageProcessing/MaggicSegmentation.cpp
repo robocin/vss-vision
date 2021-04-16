@@ -175,6 +175,45 @@ MaggicSegmentation::~MaggicSegmentation()
   delete this->_calibrationParameters;
 }
 
+uint MaggicSegmentation::BGR2RGBHash(cv::Vec3b &v) {
+    return static_cast<uint>(v[0]) // Blue
+            + (static_cast<uint>(v[1]) << 8) // Green
+            + (static_cast<uint>(v[2]) << 16); // Red
+}
+
+uint MaggicSegmentation::RGB2RGBHash(cv::Vec3b &v) {
+    return static_cast<uint>(v[2]) // Blue
+            + (static_cast<uint>(v[1]) << 8) // Green
+            + (static_cast<uint>(v[0]) << 16); // Red
+}
+
+cv::Vec3b MaggicSegmentation::RGBHash2RGB(uint h) {
+    return cv::Vec3b(static_cast<uchar>((h&0x00ff0000) >> 16),
+            static_cast<uchar>((h&0x0000ff00) >> 8),
+            static_cast<uchar>(h&0x000000ff));
+}
+
+cv::Vec3b MaggicSegmentation::RGBHash2BGR(uint h) {
+    return cv::Vec3b(static_cast<uchar>(h&0x000000ff),
+            static_cast<uchar>((h&0x0000ff00) >> 8),
+            static_cast<uchar>((h&0x00ff0000) >> 16));
+}
+
+String MaggicSegmentation::RGBHash2String(uint h) {
+    static bool preprocess = true;
+    static std::map<uint, String> colorNames;
+    if (preprocess) {
+        preprocess = false;
+        // Initializing stats
+        for (uint i=0; i < 8; ++i) { // black to light blue
+            cv::Vec3b *v = reinterpret_cast<cv::Vec3b*>(ColorSpace::markerColors) + i;
+            colorNames.insert(std::make_pair(MaggicSegmentation::BGR2RGBHash(*v),
+                                              ColorSpace::colorNames[i]));
+        }
+    }
+    return colorNames[h];
+}
+
 void MaggicSegmentation::openLastSession() {
   mut.lock();
   //std::cout << "Opening last session on MaggicSegmentation" << std::endl;
@@ -320,7 +359,6 @@ int MaggicSegmentation::getEntitiesCount() {
 
 void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
   if (d.empty()) d = cv::Mat::zeros(o.size(), o.type());
-  std::cout << "Normalization " << (this->normalization_method == NO_NORMALIZATION ? "off" : "on")  << std::endl;
   for (int r = 0; r < o.rows; ++r) {
     for (int c = 0; c < o.cols; ++c) {
       filterGray(d.at<cv::Vec3b>(r, c),o.at<cv::Vec3b>(r, c));

@@ -45,6 +45,7 @@ typedef struct ColorInterval {
 
 namespace ColorSpace {
   extern RGB markerColors[NUMBEROFCOLOR];
+  extern String colorNames[NUMBEROFCOLOR];
 }
 
 
