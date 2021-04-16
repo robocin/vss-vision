@@ -54,6 +54,8 @@ enum MaggicVisionDebugSelection {
   MaggicVisionDebugSelection_DetailsFrame
 };
 
+
+
 typedef std::vector<cv::Rect> Rectangles;
 
 /**
@@ -66,6 +68,14 @@ class MaggicSegmentation : public ImageProcessing
 #define max(a,b) (a>b?a:b)
 
 public:
+    enum NormalizationMethod {
+        NO_NORMALIZATION= 0,
+        CHROMATIC_NORMALIZATION,
+        VECTOR_NORMALIZATION,
+        WEIGHTED_NORMALIZATION,
+        NORMALIZATION_METHODS_LENGTH
+    };
+
   bool paused, enableEstimateRobots;
   bool useLoadedValues = false;
   bool m_updateDetails = true;
@@ -161,6 +171,12 @@ public:
 
   void setNormalizedEnabled(bool enabled);
 
+  void setNormalizationMethod(MaggicSegmentation::NormalizationMethod method);
+
+  void getNormalizationMethod(MaggicSegmentation::NormalizationMethod &method);
+
+  MaggicSegmentation::NormalizationMethod getNormalizationMethod();
+
   void saveSelectedDebug();
 
   void lock();
@@ -176,6 +192,8 @@ private:
   static constexpr float div255 = 1.0f / 255.0f;
   static constexpr float div3255 = 1.0f/(255.0f+ 255.0f+ 255.0f);
   bool normalized_color;
+  NormalizationMethod normalization_method, selected_normalization_method;
+  static const NormalizationMethod default_normalization_method;
 
   std::string _maggicSegmentationSessionFileName;
 

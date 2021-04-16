@@ -45,6 +45,11 @@ void APPLY_LUT_GPU(cv::Mat &mat) {
 
 #endif
 
+// SETTING DEFAULT SEGMENTATION
+const MaggicSegmentation::NormalizationMethod
+MaggicSegmentation::default_normalization_method =
+        MaggicSegmentation::WEIGHTED_NORMALIZATION;
+
 MaggicSegmentation::MaggicSegmentation()
 {
   this->isLUTReady = false;
@@ -53,6 +58,8 @@ MaggicSegmentation::MaggicSegmentation()
   this->_HUETable = new int[256];
   memset(this->_HUETable,0,256*sizeof(int)); // clear HUETable
   this->_calibrationParameters = new ColorInterval[NUMBEROFCOLOR];
+
+  setNormalizationMethod(this->default_normalization_method);
 
   colorPalette = cv::Mat::zeros(1, 10, CV_8UC3);
   colorPalette.at<cv::Vec3b>(0, 0) = cv::Vec3b(0, 255, 255); // No Color
@@ -313,7 +320,7 @@ int MaggicSegmentation::getEntitiesCount() {
 
 void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
   if (d.empty()) d = cv::Mat::zeros(o.size(), o.type());
-
+  std::cout << "Normalization " << (this->normalization_method == NO_NORMALIZATION ? "off" : "on")  << std::endl;
   for (int r = 0; r < o.rows; ++r) {
     for (int c = 0; c < o.cols; ++c) {
       filterGray(d.at<cv::Vec3b>(r, c),o.at<cv::Vec3b>(r, c));
@@ -325,14 +332,31 @@ inline void MaggicSegmentation::filterGray(cv::Vec3b &color, cv::Vec3b &coloro) 
     float x = coloro[0];
     float y = coloro[1];
     float z = coloro[2];
-    if (normalized_color) {
-      x *= x;
-      y *= y;
-      z *= z;
-      float a = 1.f / static_cast<float>(sqrt(x + y + z));
-      x = static_cast<uchar>(x*a);
-      y = static_cast<uchar>(y*a);
-      z = static_cast<uchar>(z*a);
+    float a = 1.f;
+    switch (this->normalization_method) {
+    case CHROMATIC_NORMALIZATION:
+        a = 1.f / static_cast<float>(x + y + z);
+        x = static_cast<uchar>(x*a);
+        y = static_cast<uchar>(y*a);
+        z = static_cast<uchar>(z*a);
+        break;
+    case VECTOR_NORMALIZATION:
+        a = 1.f / static_cast<float>(sqrt(x + y + z));
+        x = static_cast<uchar>(x*a);
+        y = static_cast<uchar>(y*a);
+        z = static_cast<uchar>(z*a);
+        break;
+    case WEIGHTED_NORMALIZATION:
+        x *= x;
+        y *= y;
+        z *= z;
+        a = 1.f / static_cast<float>(sqrt(x + y + z));
+        x = static_cast<uchar>(x*a);
+        y = static_cast<uchar>(y*a);
+        z = static_cast<uchar>(z*a);
+        break;
+    default:
+        break;
     }
     float men = min(min(x, y), z);
     float lower_bound = max(men - filterGrayThreshold, 0.f);
@@ -1481,10 +1505,35 @@ void MaggicSegmentation::setFilterEnabled(bool enabled) {
 }
 
 void MaggicSegmentation::setNormalizedEnabled(bool enabled) {
- this->mut.lock();
- this->normalized_color = enabled;
- this->updateColors = true;
- this->mut.unlock();
+    this->mut.lock();
+    this->normalized_color = enabled;
+    this->normalization_method = (enabled ?
+                                      this->selected_normalization_method :
+                                      NO_NORMALIZATION);
+    this->updateColors = true;
+    this->mut.unlock();
+}
+
+void MaggicSegmentation::setNormalizationMethod(MaggicSegmentation::NormalizationMethod method) {
+    this->mut.lock();
+    if (method != NO_NORMALIZATION && method != NORMALIZATION_METHODS_LENGTH) {
+        this->selected_normalization_method = method;
+    }
+    this->normalization_method = method;
+    this->normalized_color = (method == NO_NORMALIZATION ? false : true);
+    this->mut.unlock();
+}
+
+void MaggicSegmentation::getNormalizationMethod(MaggicSegmentation::NormalizationMethod &method) {
+    this->mut.lock();
+    method = this->selected_normalization_method;
+    this->mut.unlock();
+}
+
+MaggicSegmentation::NormalizationMethod MaggicSegmentation::getNormalizationMethod() {
+    NormalizationMethod r;
+    this->getNormalizationMethod(r);
+    return r;
 }
 
 void MaggicSegmentation::removeTopRectangle(Rectangles& rects, cv::Point& p) {
