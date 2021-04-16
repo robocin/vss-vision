@@ -294,8 +294,10 @@ void MaggicSegmentationDialog::on_applyLUTButton_clicked()
 }
 
 void MaggicSegmentationDialog::processAndSave() {
-    this->maggicSegmentation->calibrate(this->_inputFrame);
+    std::cout << "Processing and saving segmentation." << std::endl;
+    this->maggicSegmentation->calibrate(this->_actualFrame);
     this->maggicSegmentation->lock();
+    this->_segmentedFrame = this->maggicSegmentation->run(this->_inputFrame);
     this->maggicSegmentation->getSegmentationFrameFromLUT(this->_segmentedFrame);
     this->maggicSegmentation->unlock();
     cv::imwrite(this->_outputDir->absolutePath().toStdString()
@@ -329,10 +331,9 @@ void MaggicSegmentationDialog::useNextImage() { // Circular function
             +"/"
             +this->_fileList[this->_selectedFileIndex];
     this->_inputFrame = cv::imread(impath);
-    this->autoResizeInputFrame(this->_inputFrame);
+    // this->autoResizeInputFrame(this->_inputFrame);
     this->_inputFrame.copyTo(this->_actualFrame);
-    this->maggicSegmentation->calibrate(this->_actualFrame);
-    std::cout << "Loading image(" << this->_selectedFileIndex << "): "
+    std::cout << "Loaded image(" << this->_selectedFileIndex << "): "
               << impath << std::endl;
 }
 
