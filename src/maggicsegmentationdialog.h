@@ -49,6 +49,12 @@ void on_playpauseButton_clicked(bool checked);
 
 void on_applyLUTButton_clicked();
 
+void processAndSave();
+
+void autoResizeInputFrame(cv::Mat &frame);
+
+void useNextImage();
+
 void on_fixCameraButton_clicked();
 
 void on_buttonBox_accepted();
@@ -67,8 +73,11 @@ private:
   CameraManager* _cameraMan;
   cv::Mat _actualFrame, _segmentedFrame;
   cv::Mat _inputFrame;
-  static String _inputFolderName;
+  static String _inputFolderName, _outputFolderName;
   String _inputFileName;
+  Strings _fileList;
+  int _selectedFileIndex;
+  QDir *_inputDir, *_outputDir;
 
   bool paused;
 

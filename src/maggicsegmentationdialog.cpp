@@ -7,19 +7,29 @@
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM 45
 
 String MaggicSegmentationDialog::_inputFolderName = "Input";
-typedef std::vector<String> Strings;
+String MaggicSegmentationDialog::_outputFolderName = "Output";
 
-Strings getFileList(String &path){
+Strings getFileList(String &path, QDir **_dir = nullptr){
     Strings list;
-    QString qpath(path.c_str());
-    QDir dir(qpath);
-    if (dir.exists()) {
-        std::cout << dir.absolutePath().toStdString() << std::endl;
-        QStringList sl = dir.entryList(QDir::Files);
+    QDir *dir = nullptr;
+    if (_dir == nullptr) {
+        if (*_dir == nullptr) *_dir = new QDir(path.c_str());
+        else dir = *_dir;
+    }
+    else {
+        *_dir = new QDir(path.c_str());
+        dir = *_dir;
+    }
+    if (dir->exists()) {
+        std::cout << dir->absolutePath().toStdString() << std::endl;
+        QStringList sl = dir->entryList(QDir::Files);
         for (QString &e : sl) {
             list.push_back(e.toStdString());
         }
+    } else {
+        dir->mkpath(dir->absolutePath());
     }
+    if (_dir == nullptr) delete dir;
     return list;
 }
 
@@ -81,10 +91,17 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   int* src_LUT = this->maggicSegmentation->getLUT();
   memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
 
-  Strings fl = getFileList(_inputFolderName);
-  std::cout << "Files:" << std::endl;
-  for (auto &e : fl) {
-      std::cout << " " << e << std::endl;
+  this->_selectedFileIndex = -1;
+  this->_fileList= getFileList(_inputFolderName, &(this->_inputDir));
+  this->_outputDir = new QDir(this->_outputFolderName.c_str());
+  if (!this->_outputDir->exists()) {
+      this->_outputDir->mkpath(this->_outputDir->absolutePath());
+  }
+  if (this->_fileList.size()) {
+      std::cout << "Files:" << std::endl;
+      for (auto &e : this->_fileList) {
+          std::cout << " " << e << std::endl;
+      }
   }
 
 }
@@ -108,6 +125,8 @@ MaggicSegmentationDialog::~MaggicSegmentationDialog()
   delete this->_updateFrameTimer;
   delete this->ui;
   delete this->maggicSegmentation;
+  delete this->_inputDir;
+  delete this->_outputDir;
 }
 
 void MaggicSegmentationDialog::updateFrame()
@@ -265,12 +284,58 @@ void MaggicSegmentationDialog::on_applyLUTButton_clicked()
   this->maggicSegmentation->lock();
   this->maggicSegmentation->setHUETable(true);
   this->maggicSegmentation->generateLUTFromHUE();
-  int* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
+  int* dst_LUT = reinterpret_cast<LUTSegmentation*>(
+              Vision::singleton().getSegmentationObject())->getLUT();
   int* src_LUT = this->maggicSegmentation->getLUT();
   memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
   this->maggicSegmentation->unlock();
-
+  this->processAndSave();
+  this->maggicSegmentation->saveSelectedDebug();
 }
+
+void MaggicSegmentationDialog::processAndSave() {
+    this->maggicSegmentation->calibrate(this->_inputFrame);
+    this->maggicSegmentation->lock();
+    this->maggicSegmentation->getSegmentationFrameFromLUT(this->_segmentedFrame);
+    this->maggicSegmentation->unlock();
+    cv::imwrite(this->_outputDir->absolutePath().toStdString()
+                +"/"
+                +this->_fileList[this->_selectedFileIndex],
+                this->_segmentedFrame);
+}
+
+void MaggicSegmentationDialog::autoResizeInputFrame(cv::Mat &frame) {
+    if (frame.rows == 1080 && frame.cols == 1920) {
+        cv::resize(frame, frame,
+                   cv::Size(1280, 720), 0, 0);
+    }
+    if (frame.rows == 720 && frame.cols == 1280) {
+      cv::Rect cropRectangle(213, 0, 854, 720);
+
+      // Crop the full image to that image contained by the rectangle
+      // cropRectangle
+      cv::Mat croppedRef(frame, cropRectangle);
+      croppedRef.copyTo(frame);
+      cv::resize(frame, frame,
+                 cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
+    }
+}
+
+void MaggicSegmentationDialog::useNextImage() { // Circular function
+    this->on_playpauseButton_clicked(true);
+    this->_selectedFileIndex = (this->_selectedFileIndex+1)
+            %static_cast<int>(this->_fileList.size());
+    String impath = this->_inputDir->absolutePath().toStdString()
+            +"/"
+            +this->_fileList[this->_selectedFileIndex];
+    this->_inputFrame = cv::imread(impath);
+    this->autoResizeInputFrame(this->_inputFrame);
+    this->_inputFrame.copyTo(this->_actualFrame);
+    this->maggicSegmentation->calibrate(this->_actualFrame);
+    std::cout << "Loading image(" << this->_selectedFileIndex << "): "
+              << impath << std::endl;
+}
+
 void MaggicSegmentationDialog::on_fixCameraButton_clicked()
 {
   std::stringstream strs;
@@ -286,7 +351,6 @@ void MaggicSegmentationDialog::on_buttonBox_accepted()
 {
   on_applyLUTButton_clicked();
 }
-
 
 bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
 
@@ -309,7 +373,7 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
         if (static_cast<int>(mouseEvent->button()) == 2) { // right click
             if (f_object == ui->tabWidget) {
                 std::cout << "Right click on Tab widget!" << std::endl;
-                this->maggicSegmentation->saveSelectedDebug();
+                this->useNextImage();
             }
         }
     }

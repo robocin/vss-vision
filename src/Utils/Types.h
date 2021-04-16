@@ -17,6 +17,7 @@ namespace Types {
     using Void         = void;
     using Float        = double;
     using String       = std::string;
+    using Strings      = std::vector<String>;
 
     template <class M, class N>
     using Pair = std::pair<M, N>;
