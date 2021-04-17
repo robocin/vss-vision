@@ -432,16 +432,16 @@ void MaggicSegmentationDialog::autoResizeInputFrame(cv::Mat &frame) {
         cv::resize(frame, frame,
                    cv::Size(1280, 720), 0, 0);
     }
-    if (frame.rows == 720 && frame.cols == 1280) {
-      cv::Rect cropRectangle(213, 0, 854, 720);
+//    if (frame.rows == 720 && frame.cols == 1280) {
+//      cv::Rect cropRectangle(213, 0, 854, 720);
 
-      // Crop the full image to that image contained by the rectangle
-      // cropRectangle
-      cv::Mat croppedRef(frame, cropRectangle);
-      croppedRef.copyTo(frame);
-      cv::resize(frame, frame,
-                 cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
-    }
+//      // Crop the full image to that image contained by the rectangle
+//      // cropRectangle
+//      cv::Mat croppedRef(frame, cropRectangle);
+//      croppedRef.copyTo(frame);
+//      cv::resize(frame, frame,
+//                 cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
+//    }
 }
 
 void MaggicSegmentationDialog::useNextImage() { // Circular function
@@ -457,7 +457,7 @@ void MaggicSegmentationDialog::useNextImage() { // Circular function
             +this->_groundTruthFileList[this->_selectedFileIndex];
     // IN
     this->_inputFrame = cv::imread(input_impath);
-    // this->autoResizeInputFrame(this->_inputFrame);
+     this->autoResizeInputFrame(this->_inputFrame);
     this->_inputFrame.copyTo(this->_actualFrame);
     std::cout << "Loaded image(" << this->_selectedFileIndex << "): "
               << input_impath << std::endl;
