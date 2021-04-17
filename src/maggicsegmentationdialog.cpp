@@ -94,7 +94,7 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
 
   this->_selectedFileIndex = -1;
   this->_inputFileList = getFileList(_inputFolderName, &(this->_inputDir));
-  this->_groundTruthFileList = getFileList(_groundTruthFolderName, &(this->_inputDir));
+  this->_groundTruthFileList = getFileList(_groundTruthFolderName, &(this->_groundTruthDir));
   this->_outputDir = new QDir(this->_outputFolderName.c_str());
   if (!this->_outputDir->exists()) {
       this->_outputDir->mkpath(this->_outputDir->absolutePath());
@@ -304,38 +304,57 @@ void MaggicSegmentationDialog::processImage(cv::Mat &ground_truth, cv::Mat &segm
         spdlog::get("MaggicVision")->error(" gstats or sstats is nullptr (function : MaggicSemgentationDialog::processImage)");
         return;
     }
-    cv::Mat mask = segmented == ground_truth;
+    cv::Mat mask = cv::Mat::zeros(ground_truth.size(), ground_truth.type());
     cv::Mat compared;
-
-    cv::bitwise_and(ground_truth, ground_truth, compared);
+    // Creating Ground Truth statistics
+    for (int i=0;i<mask.rows; ++i) {
+        for (int j=0;j<mask.cols; ++j) {
+            cv::Vec3b gt = ground_truth.at<cv::Vec3b>(i,j);
+            cv::Vec3b sg = segmented.at<cv::Vec3b>(i,j);
+            bool b = gt[0] == sg[0];
+            bool g = gt[1] == sg[1];
+            bool r = gt[2] == sg[2];
+            if (b && g && r) {
+                mask.at<cv::Vec3b>(i,j) = cv::Vec3b(255,255,255);
+            } else {
+                mask.at<cv::Vec3b>(i,j) = cv::Vec3b(0,0,0);
+            }
+        }
+    }
+    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/mask.png",mask);
+    cv::cvtColor(mask,mask,cv::COLOR_BGR2GRAY);
+    cv::bitwise_and(ground_truth, ground_truth, compared, mask);
+    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/compared.png",compared);
+    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/gt.png",ground_truth);
 
     // Clean stats mapping
     sstats->clear();
     gstats->clear();
 
+    std::mutex sm, gm;
+
     // Initializing stats
     for (uint i=0; i < 8; ++i) { // black to light blue
         cv::Vec3b *v = reinterpret_cast<cv::Vec3b*>(ColorSpace::markerColors) + i;
+        gstats->insert(std::make_pair(MaggicSegmentation::BGR2RGBHash(*v), 0));
         sstats->insert(std::make_pair(MaggicSegmentation::BGR2RGBHash(*v), 0));
     }
 
     // Creating Ground Truth statistics
-    ground_truth.forEach<cv::Vec3b>
-    (
-      [gstats](cv::Vec3b &pixel, const int *) -> void
-      {
-        *(gstats->find(MaggicSegmentation::BGR2RGBHash(pixel)))++;
-      }
-    );
+    for (int i=0;i<ground_truth.rows; ++i) {
+        for (int j=0;j<ground_truth.cols; ++j) {
+            cv::Vec3b pixel = ground_truth.at<cv::Vec3b>(i,j);
+            gstats->find(MaggicSegmentation::BGR2RGBHash(pixel))->second++;
+        }
+    }
 
     // Comparing and creating statistics
-    compared.forEach<cv::Vec3b>
-    (
-      [sstats](cv::Vec3b &pixel, const int *) -> void
-      {
-        *(sstats->find(MaggicSegmentation::BGR2RGBHash(pixel)))++;
-      }
-    );
+    for (int i=0;i<compared.rows; ++i) {
+        for (int j=0;j<compared.cols; ++j) {
+            cv::Vec3b pixel = compared.at<cv::Vec3b>(i,j);
+            sstats->find(MaggicSegmentation::BGR2RGBHash(pixel))->second++;
+        }
+    }
 }
 
 void MaggicSegmentationDialog::processBatch() {
@@ -343,24 +362,47 @@ void MaggicSegmentationDialog::processBatch() {
     this->_selectedFileIndex = -1;
 //    for (size_t i=0; i < this->_inputFileList.size(); ++i) {
         this->useNextImage();
-//        this->processAndSave();
+        this->processAndSave();
 //    }
 }
 
 void MaggicSegmentationDialog::saveStats(Statistics &gstats, Statistics &sstats)  {
-    size_t fileNameUsableLen = this->_inputFileName.size()-3;
-    std::fstream fout(this->_outputDir->absolutePath().toStdString()
-                      +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
-                      +".txt", std::fstream::out);
+    size_t fileNameUsableLen = this->_inputFileName.size()-4;
+    String filepath = this->_outputDir->absolutePath().toStdString()
+            +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
+            +".txt";
+    std::cout << "Saving stats in " << filepath << std::endl;
+    std::fstream fout(filepath, std::fstream::out);
     if (fout.is_open()) {
+        int totalGT = 0, totalSG = 0;
         fout << "Ground-Truth Stats:" << std::endl;
         for (auto &e : gstats) {
-            fout << MaggicSegmentation::RGBHash2String(e.first) << " " << e.second << std::endl;
+            fout << MaggicSegmentation::RGBHash2String(e.first) << "\t" << e.second << std::endl;
+            totalGT += e.second;
         }
         fout << "Segmented Stats:" << std::endl;
         for (auto &e : sstats) {
-            fout << MaggicSegmentation::RGBHash2String(e.first) << " " << e.second << std::endl;
+            fout << MaggicSegmentation::RGBHash2String(e.first) << "\t" << e.second << std::endl;
+            totalSG += e.second;
         }
+        fout << "Correct:" << std::endl;
+        for (auto &e : sstats) {
+            String colorName = MaggicSegmentation::RGBHash2String(e.first);
+            float pct = e.second/static_cast<float>(gstats[e.first]);
+            fout << colorName << "\t" << std::fixed << std::setprecision(3) << pct << std::endl;
+        }
+        fout << "Wrong:" << std::endl;
+        for (auto &e : sstats) {
+            String colorName = MaggicSegmentation::RGBHash2String(e.first);
+            float pct = (gstats[e.first] - e.second)/static_cast<float>(gstats[e.first]);
+            fout << colorName << "\t" << std::fixed << std::setprecision(3) << pct << std::endl;
+        }
+        fout << "Total:" << std::endl;
+        fout << "totalGT\t" << totalGT << std::endl;
+        fout << "totalSG\t" << totalSG << std::endl;
+        fout << "SGpct\t" << std::fixed << std::setprecision(3) << totalSG/static_cast<float>(totalGT) << std::endl;
+        fout << "SGpct\t" << std::fixed << std::setprecision(3) << (totalGT-totalSG)/static_cast<float>(totalGT) << std::endl;
+
         fout.close();
     } else {
         spdlog::get("MaggicVision")->error("Could not save stats. (function : MaggicSemgentationDialog::saveStats)");
@@ -371,16 +413,16 @@ void MaggicSegmentationDialog::processAndSave() {
     std::cout << "Processing and saving segmentation." << std::endl;
     this->maggicSegmentation->calibrate(this->_actualFrame);
     this->maggicSegmentation->lock();
-    this->_segmentedFrame = this->maggicSegmentation->run(this->_inputFrame);
+    this->maggicSegmentation->run(this->_inputFrame);
     this->maggicSegmentation->getSegmentationFrameFromLUT(this->_segmentedFrame);
     this->maggicSegmentation->unlock();
     Statistics gstats, sstats;
-    //his->processImage(this->_groundTruthFrame, this->_segmentedFrame, &gstats, &sstats);
+    this->processImage(this->_groundTruthFrame, this->_segmentedFrame, &gstats, &sstats);
     cv::imwrite(this->_outputDir->absolutePath().toStdString()
                 +"/"
                 +this->_inputFileList[this->_selectedFileIndex],
                 this->_segmentedFrame);
-    //this->saveStats(gstats, sstats);
+    this->saveStats(gstats, sstats);
 }
 
 void MaggicSegmentationDialog::autoResizeInputFrame(cv::Mat &frame) {
@@ -404,12 +446,13 @@ void MaggicSegmentationDialog::useNextImage() { // Circular function
     this->on_playpauseButton_clicked(true);
     this->_selectedFileIndex = (this->_selectedFileIndex+1)
             %static_cast<int>(this->_inputFileList.size());
+    this->_inputFileName = this->_inputFileList[this->_selectedFileIndex];
     String input_impath = this->_inputDir->absolutePath().toStdString()
             +"/"
-            +this->_inputFileList[this->_selectedFileIndex];
-//    String ground_truth_impath = this->_groundTruthDir->absolutePath().toStdString()
-//            +"/"
-//            +this->_groundTruthFileList[this->_selectedFileIndex];
+            +this->_inputFileName;
+    String ground_truth_impath = this->_groundTruthDir->absolutePath().toStdString()
+            +"/"
+            +this->_groundTruthFileList[this->_selectedFileIndex];
     // IN
     this->_inputFrame = cv::imread(input_impath);
     // this->autoResizeInputFrame(this->_inputFrame);
@@ -417,9 +460,9 @@ void MaggicSegmentationDialog::useNextImage() { // Circular function
     std::cout << "Loaded image(" << this->_selectedFileIndex << "): "
               << input_impath << std::endl;
     // GT
-//    this->_groundTruthFrame = cv::imread(ground_truth_impath);
-//    std::cout << "Loaded image(" << this->_selectedFileIndex << "): "
-//              << ground_truth_impath << std::endl;
+    this->_groundTruthFrame = cv::imread(ground_truth_impath);
+    std::cout << "Loaded image(" << this->_selectedFileIndex << "): "
+              << ground_truth_impath << std::endl;
 }
 
 void MaggicSegmentationDialog::on_fixCameraButton_clicked()
@@ -459,7 +502,7 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
         if (static_cast<int>(mouseEvent->button()) == 2) { // right click
             if (f_object == ui->tabWidget) {
                 std::cout << "Right click on Tab widget!" << std::endl;
-                this->useNextImage();
+//                this->useNextImage();
             }
         }
     }
@@ -512,7 +555,10 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
       if (keyEvent->key() >= Qt::Key_1 && keyEvent->key() <= Qt::Key_5) {
         this->ui->tabWidget->setCurrentIndex(keyEvent->key()- Qt::Key_1);
       }
-      if (keyEvent->key() >= Qt::Key_B) {
+  }
+  if (f_event->type() == QEvent::KeyRelease && f_object == this) {
+      QKeyEvent* keyEvent = reinterpret_cast<QKeyEvent*>(f_event);
+      if (keyEvent->key() == Qt::Key_B) {
         this->processBatch();
       }
   }
