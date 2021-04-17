@@ -352,7 +352,9 @@ void MaggicSegmentationDialog::processImage(cv::Mat &ground_truth, cv::Mat &segm
     for (int i=0;i<compared.rows; ++i) {
         for (int j=0;j<compared.cols; ++j) {
             cv::Vec3b pixel = compared.at<cv::Vec3b>(i,j);
-            sstats->find(MaggicSegmentation::BGR2RGBHash(pixel))->second++;
+            cv::Vec3b pixelg = ground_truth.at<cv::Vec3b>(i,j);
+            if (MaggicSegmentation::BGR2RGBHash(pixel) == MaggicSegmentation::BGR2RGBHash(pixelg))
+                sstats->find(MaggicSegmentation::BGR2RGBHash(pixel))->second++;
         }
     }
 }
