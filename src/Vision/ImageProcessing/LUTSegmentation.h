@@ -97,7 +97,7 @@ class LUTSegmentation : public ImageProcessing {
 
   bool getQuantizationBool();
 
-  int *getLUT();
+  uchar *getLUT();
 
  private:
 
@@ -108,14 +108,14 @@ class LUTSegmentation : public ImageProcessing {
    *
    * @return   The colorLabel
    */
-  int getColorLabel(YUV &color);
+  uchar getColorLabel(YUV &color);
 
   /**
    * @brief    Init the Look Up Table with the already loaded parameters
    */
   void initLUT();
   std::mutex _frameLock, _quantizationLock;
-  int *_LUT;
+  uchar *_LUT;
   ColorInterval *_calibrationParameters;
   cv::Mat _debugFrame;
   cv::Mat _segmentationFrame;

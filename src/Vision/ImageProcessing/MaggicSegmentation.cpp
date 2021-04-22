@@ -53,8 +53,8 @@ MaggicSegmentation::default_normalization_method =
 MaggicSegmentation::MaggicSegmentation()
 {
   this->isLUTReady = false;
-  this->_LUT = new int[LUT_SIZE/3];
-  memset(this->_LUT,0,LUT_SIZE/3  *sizeof(int)); // clear _LUT
+  this->_LUT = new uchar[LUT_SIZE/3];
+  memset(this->_LUT,0,LUT_SIZE/3  *sizeof(uchar)); // clear _LUT
   this->_HUETable = new int[256];
   memset(this->_HUETable,0,256*sizeof(int)); // clear HUETable
   this->_calibrationParameters = new ColorInterval[NUMBEROFCOLOR];
@@ -359,11 +359,25 @@ int MaggicSegmentation::getEntitiesCount() {
 
 void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
   if (d.empty()) d = cv::Mat::zeros(o.size(), o.type());
-  for (int r = 0; r < o.rows; ++r) {
-    for (int c = 0; c < o.cols; ++c) {
-      filterGray(d.at<cv::Vec3b>(r, c),o.at<cv::Vec3b>(r, c));
+  tbb::parallel_for(tbb::blocked_range2d<int>(0, o.rows, 238, 0, o.cols, 161),
+    [&](const tbb::blocked_range2d<int> &r) {
+     for (int i = r.rows().begin(); i != r.rows().end(); i++) {
+          for (int j = r.cols().begin(); j != r.cols().end(); j++) {
+    //  for (int r = 0; r < o.rows; ++r) {
+    //    for (int c = 0; c < o.cols; ++c) {
+          filterGray(d.at<cv::Vec3b>(i, j),o.at<cv::Vec3b>(i, j));
+        }
+      }
+  });
+  /*d.forEach<cv::Vec3b>
+  (
+    [this, d, o](cv::Vec3b &pixel, const int * position) -> void
+    {
+      int pos = static_cast<int>(position-reinterpret_cast<int*>(d.data));
+      cv::Vec3b &pixelo = *reinterpret_cast<cv::Vec3b*>(o.data[pos]);
+      this->filterGray(pixel,pixelo);
     }
-  }
+  );*/
 }
 
 inline void MaggicSegmentation::filterGray(cv::Vec3b &color, cv::Vec3b &coloro) {
@@ -589,8 +603,10 @@ void MaggicSegmentation::generateLUTFromHUE() {
 
     preprocessed = true;
   }
-
-  for (int i=0;i<LUT_SIZE/3;i++) {
+  tbb::parallel_for(tbb::blocked_range<int>(0, LUTSIZE, 238),
+    [&](const tbb::blocked_range<int> &r) {
+     for (int i = r.begin(); i != r.end(); i++) {
+//  for (int i=0;i<LUT_SIZE/3;i++) {
     uchar r = static_cast<uchar>((i&0x00ff0000) >> 16);
     uchar g = static_cast<uchar>((i&0x0000ff00) >> 8);
     uchar b = static_cast<uchar>(i&0x000000ff);
@@ -626,35 +642,16 @@ void MaggicSegmentation::generateLUTFromHUE() {
       this->_LUT[i] = 0; // black
     }
     else {
-      this->_LUT[i] = this->_HUETable[coloro[0]];
+      this->_LUT[i] = static_cast<uchar>(this->_HUETable[coloro[0]]);
     }
 
-    /*float x = b;
-    float y = g;
-    float z = r;
-    float men = min(min(x, y), z);
-    float x1 = max(men - filterGrayThreshold, 0);
-    float y1 = max(men - filterGrayThreshold, 0);
-    float z1 = max(men - filterGrayThreshold, 0);
-    float x2 = min(men + filterGrayThreshold, 255);
-    float y2 = min(men + filterGrayThreshold, 255);
-    float z2 = min(men + filterGrayThreshold, 255);
-    if (x >= x1 && x <= x2 &&
-      y >= y1 && y <= y2 &&
-      z >= z1 && z <= z2) {
-      this->_LUT[i] = 0; // black
-    }
-    else {
-      this->_LUT[i] = this->_HUETable[coloro[0]];
-    }*/
-
-  }
+  }});
   //std::cout << "Done generating LUT from Hue.\n";
   //spdlog::get("Vision")->info("MaggicSegmentation::Done generating LUT from Hue.\n");
   this->isLUTReady = true;
 }
 
-int* MaggicSegmentation::getLUT() {
+uchar* MaggicSegmentation::getLUT() {
   return this->_LUT;
 }
 
@@ -1475,9 +1472,9 @@ void MaggicSegmentation::doDetails() {
         }
         if (changed) {
             this->generateLUTFromHUE();
-            int* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
-            int* src_LUT = this->getLUT();
-            memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
+            uchar* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
+            uchar* src_LUT = this->getLUT();
+            memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(uchar));
         }
     }
 
@@ -1550,6 +1547,14 @@ void MaggicSegmentation::setNormalizedEnabled(bool enabled) {
                                       NO_NORMALIZATION);
     this->updateColors = true;
     this->mut.unlock();
+}
+
+bool MaggicSegmentation::getNormalizedEnabled() {
+    bool val;
+    this->mut.lock();
+    val = this->normalized_color;
+    this->mut.unlock();
+    return val;
 }
 
 void MaggicSegmentation::setNormalizationMethod(MaggicSegmentation::NormalizationMethod method) {
@@ -1637,4 +1642,23 @@ void MaggicSegmentation::updateFrame() {
     lock();
     this->m_updateFrame = true;
     unlock();
+}
+
+bool MaggicSegmentation::getLUTCacheEnable() {
+    bool r;
+    lock();
+    r = this->_LUTCacheEnable;
+    unlock();
+    return r;
+}
+
+void MaggicSegmentation::setLUTCacheEnable(bool enable) {
+    lock();
+    this->_LUTCacheEnable = enable;
+    unlock();
+}
+
+
+void MaggicSegmentation::applyLUT(cv::Mat &input, cv::Mat &output, uchar* LUT) {
+
 }

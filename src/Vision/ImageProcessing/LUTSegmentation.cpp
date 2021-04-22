@@ -1,7 +1,7 @@
 #include "LUTSegmentation.h"
 
 LUTSegmentation::LUTSegmentation() {
-  this->_LUT = new int[LUTSIZE];
+  this->_LUT = new uchar[LUTSIZE];
   this->_calibrationParameters = new ColorInterval[NUMBEROFCOLOR];
   setQuantizationBool(false);
   this->_grayTrashHoldLevel = 0;
@@ -115,8 +115,8 @@ void LUTSegmentation::setLUTPixel(YUV &color, int id) {
   }
 }
 
-int LUTSegmentation::getColorLabel(YUV &color) {
-  for (int i = 0; i < NUMBEROFCOLOR; i++) {
+uchar LUTSegmentation::getColorLabel(YUV &color) {
+  for (uchar i = 0; i < NUMBEROFCOLOR; i++) {
     if (color.y >= this->_calibrationParameters[i].min.y
         && color.y <= this->_calibrationParameters[i].max.y) {
       if (color.u >= this->_calibrationParameters[i].min.u
@@ -171,6 +171,6 @@ bool LUTSegmentation::getQuantizationBool() {
 }
 
 
-int *LUTSegmentation::getLUT() {
+uchar *LUTSegmentation::getLUT() {
   return this->_LUT;
 }

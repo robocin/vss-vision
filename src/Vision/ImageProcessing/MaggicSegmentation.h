@@ -161,7 +161,7 @@ public:
 
   void generateLUTFromHUE();
 
-  int* getLUT();
+  uchar* getLUT();
 
   void openLastSession();
 
@@ -181,6 +181,8 @@ public:
 
   void setNormalizedEnabled(bool enabled);
 
+  bool getNormalizedEnabled();
+
   void setNormalizationMethod(MaggicSegmentation::NormalizationMethod method);
 
   void getNormalizationMethod(MaggicSegmentation::NormalizationMethod &method);
@@ -197,6 +199,9 @@ public:
 
   void updateFrame();
 
+  void setLUTCacheEnable(bool enabled = true);
+  bool getLUTCacheEnable();
+
 private:
   int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40, _intervalGrayThreshold = 30;
   static constexpr float div255 = 1.0f / 255.0f;
@@ -204,6 +209,7 @@ private:
   bool normalized_color;
   NormalizationMethod normalization_method, selected_normalization_method;
   static const NormalizationMethod default_normalization_method;
+  bool _LUTCacheEnable;
 
   std::string _maggicSegmentationSessionFileName;
 
@@ -240,6 +246,8 @@ private:
 
   void filterGray(cv::Mat &d, cv::Mat &o);
 
+  void applyLUT(cv::Mat &input, cv::Mat &output, uchar* LUT);
+
   inline void filterGray(cv::Vec3b &color, cv::Vec3b &coloro);
 
   void filterBinarizeColored(cv::Mat &d, cv::Mat &o);
@@ -273,7 +281,8 @@ private:
       colorPaletteHSV,
       histo;
 
-  int* _LUT;
+  uchar* _LUT;
+  uchar** _LUT_CACHE;
   ColorInterval* _calibrationParameters;
   cv::Mat _imageBuffer;
   cv::Mat _imageBufferFiltered;

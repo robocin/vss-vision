@@ -2,6 +2,7 @@
 #include "ui_maggicsegmentationdialog.h"
 #include <QMouseEvent>
 #include <chrono>
+#include <tbb/tbb.h>
 #include <QDir>
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM 17
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM 45
@@ -88,9 +89,10 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   //this->maggicSegmentation->setHUETable(this->maggicSegmentation->useLoadedValues);
   //this->maggicSegmentation->generateLUTFromHUE();
 
-  int* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
-  int* src_LUT = this->maggicSegmentation->getLUT();
-  memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
+  uchar* dst_LUT = reinterpret_cast<LUTSegmentation*>(
+              Vision::singleton().getSegmentationObject())->getLUT();
+  uchar* src_LUT = this->maggicSegmentation->getLUT();
+  memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(uchar));
 
   this->_selectedFileIndex = -1;
   this->_inputFileList = getFileList(_inputFolderName, &(this->_inputDir));
@@ -285,10 +287,10 @@ void MaggicSegmentationDialog::applyLUT(){
     this->maggicSegmentation->lock();
     this->maggicSegmentation->setHUETable(true);
     this->maggicSegmentation->generateLUTFromHUE();
-    int* dst_LUT = reinterpret_cast<LUTSegmentation*>(
+    uchar* dst_LUT = reinterpret_cast<LUTSegmentation*>(
                 Vision::singleton().getSegmentationObject())->getLUT();
-    int* src_LUT = this->maggicSegmentation->getLUT();
-    memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(int));
+    uchar* src_LUT = this->maggicSegmentation->getLUT();
+    memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(uchar));
     this->maggicSegmentation->unlock();
 }
 
@@ -306,32 +308,44 @@ void MaggicSegmentationDialog::processImage(cv::Mat &ground_truth, cv::Mat &segm
     }
     cv::Mat mask = cv::Mat::zeros(ground_truth.size(), ground_truth.type());
     cv::Mat compared;
+//    cv::Mat gt, sg;
+//    cv::cvtColor(ground_truth,gt,cv::COLOR_BGR2BGRA);
+//    cv::cvtColor(segmented,sg,cv::COLOR_BGR2BGRA);
+//    gt = cv::Mat(gt.size(),CV_32SC1,gt.data);
+//    sg = cv::Mat(sg.size(),CV_32SC1,sg.data);
+//    cv::Mat mask;
+//    cv::bitwise_and(gt, sg, mask);
+//    mask = cv::Mat(mask.size(),CV_8UC4,mask.data);
     // Creating Ground Truth statistics
-    for (int i=0;i<mask.rows; ++i) {
-        for (int j=0;j<mask.cols; ++j) {
-            cv::Vec3b gt = ground_truth.at<cv::Vec3b>(i,j);
-            cv::Vec3b sg = segmented.at<cv::Vec3b>(i,j);
-            bool b = gt[0] == sg[0];
-            bool g = gt[1] == sg[1];
-            bool r = gt[2] == sg[2];
-            if (b && g && r) {
-                mask.at<cv::Vec3b>(i,j) = cv::Vec3b(255,255,255);
-            } else {
-                mask.at<cv::Vec3b>(i,j) = cv::Vec3b(0,0,0);
+//    #pragma omp parallel for
+    tbb::parallel_for(tbb::blocked_range2d<int>(0, mask.rows, 238, 0, mask.cols, 161),
+      [&](const tbb::blocked_range2d<int> &r) {
+       for (int i = r.rows().begin(); i != r.rows().end(); i++) {
+            for (int j = r.cols().begin(); j != r.cols().end(); j++) {
+    //    for (int i=0;i<mask.rows; ++i) {
+    //        for (int j=0;j<mask.cols; ++j) {
+                cv::Vec3b gt = ground_truth.at<cv::Vec3b>(i,j);
+                cv::Vec3b sg = segmented.at<cv::Vec3b>(i,j);
+                bool b = gt[0] == sg[0];
+                bool g = gt[1] == sg[1];
+                bool r = gt[2] == sg[2];
+                if (b && g && r) {
+                    mask.at<cv::Vec3b>(i,j) = cv::Vec3b(255,255,255);
+                } else {
+                    mask.at<cv::Vec3b>(i,j) = cv::Vec3b(0,0,0);
+                }
             }
         }
-    }
-    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/mask.png",mask);
-    cv::cvtColor(mask,mask,cv::COLOR_BGR2GRAY);
+    });
+//    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/mask.png",mask);
+    cv::cvtColor(mask,mask,cv::COLOR_BGRA2GRAY);
     cv::bitwise_and(ground_truth, ground_truth, compared, mask);
-    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/compared.png",compared);
-    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/gt.png",ground_truth);
+//    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/compared.png",compared);
+//    cv::imwrite(this->_outputDir->absolutePath().toStdString() + "/gt.png",ground_truth);
 
     // Clean stats mapping
     sstats->clear();
     gstats->clear();
-
-    std::mutex sm, gm;
 
     // Initializing stats
     for (uint i=0; i < 8; ++i) { // black to light blue
@@ -352,8 +366,8 @@ void MaggicSegmentationDialog::processImage(cv::Mat &ground_truth, cv::Mat &segm
     for (int i=0;i<compared.rows; ++i) {
         for (int j=0;j<compared.cols; ++j) {
             cv::Vec3b pixel = compared.at<cv::Vec3b>(i,j);
-            cv::Vec3b pixelg = ground_truth.at<cv::Vec3b>(i,j);
-            if (MaggicSegmentation::BGR2RGBHash(pixel) == MaggicSegmentation::BGR2RGBHash(pixelg))
+            uchar pixelm = mask.at<uchar>(i,j);
+            if (pixelm)
                 sstats->find(MaggicSegmentation::BGR2RGBHash(pixel))->second++;
         }
     }
@@ -362,53 +376,148 @@ void MaggicSegmentationDialog::processImage(cv::Mat &ground_truth, cv::Mat &segm
 void MaggicSegmentationDialog::processBatch() {
     this->applyLUT();
     this->_selectedFileIndex = -1;
-//    for (size_t i=0; i < this->_inputFileList.size(); ++i) {
+
+
+
+    for (size_t i=0; i < this->_inputFileList.size(); ++i) {
         this->useNextImage();
-        this->processAndSave();
-//    }
+        for (int n=0;n < MaggicSegmentation::NormalizationMethod::NORMALIZATION_METHODS_LENGTH; ++n){
+            this->maggicSegmentation->setNormalizationMethod(
+                        static_cast<MaggicSegmentation::NormalizationMethod>(n));
+            for (int t =1; t< 256; ++t) {
+                this->maggicSegmentation->setFilterGrayThresholdValue(t);
+                this->applyLUT();
+                this->processAndSave();
+            }
+        }
+    }
 }
 
 void MaggicSegmentationDialog::saveStats(Statistics &gstats, Statistics &sstats)  {
-    size_t fileNameUsableLen = this->_inputFileName.size()-4;
-    String filepath = this->_outputDir->absolutePath().toStdString()
-            +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
-            +".txt";
-    std::cout << "Saving stats in " << filepath << std::endl;
-    std::fstream fout(filepath, std::fstream::out);
-    if (fout.is_open()) {
-        int totalGT = 0, totalSG = 0;
-        fout << "Ground-Truth Stats:" << std::endl;
-        for (auto &e : gstats) {
-            fout << MaggicSegmentation::RGBHash2String(e.first) << "\t" << e.second << std::endl;
-            totalGT += e.second;
-        }
-        fout << "Segmented Stats:" << std::endl;
-        for (auto &e : sstats) {
-            fout << MaggicSegmentation::RGBHash2String(e.first) << "\t" << e.second << std::endl;
-            totalSG += e.second;
-        }
-        fout << "Correct:" << std::endl;
-        for (auto &e : sstats) {
-            String colorName = MaggicSegmentation::RGBHash2String(e.first);
-            float pct = e.second/static_cast<float>(gstats[e.first]);
-            fout << colorName << "\t" << std::fixed << std::setprecision(3) << pct << std::endl;
-        }
-        fout << "Wrong:" << std::endl;
-        for (auto &e : sstats) {
-            String colorName = MaggicSegmentation::RGBHash2String(e.first);
-            float pct = (gstats[e.first] - e.second)/static_cast<float>(gstats[e.first]);
-            fout << colorName << "\t" << std::fixed << std::setprecision(3) << pct << std::endl;
-        }
-        fout << "Total:" << std::endl;
-        fout << "totalGT\t" << totalGT << std::endl;
-        fout << "totalSG\t" << totalSG << std::endl;
-        fout << "SGpct\t" << std::fixed << std::setprecision(3) << totalSG/static_cast<float>(totalGT) << std::endl;
-        fout << "SGpct\t" << std::fixed << std::setprecision(3) << (totalGT-totalSG)/static_cast<float>(totalGT) << std::endl;
+    std::map<uint, uint> ordered_color;
+//    bool latex = true;
+    bool plot = true;
 
-        fout.close();
-    } else {
-        spdlog::get("MaggicVision")->error("Could not save stats. (function : MaggicSemgentationDialog::saveStats)");
+    int idx[8] = {0,4,5,2,3,6,7,1}; // bk r g b y m c
+    for (uint i=0; i < 8; ++i) { // black to light blue
+        cv::Vec3b *v = reinterpret_cast<cv::Vec3b*>(ColorSpace::markerColors) + idx[i];
+        uint hash = MaggicSegmentation::BGR2RGBHash(*v);
+        ordered_color.insert(std::make_pair(i, hash));
     }
+    if (plot) {
+        size_t fileNameUsableLen = this->_inputFileName.size()-4;
+        MaggicSegmentation::NormalizationMethod method;
+        this->maggicSegmentation->getNormalizationMethod(method);
+        int method_number = (this->maggicSegmentation->getNormalizedEnabled() ? static_cast<int>(method) : 0);
+        String filepath = this->_outputDir->absolutePath().toStdString()
+                +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
+                + std::to_string(method_number) + ".txt";
+        std::cout << "Saving stats (" << this->maggicSegmentation->getFilterGrayThresholdValue()
+                  << ") in " << filepath << std::endl;
+        if (this->maggicSegmentation->getFilterGrayThresholdValue() == 1) {
+            std::fstream fout(filepath, std::fstream::out);
+            fout << "threshold\t";
+            for (int i =0; i<8; ++i) {
+                fout << MaggicSegmentation::RGBHash2String(ordered_color[i]);
+                if (i!=7) fout << "\t";
+            }
+            fout << std::endl;
+            fout.close();
+        }
+        std::fstream fout(filepath, std::fstream::out | std::fstream::app);
+        if (fout.is_open()) {
+            int totalGT = 0, totalSG = 0;
+            fout << this->maggicSegmentation->getFilterGrayThresholdValue() << "\t";
+            for (int i = 0; i < 8; ++i) {
+                totalGT += gstats.find(ordered_color[i])->second;
+                totalSG += sstats.find(ordered_color[i])->second;
+            }
+            for (int i = 0; i < 8; ++i) {
+                float pct = sstats[ordered_color[i]]/static_cast<float>(gstats[ordered_color[i]]);
+                fout << std::fixed << std::setprecision(1) << 100.0*pct;
+                if (i !=7) fout << "\t";
+            }
+            fout << "\t" << 100.0*totalSG/static_cast<float>(totalGT) << std::endl;
+
+            fout.close();
+        } else {
+            spdlog::get("MaggicVision")->error("Could not save latex stats. (function : MaggicSemgentationDialog::saveStats)");
+        }
+    }
+
+
+//    if (latex) {
+//        size_t fileNameUsableLen = this->_inputFileName.size()-4;
+//        String filepath = this->_outputDir->absolutePath().toStdString()
+//                +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
+//                +"_"+ std::to_string(this->maggicSegmentation->getFilterGrayThresholdValue()) +".tex";
+//        std::cout << "Saving stats in " << filepath << std::endl;
+//        std::fstream fout(filepath, std::fstream::out);
+//        if (fout.is_open()) {
+//            int totalGT = 0, totalSG = 0;
+//            fout << "Segmentation Stats:" << std::endl;
+//            for (int i =0; i<8; ++i) {
+//                totalGT += gstats.find(ordered_color[i])->second;
+//                fout << MaggicSegmentation::RGBHash2String(ordered_color[i]);
+//                if (i !=7) fout << " & ";
+//            }
+//            fout << "\\" << std::endl;
+
+//            for (int i =0; i<8; ++i) {
+//                float pct = sstats[ordered_color[i]]/static_cast<float>(gstats[ordered_color[i]]);
+//                fout << std::fixed << std::setprecision(1) << 100.0*pct;
+//                if (i !=7) fout << " & ";
+//            }
+//            fout << "\\" << std::endl;
+
+
+//            fout.close();
+//        } else {
+//            spdlog::get("MaggicVision")->error("Could not save latex stats. (function : MaggicSemgentationDialog::saveStats)");
+//        }
+//    }
+//    {
+//        size_t fileNameUsableLen = this->_inputFileName.size()-4;
+//        String filepath = this->_outputDir->absolutePath().toStdString()
+//                +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
+//                +"_"+ std::to_string(this->maggicSegmentation->getFilterGrayThresholdValue()) +".txt";
+//        std::cout << "Saving stats in " << filepath << std::endl;
+//        std::fstream fout(filepath, std::fstream::out);
+//        if (fout.is_open()) {
+//            int totalGT = 0, totalSG = 0;
+//            fout << "Ground-Truth Stats:" << std::endl;
+//            for (auto &e : gstats) {
+//                fout << MaggicSegmentation::RGBHash2String(e.first) << "\t" << e.second << std::endl;
+//                totalGT += e.second;
+//            }
+//            fout << "Segmented Stats:" << std::endl;
+//            for (auto &e : sstats) {
+//                fout << MaggicSegmentation::RGBHash2String(e.first) << "\t" << e.second << std::endl;
+//                totalSG += e.second;
+//            }
+//            fout << "Correct:" << std::endl;
+//            for (auto &e : sstats) {
+//                String colorName = MaggicSegmentation::RGBHash2String(e.first);
+//                float pct = e.second/static_cast<float>(gstats[e.first]);
+//                fout << colorName << "\t" << std::fixed << std::setprecision(3) << pct << std::endl;
+//            }
+//            fout << "Wrong:" << std::endl;
+//            for (auto &e : sstats) {
+//                String colorName = MaggicSegmentation::RGBHash2String(e.first);
+//                float pct = (gstats[e.first] - e.second)/static_cast<float>(gstats[e.first]);
+//                fout << colorName << "\t" << std::fixed << std::setprecision(3) << pct << std::endl;
+//            }
+//            fout << "Total:" << std::endl;
+//            fout << "totalGT\t" << totalGT << std::endl;
+//            fout << "totalSG\t" << totalSG << std::endl;
+//            fout << "SGpct\t" << std::fixed << std::setprecision(3) << totalSG/static_cast<float>(totalGT) << std::endl;
+//            fout << "SGpct\t" << std::fixed << std::setprecision(3) << (totalGT-totalSG)/static_cast<float>(totalGT) << std::endl;
+
+//            fout.close();
+//        } else {
+//            spdlog::get("MaggicVision")->error("Could not save stats. (function : MaggicSemgentationDialog::saveStats)");
+//        }
+//    }
 }
 
 void MaggicSegmentationDialog::processAndSave() {
@@ -420,10 +529,10 @@ void MaggicSegmentationDialog::processAndSave() {
     this->maggicSegmentation->unlock();
     Statistics gstats, sstats;
     this->processImage(this->_groundTruthFrame, this->_segmentedFrame, &gstats, &sstats);
-    cv::imwrite(this->_outputDir->absolutePath().toStdString()
-                +"/"
-                +this->_inputFileList[this->_selectedFileIndex],
-                this->_segmentedFrame);
+//    cv::imwrite(this->_outputDir->absolutePath().toStdString()
+//                +"/"
+//                +this->_inputFileList[this->_selectedFileIndex],
+//                this->_segmentedFrame);
     this->saveStats(gstats, sstats);
 }
 
@@ -504,7 +613,8 @@ bool MaggicSegmentationDialog::eventFilter(QObject *f_object, QEvent *f_event) {
         if (static_cast<int>(mouseEvent->button()) == 2) { // right click
             if (f_object == ui->tabWidget) {
                 std::cout << "Right click on Tab widget!" << std::endl;
-//                this->useNextImage();
+                this->useNextImage();
+                this->processAndSave();
             }
         }
     }
