@@ -387,13 +387,13 @@ inline void MaggicSegmentation::filterGray(cv::Vec3b &color, cv::Vec3b &coloro) 
     float a = 1.f;
     switch (this->normalization_method) {
     case CHROMATIC_NORMALIZATION:
-        a = 1.f / static_cast<float>(x + y + z);
+        a = 255.0f / static_cast<float>(x + y + z);
         x = static_cast<uchar>(x*a);
         y = static_cast<uchar>(y*a);
         z = static_cast<uchar>(z*a);
         break;
     case VECTOR_NORMALIZATION:
-        a = 1.f / static_cast<float>(sqrt(x + y + z));
+        a = 255.0f / static_cast<float>(sqrt(x*x + y*y + z*z));
         x = static_cast<uchar>(x*a);
         y = static_cast<uchar>(y*a);
         z = static_cast<uchar>(z*a);
