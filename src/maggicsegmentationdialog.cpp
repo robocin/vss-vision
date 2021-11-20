@@ -107,6 +107,7 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
           std::cout << " " << e << std::endl;
       }
   }
+  this->ui->NormalizationComboBox->setCurrentIndex(static_cast<int>(this->maggicSegmentation->getNormalizationMethod()));
 
 }
 
@@ -687,9 +688,10 @@ void MaggicSegmentationDialog::on_FilterCheckBox_toggled(bool checked)
     this->maggicSegmentation->setFilterEnabled(checked);
 }
 
-void MaggicSegmentationDialog::on_NormalizedCheckBox_toggled(bool checked)
+void MaggicSegmentationDialog::on_NormalizationComboBox_currentIndexChanged(int index)
 {
-    this->maggicSegmentation->setNormalizedEnabled(checked);
+    this->maggicSegmentation->setNormalizationMethod(static_cast<MaggicSegmentation::NormalizationMethod>(index));
+    this->maggicSegmentation->setNormalizedEnabled(index > 0);
     this->maggicSegmentation->lock();
     this->maggicSegmentation->setHUETable(true);
     this->maggicSegmentation->generateLUTFromHUE();

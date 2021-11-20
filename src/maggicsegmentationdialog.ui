@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>750</width>
-    <height>580</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -469,7 +469,7 @@
   <widget class="QPushButton" name="playpauseButton">
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>130</x>
      <y>520</y>
      <width>110</width>
      <height>30</height>
@@ -548,31 +548,56 @@
     <string>F</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="NormalizedCheckBox">
+  <widget class="QComboBox" name="NormalizationComboBox">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>550</y>
-     <width>111</width>
-     <height>20</height>
+     <y>560</y>
+     <width>251</width>
+     <height>25</height>
     </rect>
    </property>
-   <property name="toolTip">
-    <string>Normalized (N)</string>
-   </property>
-   <property name="text">
-    <string>Normalized</string>
-   </property>
-   <property name="shortcut">
-    <string>N</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
+   <item>
+    <property name="text">
+     <string>No Normalization</string>
+    </property>
+    <property name="icon">
+     <iconset resource="iconTools/icontools.qrc">
+      <normaloff>:/image/icon/35-turn-visibility-off-button.png</normaloff>:/image/icon/35-turn-visibility-off-button.png</iconset>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Chromatic Normalization</string>
+    </property>
+    <property name="icon">
+     <iconset resource="iconTools/icontools.qrc">
+      <normaloff>:/image/icon/019-bee.png</normaloff>:/image/icon/019-bee.png</iconset>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Vector Normalization</string>
+    </property>
+    <property name="icon">
+     <iconset resource="iconTools/icontools.qrc">
+      <normaloff>:/image/icon/017-strategy.png</normaloff>:/image/icon/017-strategy.png</iconset>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Weighted Normalization</string>
+    </property>
+    <property name="icon">
+     <iconset resource="iconTools/icontools.qrc">
+      <normaloff>:/image/icon/030-wand.png</normaloff>:/image/icon/030-wand.png</iconset>
+    </property>
+   </item>
   </widget>
  </widget>
  <resources>
   <include location="image.qrc"/>
+  <include location="iconTools/icontools.qrc"/>
  </resources>
  <connections>
   <connection>

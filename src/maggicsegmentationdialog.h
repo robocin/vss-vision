@@ -72,10 +72,9 @@ void on_vectorscopeCheckBox_toggled(bool checked);
 
 void on_FilterCheckBox_toggled(bool checked);
 
-void on_NormalizedCheckBox_toggled(bool checked);
-
-
 void saveStats(Statistics &gstats, Statistics &sstats);
+
+void on_NormalizationComboBox_currentIndexChanged(int index);
 
 private:
   Ui::MaggicSegmentationDialog *ui;
