@@ -527,7 +527,7 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
 
   if (!fromFile) {// if it's not from file run normally
 
-    spdlog::get("Vision")->info("MaggicSegmentation:: Loading Default HUE list\n");
+//    spdlog::get("Vision")->info("MaggicSegmentation:: Loading Default HUE list\n");
 
     // clear the vector of pair
     hueList.clear();
@@ -581,7 +581,7 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
     }
     this->_HUETable[i] = bl;
   }
-  spdlog::get("Vision")->info("MaggicSegmentation:: Default HUE list loaded.\n");
+//  spdlog::get("Vision")->info("MaggicSegmentation:: Default HUE list loaded.\n");
 }
 
 void MaggicSegmentation::generateLUTFromHUE() {

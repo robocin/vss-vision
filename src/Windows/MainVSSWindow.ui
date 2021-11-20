@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>VSS-Vision (RobôCIn)</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../image.qrc">
+    <normaloff>:/image/icon/icon_squared_medium.png</normaloff>:/image/icon/icon_squared_medium.png</iconset>
   </property>
   <widget class="QWidget" name="CentralWidget">
    <property name="enabled">
@@ -1104,6 +1108,7 @@
  </widget>
  <resources>
   <include location="../iconTools/icontools.qrc"/>
+  <include location="../image.qrc"/>
  </resources>
  <connections/>
 </ui>

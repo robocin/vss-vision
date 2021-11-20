@@ -298,7 +298,7 @@ void MaggicSegmentationDialog::on_applyLUTButton_clicked()
 {
   this->applyLUT();
   this->processAndSave();
-  this->maggicSegmentation->saveSelectedDebug();
+//  this->maggicSegmentation->saveSelectedDebug();
 }
 
 void MaggicSegmentationDialog::processImage(cv::Mat &ground_truth, cv::Mat &segmented, Statistics *gstats = nullptr, Statistics *sstats = nullptr) {
@@ -527,13 +527,13 @@ void MaggicSegmentationDialog::processAndSave() {
     this->maggicSegmentation->run(this->_inputFrame);
     this->maggicSegmentation->getSegmentationFrameFromLUT(this->_segmentedFrame);
     this->maggicSegmentation->unlock();
-    Statistics gstats, sstats;
-    this->processImage(this->_groundTruthFrame, this->_segmentedFrame, &gstats, &sstats);
+//    Statistics gstats, sstats;
+//    this->processImage(this->_groundTruthFrame, this->_segmentedFrame, &gstats, &sstats);
 //    cv::imwrite(this->_outputDir->absolutePath().toStdString()
 //                +"/"
 //                +this->_inputFileList[this->_selectedFileIndex],
 //                this->_segmentedFrame);
-    this->saveStats(gstats, sstats);
+//    this->saveStats(gstats, sstats);
 }
 
 void MaggicSegmentationDialog::autoResizeInputFrame(cv::Mat &frame) {
