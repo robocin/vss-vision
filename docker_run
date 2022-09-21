@@ -1,0 +1,11 @@
+#!/bin/bash
+if [ $# -eq 0 ]
+then
+    echo "select camera id as arg"
+else
+    export DISPLAY=$DISPLAY
+	echo "setting display to $DISPLAY, and camera /dev/video$1"
+	xhost +
+	docker run -it --rm --device=/dev/video$1:/dev/video0 -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY --network=host vss-vision
+	xhost -
+fi
