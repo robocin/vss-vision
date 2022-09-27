@@ -1,6 +1,5 @@
 #include "Network/Network.h"
 #include "spdlog/spdlog.h"
-
 sf::Uint16 Network::port = static_cast<sf::Uint16>(54000);
 sf::IpAddress Network::recipient = "0.0.0.0";
 sf::UdpSocket Network::socket;

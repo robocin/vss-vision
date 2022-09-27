@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QT += network
 TARGET = VSS-VISION
 TEMPLATE = app
-
+LIBS += -L/usr/local/lib -lprotobuf
 QMAKE_CXXFLAGS += -O3 -std=c++11
 #QMAKE_EXT_MOC = .cu
 
@@ -83,7 +83,8 @@ SOURCES += main.cpp\
     Utils/EnumsAndConstants.cpp \
     Windows/RobotWidget.cpp \
     trackconfigdialog.cpp \
-    Network/Network.cpp
+    Network/Network.cpp \
+    Network/messages_robocup_ssl_detection.pb.cc
 
 HEADERS  += \
   Entity/Entity.h \
@@ -124,7 +125,8 @@ HEADERS  += \
     Utils/BetterEnum.h \
     trackconfigdialog.h \
     Windows/FileConstants.h\
-    Network/Network.h
+    Network/Network.h \
+    Network/messages_robocup_ssl_detection.pb.h
 
 FORMS  += \
   visionconfigdialog.ui \

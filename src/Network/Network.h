@@ -13,7 +13,6 @@
     #include "Utils/Utils.h"
 #endif
 #include "SFML/Network.hpp"
-#include "Network/wrapper.pb.h"
 #include "Network/messages_robocup_ssl_detection.pb.h"
 
 class Network {
