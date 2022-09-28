@@ -1,0 +1,25 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },	
+    "runArgs": [
+		"-e", "DISPLAY=${env:DISPLAY}",
+		"-v", "/tmp/.X11-unix:/tmp/.X11-unix",
+        "--network=host"
+	],
+
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cpptools-extension-pack",
+				"eamodio.gitlens",
+				"tonka3000.qtvsctools"
+			]
+		}
+	},
+
+}
