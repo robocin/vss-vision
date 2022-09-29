@@ -11,4 +11,10 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libsfml-dev \
     libopencv-dev \
     freeglut3-dev \
-    git
+    git \
+    protobuf-compiler\
+    libprotobuf-dev \
+    python3 \
+    python3-pip
+
+RUN pip install protobuf==3.20

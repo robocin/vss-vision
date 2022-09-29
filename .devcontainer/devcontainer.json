@@ -17,7 +17,8 @@
 				"ms-vscode.cpptools",
 				"ms-vscode.cpptools-extension-pack",
 				"eamodio.gitlens",
-				"tonka3000.qtvsctools"
+				"tonka3000.qtvsctools",
+				"ms-python.python"
 			]
 		}
 	},
