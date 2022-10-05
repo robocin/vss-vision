@@ -8,7 +8,7 @@ import messages_robocup_ssl_geometry_pb2 as geo
 class FiraClient:
 
     def __init__(self, 
-            vision_ip='127.0.0.1',
+            vision_ip='224.5.23.2',
             vision_port=20011, 
             cmd_ip='127.0.0.1',
             cmd_port=20011):

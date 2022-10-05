@@ -6,7 +6,7 @@ import messages_robocup_ssl_detection_pb2 as detection_t
 import messages_robocup_ssl_geometry_pb2 as geo
 
 class PROTOClient:
-    def __init__(self, ip='127.0.0.1', port=20011):    
+    def __init__(self, ip='224.5.23.2', port=20011):    
         self.com_ip = ip
         self.com_port = port
         self.com_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
