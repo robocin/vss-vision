@@ -13,10 +13,10 @@ class PROTOClient:
         self.com_address = (self.com_ip, self.com_port)
 
     def fix_x(self, x):
-        return (x * 10)
+        return (x * 10) - 750
     
     def fix_y(self, y):
-        return (y * 10)
+        return (y * 10) - 600
 
     # Returns a list of entities
     def unpack(self,data):
@@ -47,7 +47,15 @@ class PROTOClient:
                 ball = frame.balls.add()
                 robots_blue = frame.robots_blue
                 robots_yellow = frame.robots_yellow
-
+                geo = msg.geometry
+                field = geo.field
+                field.field_length = 1500
+                field.field_width = 1300
+                field.goal_width = 400
+                field.goal_depth = 100
+                field.boundary_width = 0
+                field.penalty_area_depth = 150
+                field.penalty_area_width = 700
                 data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
                 messageType = struct.unpack_from('c',data,0)[0].decode("utf-8")
                 print("message type {}".format(messageType))
