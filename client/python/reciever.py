@@ -54,8 +54,8 @@ class FiraClient:
 
         if data != None:
             decoded_data = wr.SSL_WrapperPacket().FromString(data)
-            print(decoded_data)
-        print(data)
+            print(decoded_data.detection.balls)
+        # print(data)
         # return self.frame, self.det_frame
 
 a = FiraClient()

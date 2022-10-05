@@ -13,10 +13,10 @@ class PROTOClient:
         self.com_address = (self.com_ip, self.com_port)
 
     def fix_x(self, x):
-        return (x * 10) - 75
+        return (x * 10)
     
     def fix_y(self, y):
-        return (y * 10) - 65
+        return (y * 10)
 
     # Returns a list of entities
     def unpack(self,data):
@@ -71,28 +71,30 @@ class PROTOClient:
                 ball.pixel_y = ball.y * 10
                 ball.confidence = 1
                 print(entities)
-                for i in range(1,4):
+                for i in range(1,entities):
                     id = ord(struct.unpack_from('c',data,header_offset + entity_size*i)[0])
-                    x, y, ang = struct.unpack_from('ddd',data,header_offset+1 + entity_size*i)
-                    _robot = robots_blue.add()
-                    _robot.robot_id = id
-                    _robot.x = x
-                    _robot.y = y
-                    _robot.confidence = 1.0
-                    _robot.pixel_x = _robot.x * 10
-                    _robot.pixel_y = _robot.y * 10
+                    if(id < 200):
+                        x, y, ang = struct.unpack_from('ddd',data,header_offset+1 + entity_size*i)
+                        _robot = robots_blue.add()
+                        _robot.robot_id = id - 100
+                        _robot.x = self.fix_x(x)
+                        _robot.y = self.fix_y(y)
+                        _robot.orientation = ang
+                        _robot.confidence = 1.0
+                        _robot.pixel_x = _robot.x * 10
+                        _robot.pixel_y = _robot.y * 10
 
-                for i in range(4, entities):
-                    id = ord(struct.unpack_from('c',data,header_offset + entity_size*i)[0])
-                    x, y, ang = struct.unpack_from('ddd',data,header_offset+1 + entity_size*i)
-                    _robot = robots_yellow.add()
-                    _robot.robot_id = id
-                    _robot.x = x
-                    _robot.y = y
-                    _robot.confidence = 1.0
-                    _robot.pixel_x = _robot.x * 10
-                    _robot.pixel_y = _robot.y * 10
-
+                    else:
+                        id = ord(struct.unpack_from('c',data,header_offset + entity_size*i)[0])
+                        x, y, ang = struct.unpack_from('ddd',data,header_offset+1 + entity_size*i)
+                        _robot = robots_yellow.add()
+                        _robot.robot_id = id - 200
+                        _robot.x = self.fix_x(x)
+                        _robot.y = self.fix_y(y)
+                        _robot.orientation = ang
+                        _robot.confidence = 1.0
+                        _robot.pixel_x = _robot.x * 10
+                        _robot.pixel_y = _robot.y * 10
 
 
                 data = msg.SerializeToString()
