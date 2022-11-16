@@ -34,7 +34,7 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
   findTeam(teamA, debugFrame, groupedBlobs.team);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
   Players teamB;
-  findEnemys(teamB, debugFrame, groupedBlobs.enemys);
+  findTeam(teamB, debugFrame, groupedBlobs.enemys);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
   Players allPlayers;

@@ -23,34 +23,36 @@ RobotWidget::~RobotWidget() {
   delete m_ui;
 }
 
-QPixmap RobotWidget::getRobotId() {
+QPixmap RobotWidget::getRobotId(int team_color) {
   QPixmap colorArea(200, 200);
-  setPrimaryColor(colorArea);
-  setSecodaryColor(colorArea);
+  setPrimaryColor(colorArea, team_color);
+  setSecodaryColor(colorArea, team_color);
   QPainter paint(&colorArea);
   paint.drawPixmap(0, 0, m_borderImage);
   paint.end();
   return colorArea;
 }
 
-void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
+void RobotWidget::setPrimaryColor(QPixmap &t_robotId, int team_color) {
   QPainter paint(&t_robotId);
   int teamColor = Vision::singleton().getTeamColor();
-  if (teamColor == Color::BLUE) {
+  if (team_color == Color::BLUE) {
     paint.setBrush(QBrush(Qt::blue));
-  } else if (teamColor == Color::YELLOW) {
+  } else if (team_color == Color::YELLOW) {
     paint.setBrush(QBrush(Qt::yellow));
   } else paint.setBrush(QBrush(Qt::black));
   paint.drawRect(0, 0, 200, 100);
 }
 
-void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
+void RobotWidget::setSecodaryColor(QPixmap &t_robotId, int team_color) {
   QPainter paint(&t_robotId);
 
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
   int t_id = this->m_robotId%100 + Color::RED;
+
+  if(team_color == Color::YELLOW) t_id-=3;
 
   for (const char *str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
@@ -69,14 +71,26 @@ void RobotWidget::update() {
   int offset_x = static_cast<int>(m_index) * 50;
   int offset_y = 0;
   int teamColor = Vision::singleton().getTeamColor();
-  // printf("Team Color %d\n", teamColor);
-  Players players = vss.players(
-              static_cast<uint>(teamColor)
-              );
-  if (m_index < players.size()) {
-    Ally &ally = players[m_index];
+  int index_base = m_index;
+  Players players;
+  int team_color = 0;
+  if(m_index < 3) {
+    players = vss.players(
+                static_cast<uint>(2)
+                );
+    team_color = 2;
+  }
+  else {
+    players = vss.players(
+                static_cast<uint>(3)
+                );
+    index_base -= 3;
+    team_color = 3;
+  }
+  if (index_base < players.size()) {
+    Ally &ally = players[index_base];
     this->m_robotId = ally.id();
-    m_ui->idRobot->setPixmap(getRobotId());
+    m_ui->idRobot->setPixmap(getRobotId(team_color));
     std::stringstream ss;
     std::string str;
     QString value;
