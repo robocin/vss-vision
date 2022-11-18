@@ -9,8 +9,10 @@
 QT     += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 TARGET = VSS-VISION
 TEMPLATE = app
+
 QMAKE_CXXFLAGS += -O3 -std=c++11
 #QMAKE_EXT_MOC = .cu
 
