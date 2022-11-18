@@ -16,8 +16,7 @@ src/VSSL\.app/Contents/PkgInfo
 src/VSSL\.app/Contents/Resources/empty\.lproj
 src/Utils/dest.txt
 \.DS_Store
-
-
+*avi
 
 #All logging files (including rotative)
 src/Log/*
@@ -40,3 +39,6 @@ client/RCClient
 
 # Python Cache
 *__pycache__/
+
+# Compiled protobuf
+*_pb2.py
