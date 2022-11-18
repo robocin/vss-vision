@@ -17,6 +17,7 @@ src/VSSL\.app/Contents/Resources/empty\.lproj
 src/Utils/dest.txt
 \.DS_Store
 
+build/
 
 
 #All logging files (including rotative)
