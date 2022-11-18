@@ -39,3 +39,6 @@ client/RCClient
 
 # Python Cache
 *__pycache__/
+
+# Compiled protobuf
+*_pb2.py
