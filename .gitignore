@@ -17,7 +17,6 @@ src/VSSL\.app/Contents/Resources/empty\.lproj
 src/Utils/dest.txt
 \.DS_Store
 *avi
-src/Network/SslClient
 
 #All logging files (including rotative)
 src/Log/*
