@@ -10,13 +10,10 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     v4l-utils \
     libsfml-dev \
     libopencv-dev \
-    freeglut3-dev  \
-    protobuf-compiler\
-    libprotobuf-dev
+    freeglut3-dev
 
 WORKDIR /workspaces/vss-vision
 
 COPY . .
 
-RUN cd src/Network/pb && protoc --cpp_out=../ *.proto
 RUN cd src && qmake && make clean && make -j8

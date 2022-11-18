@@ -1,11 +1,12 @@
 #!/bin/bash
+
+xhost +
 if [ $# -eq 0 ]
 then
-    echo "select camera id as arg"
+	echo "running with no attached camera"
+	docker run -it --rm -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY --network=host vss-vision
 else
-    export DISPLAY=$DISPLAY
-	echo "setting display to $DISPLAY, and camera /dev/video$1"
-	xhost +
+	echo "setting camera /dev/video$1"
 	docker run -it --rm --device=/dev/video$1:/dev/video0 -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY --network=host vss-vision
-	xhost -
 fi
+xhost -
