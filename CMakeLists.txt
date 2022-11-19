@@ -2,8 +2,14 @@ cmake_minimum_required(VERSION 3.16)
 
 project(VSS-VISION)
 
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin")
+
 
 set(SOURCES
     src/main.cpp
@@ -102,4 +108,3 @@ target_link_libraries(VSS-VISION TBB::tbb)
 
 find_package(SFML REQUIRED COMPONENTS network)
 target_link_libraries(VSS-VISION sfml-network)
-# find_package(spdlog REQUIRED)

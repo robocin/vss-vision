@@ -18,7 +18,7 @@ src/Utils/dest.txt
 \.DS_Store
 
 build/
-
+bin/
 
 #All logging files (including rotative)
 src/Log/*
