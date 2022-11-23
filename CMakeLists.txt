@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin")
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/src")
 
 
 set(SOURCES
@@ -102,8 +102,8 @@ add_executable(VSS-VISION ${SOURCES} ${HEADERS} ${RESOURCES})
 target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/src")
 target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
-target_link_libraries(VSS-VISION Qt5::Core Qt5::Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
+target_link_libraries(VSS-VISION Qt5::Core Qt5::Widgets Qt5::Gui)
 
 find_package(OpenCV REQUIRED)
 target_link_libraries(VSS-VISION ${OpenCV_LIBS})
@@ -111,5 +111,5 @@ target_link_libraries(VSS-VISION ${OpenCV_LIBS})
 find_package(TBB REQUIRED)
 target_link_libraries(VSS-VISION TBB::tbb)
 
-find_package(SFML REQUIRED COMPONENTS network)
-target_link_libraries(VSS-VISION sfml-network)
+find_package(SFML REQUIRED COMPONENTS network system)
+target_link_libraries(VSS-VISION sfml-network sfml-system)

@@ -1,7 +1,6 @@
 #include "visionconfigdialog.h"
 #include "ui_visionconfigdialog.h"
 
-
 VisionConfigDialog::VisionConfigDialog(bool videoFlag, QWidget *parent) :
   QDialog(parent),
   ui(new Ui::VisionConfigDialog) {
@@ -11,6 +10,10 @@ VisionConfigDialog::VisionConfigDialog(bool videoFlag, QWidget *parent) :
   this->_trackDialog = nullptr;
   this->_videoFlag = videoFlag;
   this->_fieldPixmap = QPixmap("Images/field.png");
+  if (this->_fieldPixmap.isNull()) {
+    std::cerr << "erro ao abrir o arquivo Images/field.png" << std::endl;
+    return;
+  }
   this->_fieldPixmap = this->_fieldPixmap.scaled(this->ui->projectionLabel->width(),
                                                  this->ui->projectionLabel->height(),
                                                  Qt::KeepAspectRatio,
