@@ -92,7 +92,12 @@ set(HEADERS
     src/Network/Network.h
 )
 
-add_executable(VSS-VISION ${SOURCES} ${HEADERS})
+set(RESOURCES
+    src/image.qrc
+    src/iconTools/icontools.qrc
+)
+
+add_executable(VSS-VISION ${SOURCES} ${HEADERS} ${RESOURCES})
 
 target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/src")
 target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/include")
