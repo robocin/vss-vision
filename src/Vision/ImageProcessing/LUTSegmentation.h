@@ -36,7 +36,6 @@
 class LUTSegmentation : public ImageProcessing {
 
  public:
-
   /**
    * @brief    Default Constructor
    */
@@ -69,7 +68,7 @@ class LUTSegmentation : public ImageProcessing {
    *
    * @return   A one channel's Mat with the labels on the pixels' value
    */
-  cv::Mat run(cv::Mat &frame) final;
+  cv::Mat run(cv::Mat& frame) final;
 
   /**
    * @brief    Gets the debug frame, a Mat in BGR channel
@@ -91,16 +90,15 @@ class LUTSegmentation : public ImageProcessing {
    * @param    color  The color
    * @param[in]  id   The identifier that needs to conform with the Color enum present in Utils
    */
-  void setLUTPixel(YUV &color, int id);
+  void setLUTPixel(YUV& color, int id);
 
   void setQuantizationBool(bool quantization);
 
   bool getQuantizationBool();
 
-  uchar *getLUT();
+  uchar* getLUT();
 
  private:
-
   /**
    * @brief    Gets the color Label to a given YUV color
    *
@@ -108,32 +106,30 @@ class LUTSegmentation : public ImageProcessing {
    *
    * @return   The colorLabel
    */
-  uchar getColorLabel(YUV &color);
+  uchar getColorLabel(YUV& color);
 
   /**
    * @brief    Init the Look Up Table with the already loaded parameters
    */
   void initLUT();
   std::mutex _frameLock, _quantizationLock;
-  uchar *_LUT;
-  ColorInterval *_calibrationParameters;
+  uchar* _LUT;
+  ColorInterval* _calibrationParameters;
   cv::Mat _debugFrame;
   cv::Mat _segmentationFrame;
-  std::string _colorLabels[NUMBEROFCOLOR] = { NOCOLLABEL,
-                                              ORANGELABEL,
-                                              BLUELABEL,
-                                              YELLOWLABEL,
-                                              REDLABEL,
-                                              GREENLABEL,
-                                              PINKLABEL,
-                                              LIGHTBLUELABEL,
-                                              PURPLELABEL,
-                                              BROWNLABEL,
-                                              COLORSTRANGELABEL
-                                            };
+  std::string _colorLabels[NUMBEROFCOLOR] = {NOCOLLABEL,
+                                             ORANGELABEL,
+                                             BLUELABEL,
+                                             YELLOWLABEL,
+                                             REDLABEL,
+                                             GREENLABEL,
+                                             PINKLABEL,
+                                             LIGHTBLUELABEL,
+                                             PURPLELABEL,
+                                             BROWNLABEL,
+                                             COLORSTRANGELABEL};
   bool _quantization;
   int _grayTrashHoldLevel;
-
 };
 
 #endif

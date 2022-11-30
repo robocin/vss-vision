@@ -9,20 +9,19 @@
 #include <tbb/tbb.h>
 #include <Timer/Timer.h>
 
-typedef struct{
-   int start;
-   int width;
-   int areaBlob;
-   int parent;
-   int parentRow;
-   int sumX;
-   int sumY;
-   uchar color;
-}Run;
+typedef struct {
+  int start;
+  int width;
+  int areaBlob;
+  int parent;
+  int parentRow;
+  int sumX;
+  int sumY;
+  uchar color;
+} Run;
 
-class RunLengthEncoding
-{
-public:
+class RunLengthEncoding {
+ public:
   RunLengthEncoding();
 
   /**
@@ -30,8 +29,7 @@ public:
    *
    * @param[in]  matrix   source matrix, already segmented
    */
-  std::vector< std::vector<Run> > run(const cv::Mat &matrix);
-
+  std::vector<std::vector<Run>> run(const cv::Mat& matrix);
 };
 
 #endif // RUNLENGHTENCODING_H

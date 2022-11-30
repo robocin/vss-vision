@@ -18,8 +18,8 @@ namespace CoachUtils {
    * @param entities vector to get positions
    * @param job object that holds index of each players role
    * @return true if there's a penaulty condition
-  */
-  //bool gkShouldLeaveArea(std::vector<Entity>& entities, Job job);
+   */
+  // bool gkShouldLeaveArea(std::vector<Entity>& entities, Job job);
 
   bool freeArea(std::vector<Entity>& entities, Job job);
 
@@ -38,6 +38,6 @@ namespace CoachUtils {
   bool gkCloseToArea(cv::Point2d pos);
 
   void debugObjective(cv::Mat cameraFrame, std::vector<Entity>& entities, int job);
-}
+} // namespace CoachUtils
 
 #endif // COACHUTILS_H

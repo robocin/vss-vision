@@ -1,29 +1,28 @@
 #include "MainVSSWindow.h"
 #include "ui_MainVSSWindow.h"
 
-MainVSSWindow::MainVSSWindow(QWidget *parent)
-  : QMainWindow(parent),
+MainVSSWindow::MainVSSWindow(QWidget* parent) :
+    QMainWindow(parent),
     m_ui(new Ui::MainVSSWindow),
     m_mainWindowFrameTimer(new QTimer(this)),
-    m_visionTimer(new QLabel()){
+    m_visionTimer(new QLabel()) {
   m_ui->setupUi(this);
   this->readMainWindowConfig();
 
   setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
   qApp->installEventFilter(this);
   // Baseado na quantidade de jogadores.
-  auto &robotLayout = m_ui->verticalLayout_3;
+  auto& robotLayout = m_ui->verticalLayout_3;
 
   for (size_t i = 0; i < MAX_PLAYERS; i++) {
-    auto &widget = m_robotWidgets[i];
-
+    auto& widget = m_robotWidgets[i];
 
     widget = new RobotWidget(i, m_ui->scrollAreaWidgetContents);
 
     robotLayout->addWidget(widget);
 
     if (i + 1 < MAX_PLAYERS) {
-      auto &line = m_robotLines[i];
+      auto& line = m_robotLines[i];
       line = new QFrame(m_ui->scrollAreaWidgetContents);
       robotLayout->addWidget(line);
     }
@@ -52,14 +51,14 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
 
   this->m_ui->cameraIndexComboBox->installEventFilter(this);
   this->m_ui->cameraIndexComboBox->clear();
-  std::vector<int> cameraListAux =
-    CameraManager::singleton().returnCameraList();
+  std::vector<int> cameraListAux = CameraManager::singleton().returnCameraList();
 
   for (size_t i = 0; i < cameraListAux.size(); i++) {
     this->m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
   }
 
-  this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
+  this->m_ui->cameraIndexComboBox->setCurrentText(
+      QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
   CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
 
   this->m_maggicSegmentationDialog = new MaggicSegmentationDialog();
@@ -94,11 +93,11 @@ void MainVSSWindow::initColors() {
 
 MainVSSWindow::~MainVSSWindow() {
   for (size_t i = 0; i < MAX_PLAYERS; i++) {
-    auto &widget = m_robotWidgets[i];
+    auto& widget = m_robotWidgets[i];
     delete widget;
 
     if (i + 1 < MAX_PLAYERS) {
-      auto &line = m_robotLines[i];
+      auto& line = m_robotLines[i];
       delete line;
     }
   }
@@ -114,16 +113,16 @@ void MainVSSWindow::selectCorrectFrame() {
 
   if (frameType == "Original") {
     if (m_ui->cutFieldPushButton->isChecked()) {
-        this->m_currentFrameLocker.lock();
+      this->m_currentFrameLocker.lock();
       Vision::singleton().getCurrentFrame(m_currentFrame);
       this->m_currentFrameLocker.unlock();
     } else {
-        this->m_currentFrameLocker.lock();
+      this->m_currentFrameLocker.lock();
       CameraManager::singleton().getCurrentFrame(m_currentFrame);
       this->m_currentFrameLocker.unlock();
     }
   } else if (frameType == "Segmented") {
-      this->m_currentFrameLocker.lock();
+    this->m_currentFrameLocker.lock();
     Vision::singleton().getSegmentationFrame(m_currentFrame);
     this->m_currentFrameLocker.unlock();
   } else if (frameType == "Tracked") {
@@ -145,7 +144,7 @@ void MainVSSWindow::selectCorrectFrame() {
 void MainVSSWindow::setCameraFrame() {
   resizeFrames();
   cv::Mat cameraFrame;
-    this->m_currentFrameLocker.lock();
+  this->m_currentFrameLocker.lock();
   if (this->m_currentFrame.empty()) {
     this->m_currentFrame = cv::Mat::zeros(480, 640, CV_8UC3);
   }
@@ -155,12 +154,14 @@ void MainVSSWindow::setCameraFrame() {
 
   if (!cameraFrame.empty()) {
     cv::Mat tempFrame = cameraFrame.clone();
-    cv::Size newSize(this->m_ui->cameraLabel->width(),
-                     this->m_ui->cameraLabel->height());
+    cv::Size newSize(this->m_ui->cameraLabel->width(), this->m_ui->cameraLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
     cv::cvtColor(tempFrame, tempFrame, cv::COLOR_BGR2RGB);
-    QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
-                 static_cast<int>(tempFrame.step), QImage::Format_RGB888);
+    QImage qimg2(reinterpret_cast<uchar*>(tempFrame.data),
+                 tempFrame.cols,
+                 tempFrame.rows,
+                 static_cast<int>(tempFrame.step),
+                 QImage::Format_RGB888);
     this->m_ui->cameraLabel->setPixmap(QPixmap::fromImage(qimg2));
   }
 }
@@ -172,16 +173,14 @@ void MainVSSWindow::update() {
   }
 
   double visionTime = Vision::singleton().getVisionRunTime();
-  m_visionTimer->setText(QString("Vision RunTime: ") +
-                         QString::number(visionTime, 'f', 2) +
+  m_visionTimer->setText(QString("Vision RunTime: ") + QString::number(visionTime, 'f', 2) +
                          QString(" ms"));
 
-  for (auto &widget : m_robotWidgets) {
+  for (auto& widget : m_robotWidgets) {
     widget->update();
   }
   double fps = CameraManager::singleton().getCurrentFPS();
-  m_ui->fpsLabel->setText(QString("FPS: ") + QString::number(fps,'f',2));
-
+  m_ui->fpsLabel->setText(QString("FPS: ") + QString::number(fps, 'f', 2));
 }
 
 void MainVSSWindow::setFrame(QImage image) {
@@ -190,13 +189,17 @@ void MainVSSWindow::setFrame(QImage image) {
 
 void MainVSSWindow::setFrame() {
   resizeFrames();
-  QImage tmp(m_currentFrame.data, m_currentFrame.cols, m_currentFrame.rows,
-             static_cast<int>(m_currentFrame.step), QImage::Format_RGB888);
+  QImage tmp(m_currentFrame.data,
+             m_currentFrame.cols,
+             m_currentFrame.rows,
+             static_cast<int>(m_currentFrame.step),
+             QImage::Format_RGB888);
   m_ui->cameraLabel->setPixmap(QPixmap::fromImage(tmp));
 }
 
 void MainVSSWindow::clearFrame() {
-  m_currentFrame = cv::Mat::zeros(static_cast<int>(Field::size().x), static_cast<int>(Field::size().y), CV_8UC3);
+  m_currentFrame =
+      cv::Mat::zeros(static_cast<int>(Field::size().x), static_cast<int>(Field::size().y), CV_8UC3);
   this->setFrame();
 }
 
@@ -204,14 +207,11 @@ void MainVSSWindow::resizeCameraFrame() {
   int height = m_ui->cameraFrame->height();
   int width = m_ui->cameraFrame->width();
 
-  if ((width > height && width != height * 4 / 3) ||
-      (height > width && height != width * 3 / 4)) {
+  if ((width > height && width != height * 4 / 3) || (height > width && height != width * 3 / 4)) {
     if (width > height) {
-      m_ui->cameraLabel->setGeometry((width - height * 4 / 3) / 2, 0,
-                                         height * 4 / 3, height);
+      m_ui->cameraLabel->setGeometry((width - height * 4 / 3) / 2, 0, height * 4 / 3, height);
     } else {
-      m_ui->cameraLabel->setGeometry(0, (height - width * 3 / 4) / 2, width,
-                                         width * 3 / 4);
+      m_ui->cameraLabel->setGeometry(0, (height - width * 3 / 4) / 2, width, width * 3 / 4);
     }
   }
 }
@@ -231,11 +231,10 @@ void MainVSSWindow::on_capturePushButton_clicked() {
 
     if (this->m_cameraCapture) {
       openSucceeded = CameraManager::singleton().init(
-                        this->m_ui->cameraIndexComboBox->currentText().toStdString()[0] -
-                        '0');
+          this->m_ui->cameraIndexComboBox->currentText().toStdString()[0] - '0');
     } else if (this->m_videoCapture) {
-      openSucceeded = CameraManager::singleton().init(
-                        this->m_videoFileName.toLocal8Bit().constData());
+      openSucceeded =
+          CameraManager::singleton().init(this->m_videoFileName.toLocal8Bit().constData());
     }
 
     if (openSucceeded) {
@@ -268,8 +267,7 @@ void MainVSSWindow::on_capturePushButton_clicked() {
       this->m_ui->capturePushButton->setChecked(false);
       QMessageBox cameraAlert;
       cameraAlert.setText("Problem trying to open the camera!");
-      cameraAlert.setInformativeText(
-        "Certify that your camera is attached to the computer.");
+      cameraAlert.setInformativeText("Certify that your camera is attached to the computer.");
       cameraAlert.exec();
     }
   } else {
@@ -296,20 +294,19 @@ void MainVSSWindow::on_capturePushButton_clicked() {
 
 void MainVSSWindow::on_cutFieldPushButton_clicked() {
   if (this->m_ui->cutFieldPushButton->isChecked()) {
-    //m_ui->visionInitPushButton->setEnabled(true);
-    //m_ui->visionConfigurePushButton->setEnabled(true);
+    // m_ui->visionInitPushButton->setEnabled(true);
+    // m_ui->visionConfigurePushButton->setEnabled(true);
     Vision::singleton().resetCorrection();
     this->m_ui->halfPushButton->setEnabled(true);
   } else {
-    //if (this->m_ui->visionInitPushButton->isChecked()) {
+    // if (this->m_ui->visionInitPushButton->isChecked()) {
     //  this->on_visionInitPushButton_clicked();
     //}
 
-    //m_ui->visionInitPushButton->setEnabled(false);
-    //m_ui->visionConfigurePushButton->setEnabled(false);
+    // m_ui->visionInitPushButton->setEnabled(false);
+    // m_ui->visionConfigurePushButton->setEnabled(false);
     this->m_ui->startAllPushButton->setChecked(false);
     this->m_ui->halfPushButton->setEnabled(false);
-
   }
 
   Vision::singleton().setCorrection(m_ui->cutFieldPushButton->isChecked());
@@ -332,14 +329,12 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
     m_ui->visualizationComboBox->addItem("Segmented");
     m_ui->visualizationComboBox->addItem("Tracked");
     m_ui->visualizationComboBox->setCurrentIndex(2);
-    }
+  }
 
-    m_ui->visualizationComboBox->setCurrentText("Tracked");
+  m_ui->visualizationComboBox->setCurrentText("Tracked");
 }
 
-
-void MainVSSWindow::on_DistortionComboBox_currentIndexChanged(
-  const QString &arg1) {
+void MainVSSWindow::on_DistortionComboBox_currentIndexChanged(const QString& arg1) {
   if (arg1 == "NULL") {
     CameraManager::singleton().setDistortionOption(NULO);
   }
@@ -349,12 +344,10 @@ void MainVSSWindow::on_DistortionComboBox_currentIndexChanged(
   }
 }
 
-void MainVSSWindow::
-on_calibrateFieldPointspushButton_clicked()  // Deveria ser apagado para
+void MainVSSWindow::on_calibrateFieldPointspushButton_clicked() // Deveria ser apagado para
 // evitar memory leak
 {
-  this->m_fieldDialog = new FieldPointsCalibrateDialog(
-    m_ui->capturePushButton->isChecked(), this);
+  this->m_fieldDialog = new FieldPointsCalibrateDialog(m_ui->capturePushButton->isChecked(), this);
   this->m_fieldDialog->exec();
 
   if (this->m_fieldDialog->result() == QDialog::Accepted) {
@@ -404,20 +397,19 @@ void MainVSSWindow::on_maggicSegmentationButton_clicked() {
 
 void MainVSSWindow::record() {
   if (!this->m_savedVideofileName.isEmpty()) {
-    this->m_videoRecordManager.open(
-      this->m_savedVideofileName.toStdString() + ".avi",
-      cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
-      cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
+    this->m_videoRecordManager.open(this->m_savedVideofileName.toStdString() + ".avi",
+                                    cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                                    30,
+                                    cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
     Vision::singleton().recordDeepLog();
   }
 }
 
 void MainVSSWindow::startVideoRecording() {
   if (this->m_firstTimeOpeningCamera) {
-    this->m_savedVideofileName = QFileDialog::getSaveFileName(
-                                   this, tr("Save File"), "/", tr("Videos (*.avi)"));
-    Vision::singleton().setDeepLogFileName(
-      this->m_savedVideofileName.toStdString());
+    this->m_savedVideofileName =
+        QFileDialog::getSaveFileName(this, tr("Save File"), "/", tr("Videos (*.avi)"));
+    Vision::singleton().setDeepLogFileName(this->m_savedVideofileName.toStdString());
     this->m_firstTimeOpeningCamera = false;
   }
 }
@@ -426,7 +418,7 @@ void MainVSSWindow::on_primaryColor_clicked(bool checked) {
   if (!checked) {
     Vision::singleton().setTeamColor(Color::BLUE);
     Vision::singleton().setDetectionParam(MYTEAM, Color::BLUE);
-    Vision::singleton().setDetectionParam(ENEMYTEAM, Color::YELLOW);    
+    Vision::singleton().setDetectionParam(ENEMYTEAM, Color::YELLOW);
   } else {
     Vision::singleton().setTeamColor(Color::YELLOW);
     Vision::singleton().setDetectionParam(MYTEAM, Color::YELLOW);
@@ -439,8 +431,7 @@ void MainVSSWindow::on_primaryColor_clicked(bool checked) {
 void MainVSSWindow::saveColorFile() {
   QFile file(QString::fromStdString(SECONDARY_COLOR_FILE));
 
-  if (!file.open(
-        (QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
+  if (!file.open((QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
     std::cout << "failed to open file : " << SECONDARY_COLOR_FILE << std::endl;
     exit(1);
   }
@@ -453,11 +444,10 @@ void MainVSSWindow::saveColorFile() {
   file.write(saveDoc.toJson());
 }
 
-bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
+bool MainVSSWindow::eventFilter(QObject* f_object, QEvent* f_event) {
   if (f_event->type() == QEvent::MouseButtonPress && f_object != nullptr) {
     static size_t listSize = 0;
-    std::vector<int> cameraListAux =
-      CameraManager::singleton().returnCameraList();
+    std::vector<int> cameraListAux = CameraManager::singleton().returnCameraList();
 
     if (listSize != cameraListAux.size()) {
       m_ui->cameraIndexComboBox->clear();
@@ -466,9 +456,10 @@ bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
         m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
       }
 
-      this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
-      CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
-
+      this->m_ui->cameraIndexComboBox->setCurrentText(
+          QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
+      CameraManager::singleton().setCameraIndex(
+          this->_mainWindowConfig["camIdx"].toString().toInt());
 
       listSize = cameraListAux.size();
     }
@@ -478,15 +469,15 @@ bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
 }
 
 void MainVSSWindow::on_videoPathBrowsePushButton_clicked() {
-  this->m_videoFileName =
-    QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(),
-                                 tr("Videos (*.mp4 *.avi *.mpeg)"));
+  this->m_videoFileName = QFileDialog::getOpenFileName(this,
+                                                       tr("Open File"),
+                                                       QDir::currentPath(),
+                                                       tr("Videos (*.mp4 *.avi *.mpeg)"));
 
   if (!this->m_videoFileName.isEmpty() || this->m_cameraCapture == false) {
     this->m_ui->videoPathBrowsePushButton->setEnabled(true);
     this->m_ui->cameraConfigPushButton->setEnabled(false);
-    this->m_ui->videoFileNameLabel->setText(
-      QFileInfo(this->m_videoFileName).fileName());
+    this->m_ui->videoFileNameLabel->setText(QFileInfo(this->m_videoFileName).fileName());
   } else {
     this->m_ui->sourceTab->setCurrentIndex(1);
   }
@@ -494,16 +485,14 @@ void MainVSSWindow::on_videoPathBrowsePushButton_clicked() {
 
 void MainVSSWindow::on_sourceTab_currentChanged(int index) {
   if (index == 0) {
-    std::vector<int> cameraListAux =
-      CameraManager::singleton().returnCameraList();
+    std::vector<int> cameraListAux = CameraManager::singleton().returnCameraList();
     this->m_ui->cameraIndexComboBox->clear();
 
     for (size_t i = 0; i < cameraListAux.size(); i++)
-      this->m_ui->cameraIndexComboBox->addItem(
-        QString::number(cameraListAux[i]));
+      this->m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
 
     CameraManager::singleton().setCameraIndex(
-      this->m_ui->cameraIndexComboBox->currentText().toInt());
+        this->m_ui->cameraIndexComboBox->currentText().toInt());
     this->m_videoCapture = false;
     this->m_cameraCapture = true;
     this->m_ui->cameraIndexComboBox->setEnabled(true);
@@ -515,26 +504,25 @@ void MainVSSWindow::on_sourceTab_currentChanged(int index) {
 }
 
 void MainVSSWindow::rebuildRobotsScrollArea() {
-  for (auto &widget : m_robotWidgets) {
+  for (auto& widget : m_robotWidgets) {
     widget->hide();
   }
 
-  for (auto &line : m_robotLines) {
+  for (auto& line : m_robotLines) {
     line->hide();
   }
 
-  size_t numberOfRobots =
-    static_cast<size_t>(m_ui->numberOfPlayersSpinBox->value());
+  size_t numberOfRobots = static_cast<size_t>(m_ui->numberOfPlayersSpinBox->value());
 
   for (size_t i = 0; i < numberOfRobots; i++) {
-    auto &widget = m_robotWidgets[i];
+    auto& widget = m_robotWidgets[i];
     std::string widgetName = "Widget_Robot_" + std::to_string(i);
     widget->setObjectName(QString(widgetName.c_str()));
     widget->setMinimumSize(QSize(200, 150));
     widget->show();
 
     if (i + 1 < numberOfRobots) {
-      auto &line = m_robotLines[i];
+      auto& line = m_robotLines[i];
       line->setObjectName(QString(("line" + std::to_string(i)).c_str()));
       line->setFrameShape(QFrame::HLine);
       line->setFrameShadow(QFrame::Sunken);
@@ -572,8 +560,7 @@ void MainVSSWindow::getPointsFromFile() {
 void MainVSSWindow::savePointsToFile() {
   QFile file(QString::fromStdString(FIELDLIMITSPATH));
 
-  if (!file.open(
-        (QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
+  if (!file.open((QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
     std::cout << "failed to open file : " << FIELDLIMITSPATH << std::endl;
     exit(1);
   }
@@ -613,8 +600,7 @@ void MainVSSWindow::getHalfFromFile() {
 void MainVSSWindow::saveHalf() {
   QFile file(QString::fromStdString(HALF_FILE));
 
-  if (!file.open(
-        (QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
+  if (!file.open((QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
     std::cout << "failed to open file : " << HALF_FILE << std::endl;
     exit(1);
   }
@@ -638,7 +624,7 @@ void MainVSSWindow::mirrorLimitPoints() {
   m_limitPoints[3] = aux;
 }
 
-void MainVSSWindow::keyPressEvent(QKeyEvent *e) {
+void MainVSSWindow::keyPressEvent(QKeyEvent* e) {
   if (e->key() == Qt::Key_Escape) {
     this->saveMainWindowConfig();
     this->close();
@@ -646,7 +632,7 @@ void MainVSSWindow::keyPressEvent(QKeyEvent *e) {
 }
 
 void MainVSSWindow::on_numberOfPlayersSpinBox_valueChanged(int arg1) {
-   m_ui->numbetOfPlayersConfirm->setEnabled(arg1 > 0);
+  m_ui->numbetOfPlayersConfirm->setEnabled(arg1 > 0);
 }
 
 void MainVSSWindow::on_numbetOfPlayersConfirm_clicked() {
@@ -654,8 +640,7 @@ void MainVSSWindow::on_numbetOfPlayersConfirm_clicked() {
   m_ui->numbetOfPlayersConfirm->setEnabled(false);
 }
 
-void MainVSSWindow::on_fieldSizeComboBox_currentIndexChanged(
-  const QString &arg1) {
+void MainVSSWindow::on_fieldSizeComboBox_currentIndexChanged(const QString& arg1) {
   if (arg1 == "3x3") {
     Field::set3x3();
   } else if (arg1 == "5x5") {
@@ -688,38 +673,33 @@ void MainVSSWindow::on_halfPushButton_clicked() {
   }
 }
 
-void MainVSSWindow::on_playNNButton_clicked(bool checked)
-{
-    Network::buttonsMessagePlayNN(checked);
+void MainVSSWindow::on_playNNButton_clicked(bool checked) {
+  Network::buttonsMessagePlayNN(checked);
 }
 
-void MainVSSWindow::on_stopButton_clicked()
-{
-   Network::buttonsMessageStop();
+void MainVSSWindow::on_stopButton_clicked() {
+  Network::buttonsMessageStop();
 }
 
-void MainVSSWindow::readMainWindowConfig()
-{
-    QFile loadFile("./config.json");
-    if (!loadFile.open(QIODevice::ReadOnly)) {
-        std::cout <<  "Couldn't open config file ./config.json" << std::endl;
-        return ;
-      }
-   QByteArray savedData = loadFile.readAll();
-   QJsonDocument loadDoc(QJsonDocument::fromJson(savedData));
-   this->_mainWindowConfig = loadDoc.object();
-
+void MainVSSWindow::readMainWindowConfig() {
+  QFile loadFile("./config.json");
+  if (!loadFile.open(QIODevice::ReadOnly)) {
+    std::cout << "Couldn't open config file ./config.json" << std::endl;
+    return;
+  }
+  QByteArray savedData = loadFile.readAll();
+  QJsonDocument loadDoc(QJsonDocument::fromJson(savedData));
+  this->_mainWindowConfig = loadDoc.object();
 }
 
-void MainVSSWindow::saveMainWindowConfig()
-{
-    // Create save file
-    QFile saveFile("./config.json");
-    if (!saveFile.open(QIODevice::WriteOnly)) {
-     std::cout << "Couldn't open save file." << std::endl;
-     return ;
-    }
-    this->_mainWindowConfig["camIdx"] = this->m_ui->cameraIndexComboBox->currentText();
-    QJsonDocument saveDoc(this->_mainWindowConfig);
-    saveFile.write(saveDoc.toJson());
+void MainVSSWindow::saveMainWindowConfig() {
+  // Create save file
+  QFile saveFile("./config.json");
+  if (!saveFile.open(QIODevice::WriteOnly)) {
+    std::cout << "Couldn't open save file." << std::endl;
+    return;
+  }
+  this->_mainWindowConfig["camIdx"] = this->m_ui->cameraIndexComboBox->currentText();
+  QJsonDocument saveDoc(this->_mainWindowConfig);
+  saveFile.write(saveDoc.toJson());
 }

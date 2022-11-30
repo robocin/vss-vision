@@ -25,9 +25,9 @@
 #define MAX_ROBOTS 3
 #define BALL_INDEX 6
 
-#define POSITION_PROCESSING_FILE  "Config/PositionProcessing.xml"
-#define WHERE_ARE_THOSE_FILE  "Config/PositionProcessingWhereAre.xml"
-#define KMEANS_FILE  "Config/PositionProcessingKMeans.xml"
+#define POSITION_PROCESSING_FILE "Config/PositionProcessing.xml"
+#define WHERE_ARE_THOSE_FILE "Config/PositionProcessingWhereAre.xml"
+#define KMEANS_FILE "Config/PositionProcessingKMeans.xml"
 #define DEFAULT "Default"
 #define MINSIZE "minSize"
 #define MAXSIZE "maxSize"
@@ -39,25 +39,25 @@
 #define ENEMYSEARCH "enemySearch"
 #define SHOWELEMENT "showElement"
 
-#define NUMCLUSTERS  "NUMCLUSTERS"
-#define Nok    "Nok"
-#define Orangek  "Orangek"
-#define Bluek    "Bluek"
-#define Yellowk  "Yellowk"
-#define Redk     "Redk"
-#define Greenk   "Greenk"
-#define Pinkk    "Pinkk"
+#define NUMCLUSTERS "NUMCLUSTERS"
+#define Nok "Nok"
+#define Orangek "Orangek"
+#define Bluek "Bluek"
+#define Yellowk "Yellowk"
+#define Redk "Redk"
+#define Greenk "Greenk"
+#define Pinkk "Pinkk"
 #define LightBluek "LightBluek"
-#define Purplek  "Purplek"
-#define Brownk   "Brownk"
+#define Purplek "Purplek"
+#define Brownk "Brownk"
 #define ColorStrangek "ColorStrangek"
-#define secondaryColor0  "SecondaryColor0"
-#define secondaryColor1  "SecondaryColor1"
-#define secondaryColor2  "SecondaryColor2"
-#define secondaryColor3  "SecondaryColor3"
-#define secondaryColor4  "SecondaryColor4"
-#define secondaryColor5  "SecondaryColor5"
-#define secondaryColor6  "SecondaryColor6"
+#define secondaryColor0 "SecondaryColor0"
+#define secondaryColor1 "SecondaryColor1"
+#define secondaryColor2 "SecondaryColor2"
+#define secondaryColor3 "SecondaryColor3"
+#define secondaryColor4 "SecondaryColor4"
+#define secondaryColor5 "SecondaryColor5"
+#define secondaryColor6 "SecondaryColor6"
 
 #define DEFAULT_ROWS 660
 #define DEFAULT_COLS 880
@@ -67,35 +67,31 @@
 #define MIN_GOAL_Y 45
 #define RANGE_Y 40
 
-
-
-
-
 /**
  * @brief    interface Class for tracking and detection.
  */
 class PositionProcessing {
-public:
-
+ public:
   /**
    * @brief    Basic struct to a object to be detected
    */
 
   typedef struct Blob {
     cv::Point position;
-    double  angle;
-    bool    valid;
-    int     area;
-    Blob():angle(0),valid(false),area(0) {}
+    double angle;
+    bool valid;
+    int area;
+    Blob() : angle(0), valid(false), area(0) {
+    }
   } Blob;
 
-  typedef struct NearestBlobInfo{
+  typedef struct NearestBlobInfo {
     int teamIndex;
     double distance;
   } NearestBlobInfo;
 
   typedef struct Region {
-    std::pair <Blob,Blob> blobs;
+    std::pair<Blob, Blob> blobs;
     int team;
     double distance;
     int color;
@@ -116,14 +112,13 @@ public:
    * @return   Vector of positions
    */
 
-  virtual void run(std::vector< std::vector< Run > > runs,
-           int rows = DEFAULT_ROWS,
-           int cols = DEFAULT_COLS) = 0;
+  virtual void
+  run(std::vector<std::vector<Run>> runs, int rows = DEFAULT_ROWS, int cols = DEFAULT_COLS) = 0;
 
   /**
    * @brief    Initialize the algorithm from file
    *
-   */     
+   */
   virtual void init() = 0;
 
   /**
@@ -133,7 +128,7 @@ public:
    */
   virtual void getDebugFrame(cv::Mat& frame) = 0;
 
-    /**
+  /**
    * @brief    Save all the paramenters into a xml file
    */
   virtual void saveParam() = 0;
@@ -144,7 +139,7 @@ public:
    * @param[in]  value  The new value
    *
    */
-  void setUp(std::string var,int value);
+  void setUp(std::string var, int value);
 
   /**
    * @brief setColorIndex
@@ -162,8 +157,7 @@ public:
 
   void setTeamColor(int teamColor);
 
-protected:
-
+ protected:
   /**
    * @brief    Saves a xml file with all common param for this interface class.
    */
@@ -174,39 +168,38 @@ protected:
    *
    * @param    ball  The entity to be returned
    */
-  void findBall(Entity &ball, cv::Mat &debugFrame);
+  void findBall(Entity& ball, cv::Mat& debugFrame);
 
-   /**
-  * @brief    Identifies from which team the blob belongs to.
-  */
+  /**
+   * @brief    Identifies from which team the blob belongs to.
+   */
   FieldRegions pairBlobs();
 
-   /**
-  * @brief    combines a color patch identifier with the closer team patch.
-  */
+  /**
+   * @brief    combines a color patch identifier with the closer team patch.
+   */
   std::pair<Blob, NearestBlobInfo> getNearestPrimary(Blob current);
 
-   /**
-  * @brief    Identifies all robots
-  *
-  * @param    debugFrame  The debugFrame to draw the blob's positions
-  */
-  void matchBlobs(cv::Mat &debugFrame);
+  /**
+   * @brief    Identifies all robots
+   *
+   * @param    debugFrame  The debugFrame to draw the blob's positions
+   */
+  void matchBlobs(cv::Mat& debugFrame);
 
-   /**
-  * @brief    Updates the teammates positions.
-  *
-  * @param    players  The players entities
-  */
-  void findTeam(Players &players, cv::Mat& debugFrame, std::vector<Region>& teamRegions);
+  /**
+   * @brief    Updates the teammates positions.
+   *
+   * @param    players  The players entities
+   */
+  void findTeam(Players& players, cv::Mat& debugFrame, std::vector<Region>& teamRegions);
 
   /**
    * @brief    Updates the enemys positions.
    *
    * @param    players  The players entities
    */
-  void findEnemys(Players &players, cv::Mat& debugFrame, std::vector<Region> &enemyRegions);
-
+  void findEnemys(Players& players, cv::Mat& debugFrame, std::vector<Region>& enemyRegions);
 
   /**
    * @brief    Calculate a speed of an entity.
@@ -224,7 +217,7 @@ protected:
    *
    * @return   The number of entities.
    */
-  int getNumberOfEntities(const unsigned char *matriz);
+  int getNumberOfEntities(const unsigned char* matriz);
 
   /**
    * @brief getParam get a value by it's name
@@ -241,14 +234,14 @@ protected:
    *
    * @return   The number of entities with color.
    */
-  int getNumberOfEntitiesWithColor(const unsigned char *matriz,int color);
+  int getNumberOfEntitiesWithColor(const unsigned char* matriz, int color);
 
   /**
    * @brief    Initialize the blob with default values
    *
    * @param    blob  The object
    */
-  void initBlob(Blob &blob);
+  void initBlob(Blob& blob);
 
   /**
    * @brief    Initialize the default param
@@ -259,23 +252,23 @@ protected:
   int blobMaxDist();
 
   std::mutex _frameLocker;
-  std::map<std::string,int> param;
-  cv::Scalar _colorCar[ColorStrange+1];
-  cv::Vec3b segColor[ColorStrange+1];
+  std::map<std::string, int> param;
+  cv::Scalar _colorCar[ColorStrange + 1];
+  cv::Vec3b segColor[ColorStrange + 1];
   cv::Mat debugSrc;
   Blob blob[NUMBEROFCOLOR][CLUSTERSPERCOLOR];
   int colorPresent[CLUSTERSPERCOLOR];
   int _colorIndex[NUMBEROFCOLOR];
-  enum enemy{Nothing,Primary,Secundary,Both};
+  enum enemy { Nothing, Primary, Secundary, Both };
   int _teamColor;
-  int _minSize, _maxSize, _minSizeBall, _maxSizeBall, _blobMaxDist, _teamId, _enemyTeam , _enemySearch, _showElement;
+  int _minSize, _maxSize, _minSizeBall, _maxSizeBall, _blobMaxDist, _teamId, _enemyTeam,
+      _enemySearch, _showElement;
   KalmanFilter _kalmanFilterRobots[2][MAX_ROBOTS];
   KalmanFilter _dirFilteRobots[2][MAX_ROBOTS];
   KalmanFilter _kalmanFilterBall[1][1];
   KalmanFilter _dirFilterBall[1][1];
   Point _ballLastPosition;
   float _ballLastTime;
-
 };
 
 #endif

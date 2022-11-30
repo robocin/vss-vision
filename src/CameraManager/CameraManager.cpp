@@ -13,11 +13,12 @@ CameraManager::CameraManager() {
 
   this->_distortionOption = NULO;
 
-  cv::FileStorage opencv_file(
-      "CameraManager/radialDistortion/camera_matrices.xml",
-      cv::FileStorage::READ);
+  cv::FileStorage opencv_file("CameraManager/radialDistortion/camera_matrices.xml",
+                              cv::FileStorage::READ);
   if (!opencv_file.isOpened()) {
-    std::cerr << "erro ao abrir o arquivo de distorção da camera CameraManager/radialDistortion/camera_matrices.xml" << std::endl;
+    std::cerr
+        << "erro ao abrir o arquivo de distorção da camera CameraManager/radialDistortion/camera_matrices.xml"
+        << std::endl;
     return;
   }
   opencv_file["matrix_x"] >> this->_map_x;
@@ -68,10 +69,8 @@ bool CameraManager::init(int cameraIndex) {
 
   this->_capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 
-  if (this->_frameWidth !=
-          static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_WIDTH)) ||
-      this->_frameHeight !=
-          static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_HEIGHT))) {
+  if (this->_frameWidth != static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_WIDTH)) ||
+      this->_frameHeight != static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_HEIGHT))) {
     this->_is60fps = false;
   }
 
@@ -126,44 +125,40 @@ void CameraManager::updateFrame() {
     if (this->_errorInFrame == ERROR_FRAME_FROM_IMAGE) {
       std::cout << "Error while getting an image from the camera." << std::endl;
     } else if (this->_errorInFrame == ERROR_FRAME_FROM_VIDEO) {
-      std::cout
-          << "Error while getting the video, check video path in MainWindow.cpp"
-          << std::endl;
+      std::cout << "Error while getting the video, check video path in MainWindow.cpp" << std::endl;
     }
 
-    frame =
-        cv::Mat::zeros(this->_frameHeight, this->_frameWidth, CV_8UC3) * 255;
+    frame = cv::Mat::zeros(this->_frameHeight, this->_frameWidth, CV_8UC3) * 255;
 
   } else {
-    if (!this->_isFinished) this->_capture >> frame;
+    if (!this->_isFinished)
+      this->_capture >> frame;
   }
 
-  if ((frame.empty() || frame.cols < 1 || frame.rows < 1) &&
-      this->_captureType == videoCapture) {
+  if ((frame.empty() || frame.cols < 1 || frame.rows < 1) && this->_captureType == videoCapture) {
     this->setVideoFrameToBegin();
-    if (!this->_isFinished) this->_capture >> frame;
+    if (!this->_isFinished)
+      this->_capture >> frame;
   }
 
   this->_currentFrameTimeStamp = QTime::currentTime();
 
   // if (this->_is60fps) { // assuming it's 720p, always
-  if (this->_frameWidth == 1920 && this->_frameHeight == 1080 &&
-          frame.rows == 1080 && frame.cols == 1920) {
-      cv::resize(frame, frame,
-                 cv::Size(1280, 720), 0, 0);
-      this->_frameWidth = frame.cols;
-      this->_frameHeight = frame.rows;
+  if (this->_frameWidth == 1920 && this->_frameHeight == 1080 && frame.rows == 1080 &&
+      frame.cols == 1920) {
+    cv::resize(frame, frame, cv::Size(1280, 720), 0, 0);
+    this->_frameWidth = frame.cols;
+    this->_frameHeight = frame.rows;
   }
-  if (this->_frameWidth == 1280 && this->_frameHeight == 720 &&
-      frame.rows == 720 && frame.cols == 1280) {
+  if (this->_frameWidth == 1280 && this->_frameHeight == 720 && frame.rows == 720 &&
+      frame.cols == 1280) {
     cv::Rect cropRectangle(213, 0, 854, 720);
 
     // Crop the full image to that image contained by the rectangle
     // cropRectangle
     cv::Mat croppedRef(frame, cropRectangle);
     croppedRef.copyTo(frame);
-    cv::resize(frame, frame,
-               cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
+    cv::resize(frame, frame, cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
   }
 
   this->_cameraFrameLocker.lock();
@@ -174,18 +169,18 @@ void CameraManager::updateFrame() {
   this->_cameraFrameLocker.unlock();
 
   this->_isNewFrameAvaliable = true;
-  this->_cameraFPS = static_cast<double>(this->_cameraTimer.getInFPS() * 0.2 +
-                                         this->_cameraFPS * 0.8);
+  this->_cameraFPS =
+      static_cast<double>(this->_cameraTimer.getInFPS() * 0.2 + this->_cameraFPS * 0.8);
   this->_cameraTimer.stop();
   this->_cameraTimer.start();
 }
 
 std::string CameraManager::listConfig() {
-  if (this->_cameraIndex == -1) return "";
+  if (this->_cameraIndex == -1)
+    return "";
 
-  std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                             std::to_string(this->_cameraIndex) +
-                             " --list-ctrls";
+  std::string v4l2_command =
+      "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) + " --list-ctrls";
   this->_v4l2_process.start(v4l2_command.c_str());
   this->_v4l2_process.waitForFinished(-1);
   QString stdout = this->_v4l2_process.readAllStandardOutput();
@@ -197,11 +192,9 @@ std::string CameraManager::listConfig() {
 void CameraManager::setWhiteBalance(int whiteBalance) {
   if (this->_cameraIndex != -1) {
     this->_whiteBalanceTemperature.currentValue = whiteBalance;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
+    std::string v4l2_command = "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) +
                                " -c white_balance_temperature=";
-    v4l2_command +=
-        (std::to_string(this->_whiteBalanceTemperature.currentValue));
+    v4l2_command += (std::to_string(this->_whiteBalanceTemperature.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
   }
@@ -210,11 +203,9 @@ void CameraManager::setWhiteBalance(int whiteBalance) {
 void CameraManager::setWhiteBalanceAuto(int whiteBalanceAuto) {
   if (this->_cameraIndex != -1) {
     this->_whiteBalanceTemperatureAuto.currentValue = whiteBalanceAuto;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
+    std::string v4l2_command = "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) +
                                " -c white_balance_temperature_auto=";
-    v4l2_command +=
-        (std::to_string(this->_whiteBalanceTemperatureAuto.currentValue));
+    v4l2_command += (std::to_string(this->_whiteBalanceTemperatureAuto.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
   }
@@ -223,8 +214,7 @@ void CameraManager::setWhiteBalanceAuto(int whiteBalanceAuto) {
 void CameraManager::setBacklightComp(int backlight) {
   if (this->_cameraIndex != -1) {
     this->_backlight.currentValue = backlight;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
+    std::string v4l2_command = "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) +
                                " -c backlight_compensation=";
     v4l2_command += (std::to_string(this->_backlight.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
@@ -235,9 +225,8 @@ void CameraManager::setBacklightComp(int backlight) {
 void CameraManager::setExposureAuto(int exposureAuto) {
   if (this->_cameraIndex != -1) {
     this->_exposureAuto.currentValue = exposureAuto;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
-                               " -c exposure_auto=";
+    std::string v4l2_command =
+        "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) + " -c exposure_auto=";
     v4l2_command += (std::to_string(this->_exposureAuto.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
@@ -247,9 +236,8 @@ void CameraManager::setExposureAuto(int exposureAuto) {
 void CameraManager::setFocusAuto(int focusAuto) {
   if (this->_cameraIndex != -1) {
     this->_focusAuto.currentValue = focusAuto;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
-                               " -c focus_auto=";
+    std::string v4l2_command =
+        "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) + " -c focus_auto=";
     v4l2_command += (std::to_string(this->_focusAuto.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
@@ -259,8 +247,8 @@ void CameraManager::setFocusAuto(int focusAuto) {
 void CameraManager::setGain(int gain) {
   if (this->_cameraIndex != -1) {
     this->_gain.currentValue = gain;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) + " -c gain=";
+    std::string v4l2_command =
+        "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) + " -c gain=";
     v4l2_command += (std::to_string(this->_gain.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
@@ -270,9 +258,8 @@ void CameraManager::setGain(int gain) {
 void CameraManager::setBrightness(int brightness) {
   if (this->_cameraIndex != -1) {
     this->_brightness.currentValue = brightness;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
-                               " -c brightness=";
+    std::string v4l2_command =
+        "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) + " -c brightness=";
     v4l2_command += (std::to_string(this->_brightness.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
@@ -282,9 +269,8 @@ void CameraManager::setBrightness(int brightness) {
 void CameraManager::setExposureAbsolute(int exposureAbsolute) {
   if (this->_cameraIndex != -1) {
     this->_exposureAbsolute.currentValue = exposureAbsolute;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
-                               " -c exposure_absolute=";
+    std::string v4l2_command =
+        "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) + " -c exposure_absolute=";
     v4l2_command += (std::to_string(this->_exposureAbsolute.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
@@ -294,9 +280,8 @@ void CameraManager::setExposureAbsolute(int exposureAbsolute) {
 void CameraManager::setSaturation(int saturation) {
   if (this->_cameraIndex != -1) {
     this->_saturation.currentValue = saturation;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
-                               " -c saturation=";
+    std::string v4l2_command =
+        "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) + " -c saturation=";
     v4l2_command += (std::to_string(this->_saturation.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
@@ -306,8 +291,7 @@ void CameraManager::setSaturation(int saturation) {
 void CameraManager::setExposureAutoPriority(int exposureAutoPriority) {
   if (this->_cameraIndex != -1) {
     this->_exposureAutoPriority.currentValue = exposureAutoPriority;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
+    std::string v4l2_command = "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) +
                                " -c exposure_auto_priority=";
     v4l2_command += (std::to_string(this->_exposureAutoPriority.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
@@ -318,9 +302,8 @@ void CameraManager::setExposureAutoPriority(int exposureAutoPriority) {
 void CameraManager::setContrast(int contrast) {
   if (this->_cameraIndex != -1) {
     this->_contrast.currentValue = contrast;
-    std::string v4l2_command = "v4l2-ctl -d /dev/video" +
-                               std::to_string(this->_cameraIndex) +
-                               " -c contrast=";
+    std::string v4l2_command =
+        "v4l2-ctl -d /dev/video" + std::to_string(this->_cameraIndex) + " -c contrast=";
     v4l2_command += (std::to_string(this->_contrast.currentValue));
     this->_v4l2_process.start(v4l2_command.c_str());
     this->_v4l2_process.waitForFinished(-1);
@@ -329,8 +312,7 @@ void CameraManager::setContrast(int contrast) {
 
 CameraParameter CameraManager::getWhiteBalance() {
   this->listConfig();
-  this->_whiteBalanceTemperature =
-      this->returnParameterFromList("white_balance_temperature ");
+  this->_whiteBalanceTemperature = this->returnParameterFromList("white_balance_temperature ");
   return this->_whiteBalanceTemperature;
 }
 
@@ -385,8 +367,7 @@ CameraParameter CameraManager::getSaturation() {
 
 CameraParameter CameraManager::getExposureAutoPriority() {
   this->listConfig();
-  this->_exposureAutoPriority =
-      this->returnParameterFromList("exposure_auto_priority");
+  this->_exposureAutoPriority = this->returnParameterFromList("exposure_auto_priority");
   return this->_exposureAutoPriority;
 }
 
@@ -396,9 +377,13 @@ CameraParameter CameraManager::getContrast() {
   return this->_contrast;
 }
 
-int CameraManager::getFrameWidth() { return this->_frameWidth; }
+int CameraManager::getFrameWidth() {
+  return this->_frameWidth;
+}
 
-int CameraManager::getFrameHeight() { return this->_frameHeight; }
+int CameraManager::getFrameHeight() {
+  return this->_frameHeight;
+}
 
 cv::Mat CameraManager::getCurrentFrame() {
   this->_cameraFrameLocker.lock();
@@ -417,8 +402,7 @@ void CameraManager::setVideoFrameToBegin() {
   this->_capture.set(cv::CAP_PROP_POS_FRAMES, 0);
 }
 
-CameraParameter CameraManager::returnParameterFromList(
-    std::string searchString) {
+CameraParameter CameraManager::returnParameterFromList(std::string searchString) {
   std::istringstream iss(this->_parametersString);
   std::string line;
   CameraParameter returnValue;
@@ -461,7 +445,9 @@ int CameraManager::searchInRegex(std::string line, QString regexString) {
   return numberToReturn;
 }
 
-int CameraManager::getCameraIndex() { return this->_cameraIndex; }
+int CameraManager::getCameraIndex() {
+  return this->_cameraIndex;
+}
 
 void CameraManager::setCameraIndex(int cameraIndex) {
   this->_cameraIndex = cameraIndex;
@@ -474,7 +460,8 @@ void CameraManager::releaseCamera() {
 }
 
 int CameraManager::getCaptureFPS() {
-  if (!this->_capture.isOpened()) return -1;
+  if (!this->_capture.isOpened())
+    return -1;
 
   return this->_frameRate;
 }
@@ -562,8 +549,7 @@ void CameraManager::loadAndApplyFile(std::string path) {
 void CameraManager::saveFile(std::string path) {
   QFile file(QString::fromStdString(path));
 
-  if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate |
-                 QIODevice::Text)) {
+  if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
     std::cout << "failed to open " << path << std::endl;
     exit(1);
   }
@@ -571,12 +557,10 @@ void CameraManager::saveFile(std::string path) {
   QByteArray jsonFile = file.readAll();
   QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
   QJsonObject json = loadDoc.object();
-  json.insert(WHITE_BALANCE_TEMPERATURE,
-              this->_whiteBalanceTemperatureAuto.currentValue);
+  json.insert(WHITE_BALANCE_TEMPERATURE, this->_whiteBalanceTemperatureAuto.currentValue);
   json.insert(EXPOSURE_AUTO, this->_exposureAuto.currentValue);
   json.insert(FOCUS_AUTO, this->_focusAuto.currentValue);
-  json.insert(WHITE_BALANCE_TEMPERATURE,
-              this->_whiteBalanceTemperature.currentValue);
+  json.insert(WHITE_BALANCE_TEMPERATURE, this->_whiteBalanceTemperature.currentValue);
   json.insert(BACKLIGHT, this->_backlight.currentValue);
   json.insert(GAIN, this->_gain.currentValue);
   json.insert(BRIGHTNESS, this->_brightness.currentValue);
@@ -603,19 +587,25 @@ void CameraManager::set60fps(bool want60fps) {
   }
 }
 
-double CameraManager::getCurrentFPS() { return this->_cameraFPS; }
+double CameraManager::getCurrentFPS() {
+  return this->_cameraFPS;
+}
 
 QTime CameraManager::getCurrentFrameTimeStamp() {
   return this->_currentFrameTimeStamp;
 }
 
-bool CameraManager::isNewFrameAvaliable() { return this->_isNewFrameAvaliable; }
+bool CameraManager::isNewFrameAvaliable() {
+  return this->_isNewFrameAvaliable;
+}
 
 void CameraManager::setNewFrameAvailable(bool enabled) {
   this->_isNewFrameAvaliable = enabled;
 }
 
-CaptureType CameraManager::getCaptureType() { return this->_captureType; }
+CaptureType CameraManager::getCaptureType() {
+  return this->_captureType;
+}
 
 void CameraManager::setDistortionOption(Distortions distortionOption) {
   this->_distortionOption = distortionOption;
@@ -624,14 +614,13 @@ void CameraManager::setDistortionOption(Distortions distortionOption) {
 
 void CameraManager::getDistortionParameters() {
   switch (this->_distortionOption) {
-    case NULO:
-      break;
+    case NULO: break;
     case ELP:
-      cv::FileStorage opencv_file(
-          "CameraManager/radialDistortion/camera_matrices.xml",
-          cv::FileStorage::READ);
+      cv::FileStorage opencv_file("CameraManager/radialDistortion/camera_matrices.xml",
+                                  cv::FileStorage::READ);
       if (!opencv_file.isOpened()) {
-        std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices.xml" << std::endl;
+        std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices.xml"
+                  << std::endl;
       }
       opencv_file["matrix_x"] >> this->_map_x;
       opencv_file["matrix_y"] >> this->_map_y;

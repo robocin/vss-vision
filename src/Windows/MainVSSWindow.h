@@ -25,7 +25,7 @@
 #define TEAM_LABEL "team"
 
 namespace Ui {
-class MainVSSWindow;
+  class MainVSSWindow;
 }
 
 class MainVSSWindow : public QMainWindow {
@@ -66,7 +66,7 @@ class MainVSSWindow : public QMainWindow {
 
   void on_numbetOfPlayersConfirm_clicked();
 
-  void on_fieldSizeComboBox_currentIndexChanged(const QString &arg1);
+  void on_fieldSizeComboBox_currentIndexChanged(const QString& arg1);
 
   void on_halfPushButton_clicked();
 
@@ -78,8 +78,7 @@ class MainVSSWindow : public QMainWindow {
 
   void saveMainWindowConfig();
 
-
-private:
+ private:
   Ui::MainVSSWindow* m_ui;
   QTimer* m_mainWindowFrameTimer;
   cv::VideoWriter m_videoRecordManager;
@@ -95,7 +94,7 @@ private:
   void record();
   void startVideoRecording();
   void saveColorFile();
-  bool eventFilter(QObject *f_object, QEvent *f_event);
+  bool eventFilter(QObject* f_object, QEvent* f_event);
   void initColors();
   void rebuildRobotsScrollArea();
   void getPointsFromFile();
@@ -104,7 +103,6 @@ private:
   void saveHalf();
   void mirrorLimitPoints();
   void selectCorrectFrame();
-
 
   bool m_isCaptureOpen;
   bool m_cameraCapture;
@@ -123,20 +121,20 @@ private:
   std::array<RobotWidget*, MAX_PLAYERS> m_robotWidgets;
   std::array<QFrame*, MAX_PLAYERS - 1> m_robotLines;
 
-  FieldPointsCalibrateDialog* m_fieldDialog;  // crop window
+  FieldPointsCalibrateDialog* m_fieldDialog; // crop window
   VisionConfigDialog* m_visionDialog;
   CameraConfigurationDialog* m_cameraDialog;
   MaggicSegmentationDialog* m_maggicSegmentationDialog;
 
   QJsonObject m_secondaryColorJson;
-  QLabel *m_visionTimer;
+  QLabel* m_visionTimer;
 
   std::mutex m_currentFrameLocker;
 
   QJsonObject _mainWindowConfig;
 
-protected:
-  void keyPressEvent(QKeyEvent *e);
+ protected:
+  void keyPressEvent(QKeyEvent* e);
  signals:
   void startCameraUpdate();
   void pauseCameraUpdate();
@@ -144,4 +142,4 @@ protected:
   void finishVisionThread();
 };
 
-#endif  // MAINVSSWINDOW_H
+#endif // MAINVSSWINDOW_H

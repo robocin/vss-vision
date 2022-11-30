@@ -9,7 +9,7 @@
 #include "Windows/MainVSSWindow.h"
 #include "maggicsegmentationdialog.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   TBBThreadManager Graph;
 
   cv::useOptimized();
@@ -17,14 +17,10 @@ int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
   MainVSSWindow vsswindow;
 
-  QObject::connect(&vsswindow, SIGNAL(startCameraUpdate()), &Graph,
-                   SLOT(cameraStart()));
-  QObject::connect(&vsswindow, SIGNAL(pauseCameraUpdate()), &Graph,
-                   SLOT(cameraPause()));
-  QObject::connect(&vsswindow, SIGNAL(enableVisionThread(bool)), &Graph,
-                   SLOT(visionStart()));
-  QObject::connect(&vsswindow, SIGNAL(finishVisionThread()), &Graph,
-                   SLOT(visionPause()));
+  QObject::connect(&vsswindow, SIGNAL(startCameraUpdate()), &Graph, SLOT(cameraStart()));
+  QObject::connect(&vsswindow, SIGNAL(pauseCameraUpdate()), &Graph, SLOT(cameraPause()));
+  QObject::connect(&vsswindow, SIGNAL(enableVisionThread(bool)), &Graph, SLOT(visionStart()));
+  QObject::connect(&vsswindow, SIGNAL(finishVisionThread()), &Graph, SLOT(visionPause()));
 
   vsswindow.showMaximized();
   return app.exec();

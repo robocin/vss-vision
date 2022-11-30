@@ -1,9 +1,9 @@
 #include "visionconfigdialog.h"
 #include "ui_visionconfigdialog.h"
 
-VisionConfigDialog::VisionConfigDialog(bool videoFlag, QWidget *parent) :
-  QDialog(parent),
-  ui(new Ui::VisionConfigDialog) {
+VisionConfigDialog::VisionConfigDialog(bool videoFlag, QWidget* parent) :
+    QDialog(parent),
+    ui(new Ui::VisionConfigDialog) {
   this->_vision = &this->_vision->singleton();
   ui->setupUi(this);
   this->_segmentationDialog = nullptr;
@@ -45,14 +45,14 @@ void VisionConfigDialog::on_calibrateTrackingPushButton_clicked() {
 }
 
 void VisionConfigDialog::on_calibrateSegmentationPushButton_clicked() {
-//  this->_segmentationDialog = new SegmentationConfigDialog(this->_videoFlag);
-//  this->_segmentationDialog->exec();
+  //  this->_segmentationDialog = new SegmentationConfigDialog(this->_videoFlag);
+  //  this->_segmentationDialog->exec();
 
-//  if (this->_segmentationDialog->result() == QDialog::Accepted) {
-//  } else {
-//  }
+  //  if (this->_segmentationDialog->result() == QDialog::Accepted) {
+  //  } else {
+  //  }
 
-//  delete this->_segmentationDialog;
+  //  delete this->_segmentationDialog;
 }
 
 void VisionConfigDialog::updateLabels() {
@@ -86,8 +86,8 @@ void VisionConfigDialog::updateLabels() {
     if (this->_robotPositions[i].updated()) {
       x = this->_robotPositions[i].position().x;
       y = this->_robotPositions[i].position().y;
-      //velx = this->_robotPositions[i].getObjectSpeed().x;
-      //vely = this->_robotPositions[i].getObjectSpeed().y;
+      // velx = this->_robotPositions[i].getObjectSpeed().x;
+      // vely = this->_robotPositions[i].getObjectSpeed().y;
       velx = vely = 0;
       angle = this->_robotPositions[i].angle();
       p1.setX(static_cast<int>(std::floor(x * 3)));
@@ -107,7 +107,7 @@ void VisionConfigDialog::updateLabels() {
         painter.drawLine(p1, p2);
       } else {
         painter.translate(p1);
-        //calculating angle with 0 in the north
+        // calculating angle with 0 in the north
         angle = 90.0 - Geometry::radiansToDegrees(angle);
 
         if (angle < 0.001) {
@@ -122,7 +122,7 @@ void VisionConfigDialog::updateLabels() {
                          static_cast<int>(robotWidth),
                          static_cast<int>(robotWidth / 2));
 
-        if (this->_robotPositions[i].id()/100 == 1) {
+        if (this->_robotPositions[i].id() / 100 == 1) {
           painter.setBrush(QBrush(allyColor));
         } else {
           painter.setBrush(QBrush(enemyColor));

@@ -1,29 +1,35 @@
 #include <Timer/Timer.h>
 
-
 Timer::Timer() {
   this->timebegin = std::chrono::high_resolution_clock::now();
   this->paused = false;
 }
 
 double Timer::getSeconds() {
-  if (!this->paused) this->timeend = std::chrono::high_resolution_clock::now();
+  if (!this->paused)
+    this->timeend = std::chrono::high_resolution_clock::now();
   return std::chrono::duration_cast<std::chrono::seconds>(this->timeend - this->timebegin).count();
 }
 
 double Timer::getMilliseconds() {
-  if (!this->paused) this->timeend = std::chrono::high_resolution_clock::now();
-  return std::chrono::duration_cast<std::chrono::milliseconds>(this->timeend - this->timebegin).count();
+  if (!this->paused)
+    this->timeend = std::chrono::high_resolution_clock::now();
+  return std::chrono::duration_cast<std::chrono::milliseconds>(this->timeend - this->timebegin)
+      .count();
 }
 
 double Timer::getMicroseconds() {
-  if (!this->paused) this->timeend = std::chrono::high_resolution_clock::now();
-  return std::chrono::duration_cast<std::chrono::microseconds>(this->timeend - this->timebegin).count();
+  if (!this->paused)
+    this->timeend = std::chrono::high_resolution_clock::now();
+  return std::chrono::duration_cast<std::chrono::microseconds>(this->timeend - this->timebegin)
+      .count();
 }
 
 double Timer::getNanoseconds() {
-  if (!this->paused) this->timeend = std::chrono::high_resolution_clock::now();
-  return std::chrono::duration_cast<std::chrono::nanoseconds>(this->timeend - this->timebegin).count();
+  if (!this->paused)
+    this->timeend = std::chrono::high_resolution_clock::now();
+  return std::chrono::duration_cast<std::chrono::nanoseconds>(this->timeend - this->timebegin)
+      .count();
 }
 
 double Timer::getInFPS() {

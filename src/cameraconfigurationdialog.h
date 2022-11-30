@@ -4,22 +4,19 @@
 #include <QDialog>
 #include <CameraManager/CameraManager.h>
 
-
 namespace Ui {
-class CameraConfigurationDialog;
+  class CameraConfigurationDialog;
 }
 
-class CameraConfigurationDialog : public QDialog
-{
+class CameraConfigurationDialog : public QDialog {
   Q_OBJECT
 
-public:
-  explicit CameraConfigurationDialog(QWidget *parent = 0);
+ public:
+  explicit CameraConfigurationDialog(QWidget* parent = 0);
   ~CameraConfigurationDialog();
   CameraManager* _camera;
 
-
-private slots:
+ private slots:
   void on_horizontalSlider_brightness_valueChanged(int value);
 
   void on_horizontalSlider_contrast_valueChanged(int value);
@@ -76,8 +73,8 @@ private slots:
 
   void on_setExposureAutoPriorityDefaultButton_clicked();
 
-private:
-  Ui::CameraConfigurationDialog *ui;
+ private:
+  Ui::CameraConfigurationDialog* ui;
   bool _isSetup;
 };
 

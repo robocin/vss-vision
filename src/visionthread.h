@@ -11,30 +11,28 @@
 
 class MainWindow;
 
-class VisionThread: public QThread
-{
+class VisionThread : public QThread {
   Q_OBJECT
-public:
+ public:
   VisionThread();
   ~VisionThread();
 
-public slots:
+ public slots:
   void pause();
   void startWork();
   void finish();
   void enableResultSignal(bool enable);
 
-signals:
+ signals:
   void resultReady();
 
-private:
+ private:
   QMutex _threadMutex;
   QWaitCondition _threadController;
 
   bool _isRunning;
   bool _hasFinished;
   bool _resultSignalEnabled;
-
 
   void run() override;
 };

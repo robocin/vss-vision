@@ -2,7 +2,8 @@
  * Mainpage Utils class made by the RoboCIn for the project IEEE - VSS
  * @author Carlos Henrique / Cristiano Oliveira
  *
- * This class have a group of mathematical methods to the general interest of the Vision and Strategy use.
+ * This class have a group of mathematical methods to the general interest of the Vision and
+ * Strategy use.
  *
  */
 
@@ -42,7 +43,8 @@
 
 #include "Geometry.h"
 
-// A ideia eh manter todos os arquivos de include aqui, na utils. Porem, isso gera cross reference. Verificar como ajustar depois.
+// A ideia eh manter todos os arquivos de include aqui, na utils. Porem, isso gera cross reference.
+// Verificar como ajustar depois.
 //#include "GameInfo.h"
 
 // INCLUIR OS BEHAVIORS TODOS AQUI NA UTILS
@@ -69,32 +71,34 @@ namespace Utils {
    * @param angle Angle
    * @return Positive scale of the input angle. Range is [0, 360] degrees
    */
- 	double to_positive_angle(double angle);
+  double to_positive_angle(double angle);
   /*
    * Return a lower diference between two angles and put in a range of [-PI..PI]
    * @param target First angle
    * @param source Second angle
    * @return The lower diference between the two angles
    */
- 	double smallestAngleDiff(double target, double source);
+  double smallestAngleDiff(double target, double source);
   /*
    * The input radian angle is put in a range of [-M_PI, M_PI]
    * @param angle Input angle
    * @return Angle in a range of [-PI, PI]
    */
- 	double to180range(double angle);
+  double to180range(double angle);
   /*
    * Square of the diference,
    * @param x First number (double)
    * @param y Second number (double)
    * @return ((x*x)-(y*y))
    */
- 	double double_dif(double x, double y);
+  double double_dif(double x, double y);
 
   /**
-   * Reflects the projection of the ball when near the walls or just leaves the projection on the wall.
+   * Reflects the projection of the ball when near the walls or just leaves the projection on the
+   * wall.
    * @param ball_estimate actual position of projection of the ball
-   * @param reflected bool to define if the projection of the ball is reflected(true) or leaves on the wall(false)
+   * @param reflected bool to define if the projection of the ball is reflected(true) or leaves on
+   * the wall(false)
    */
   cv::Point reflect(cv::Point ball_estimate, bool reflected);
 
@@ -104,7 +108,10 @@ namespace Utils {
    * @param pos_ball ball position
    * @param ball_speed ball speed
    */
-  cv::Point estimateBallPos(cv::Point pos_robot,cv::Point pos_ball, cv::Point ball_speed, double rob_speed = 100);
+  cv::Point estimateBallPos(cv::Point pos_robot,
+                            cv::Point pos_ball,
+                            cv::Point ball_speed,
+                            double rob_speed = 100);
 
   /**
    * @brief    Sum of Squares, deltaX^2 + deltaY^2
@@ -124,9 +131,9 @@ namespace Utils {
    *
    * @return   double, Ajusted atan2
    */
-  double angle(cv::Point alfa,cv::Point beta);
+  double angle(cv::Point alfa, cv::Point beta);
 
-  double angleDouble(cv::Point2d alfa,cv::Point2d beta);
+  double angleDouble(cv::Point2d alfa, cv::Point2d beta);
 
   /**
    * @brief    Median of a list
@@ -143,7 +150,8 @@ namespace Utils {
    * @param secondElem second element to compare
    * @return true if the first is less than the second, false otherwise
    */
-  bool pairCompareSecond(const std::pair<int, double>& firstElem, const std::pair<int, double>& secondElem);
+  bool pairCompareSecond(const std::pair<int, double>& firstElem,
+                         const std::pair<int, double>& secondElem);
 
   /**
    * Calculate the parameters of one line, given two points
@@ -176,7 +184,8 @@ namespace Utils {
 
   double localToGlobalY(double dx, double theta);
   /**
-   * The function calculates the line that makes the bisector between the straight lines from the poles to the vertex
+   * The function calculates the line that makes the bisector between the straight lines from the
+   * poles to the vertex
    * @param vertex_center Vertex coordinates
    * @param pole1 First pole coordinates
    * @param pole2 Second pole coordinates
@@ -192,7 +201,8 @@ namespace Utils {
   cv::Point setInside(cv::Point objective);
 
   /**
-   * Function that calculates the points of intersection between a line and a circumference / ellipse
+   * Function that calculates the points of intersection between a line and a circumference /
+   * ellipse
    * @param line Pair containing the parameters of the line
    * @param h X coordinate of the center of the curve
    * @param a semi-axis X
@@ -200,10 +210,11 @@ namespace Utils {
    * @param b semi-axis Y
    * @return Pair of pairs containing the coordinates of the two points of intersection.
    */
-  std::pair<cv::Point2d, cv::Point2d> intersectionArc(cv::Point2d line, double h, double a, double k, double b);
+  std::pair<cv::Point2d, cv::Point2d>
+  intersectionArc(cv::Point2d line, double h, double a, double k, double b);
 
-   /**
-   * Function that calculates the complement of an angle. 
+  /**
+   * Function that calculates the complement of an angle.
    * @param input angle
    * @return inverse angle
    */
@@ -214,15 +225,15 @@ namespace Utils {
    * @param Point convert - first: wConvert - Width , second: hConvert - Height
    * @return Point - pair of int (position in pixels)
    */
-  Point convertPositionCmToPixel(const Point &position);
+  Point convertPositionCmToPixel(const Point& position);
 
-  Point convertPositionPixelToCm(const Point &position);
+  Point convertPositionPixelToCm(const Point& position);
 
   bool between(double number, double min_limit, double range);
   double map(double x, double in_min, double in_max, double out_min, double out_max);
   double bound(double x, double low, double high);
 
-  double linearEquationY(double x_in,cv::Point2d xCoord, cv::Point2d yCoord);
+  double linearEquationY(double x_in, cv::Point2d xCoord, cv::Point2d yCoord);
 
   double mod_vec(cv::Point2d vec);
 
@@ -241,13 +252,13 @@ namespace Utils {
   double crossProduct(cv::Point2d& alpha, cv::Point2d& beta);
 
   // Retorna se uma cor identifica um time
-  bool isTeamColor(const int &t_color);
+  bool isTeamColor(const int& t_color);
 
   // Retorna se uma cor eh identificacao de robo
-  bool isRobotColor(const int &t_color);
+  bool isRobotColor(const int& t_color);
 
   int convertOldColorToNewColor(int t_oldColor);
 
-};
+}; // namespace Utils
 
 #endif /* UTILS_H */

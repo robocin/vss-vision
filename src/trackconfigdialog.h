@@ -8,25 +8,24 @@
 #include <CameraManager/CameraManager.h>
 
 namespace Ui {
-class TrackConfigDialog;
+  class TrackConfigDialog;
 }
 
-class TrackConfigDialog : public QDialog
-{
+class TrackConfigDialog : public QDialog {
   Q_OBJECT
 
-public:
-  explicit TrackConfigDialog(QWidget *parent = 0);
+ public:
+  explicit TrackConfigDialog(QWidget* parent = 0);
   ~TrackConfigDialog();
 
-private slots:
+ private slots:
 
   /**
    * @brief    On click on menu
    *
    * @param[in]  index  The index of the clicked item
    */
-  void on_treeWidget_activated(const QModelIndex &index);
+  void on_treeWidget_activated(const QModelIndex& index);
 
   /**
    * @brief    update the display of minSize
@@ -84,7 +83,6 @@ private slots:
    */
   void on_verticalSlider_orange_valueChanged(int value);
 
-
   /**
    * @brief    update the display: number of blue clusters
    *
@@ -92,14 +90,12 @@ private slots:
    */
   void on_verticalSlider_blue_valueChanged(int value);
 
-
   /**
    * @brief    update the display: number of yellow clusters
    *
    * @param[in]  value  The new number of yellow clusters
    */
   void on_verticalSlider_yellow_valueChanged(int value);
-
 
   /**
    * @brief    update the display: number of red clusters
@@ -115,14 +111,12 @@ private slots:
    */
   void on_verticalSlider_green_valueChanged(int value);
 
-
   /**
    * @brief    update the display: number of pink clusters
    *
    * @param[in]  value  The new number of pink clusters
    */
   void on_verticalSlider_pink_valueChanged(int value);
-
 
   /**
    * @brief    update the display: number of light blue clusters
@@ -131,14 +125,12 @@ private slots:
    */
   void on_verticalSlider_light_blue_valueChanged(int value);
 
-
   /**
    * @brief    update the display: number of purple clusters
    *
    * @param[in]  value  The new number of purple clusters
    */
   void on_verticalSlider_purple_valueChanged(int value);
-
 
   /**
    * @brief    update the display: number of unknown clusters
@@ -156,19 +148,29 @@ private slots:
 
   void on_comboBox_EnemySearch_currentIndexChanged(int index);
 
-private:
+ private:
   Vision* _vision;
-  enum Detection{WHEREARETHOSE,NONE};
-  enum Track{Default};
-  enum Processing{DETECTION,TRACKING};
+  enum Detection { WHEREARETHOSE, NONE };
+  enum Track { Default };
+  enum Processing { DETECTION, TRACKING };
   QTimer* _updateFrameTimer;
-  Ui::TrackConfigDialog *ui;
+  Ui::TrackConfigDialog* ui;
   int _parentIndex;
   int _index;
   cv::Mat _PositionFrame;
   Entity _robotsPositions[7];
   QPalette _paletteColor[10];
-  QString colorLabel[11] = {"white","orange","blue","yellow","red","green","pink","cyan","purple","gray","darkGray"};
+  QString colorLabel[11] = {"white",
+                            "orange",
+                            "blue",
+                            "yellow",
+                            "red",
+                            "green",
+                            "pink",
+                            "cyan",
+                            "purple",
+                            "gray",
+                            "darkGray"};
 };
 
 #endif // TRACKCONFIGDIALOG_H

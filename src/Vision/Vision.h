@@ -3,16 +3,25 @@
  *
  * @author Robocin - Visão
  *
- * The Vision module was designed to facilitate the addition of new Filters and algorithms, and also provide a good level of abstraction to external modules.
- * For that, we have the Vision object as Facade, with simple methods to get position and debug frames of the module, and two interfaces to implement algorithms
+ * The Vision module was designed to facilitate the addition of new Filters and algorithms, and also
+ * provide a good level of abstraction to external modules. For that, we have the Vision object as
+ * Facade, with simple methods to get position and debug frames of the module, and two interfaces to
+ * implement algorithms
  *
- * that will be part of some part of the frame processing. The Vision processing is composed by the following steps:
+ * that will be part of some part of the frame processing. The Vision processing is composed by the
+ * following steps:
  *
- * 1. **Image Correction:** Aims to correct camera distortions such as shearing, radial distortion and making easier to get real points from image points.
- * 2. **Image Filtering:** Aims to improve the image quality, facilitating further processing. One goal of the image filtering step is minimizing the image noise.
- * 3. **Segmentation:** Aims to group similar pixels tagging them with the same tag (Usually the tag is represented as a color in RGB). Non relevant elements will be tagged together usually with a black color.
- * 4. **Tracking and Detection:** The detect part aims to, given the segmented frame, identify similar region as a entity and extract the **position and velocity** informations. The tracking part aims to,
- * given previous detection points, accelerate the detection process of the same points in subsequent frames.
+ * 1. **Image Correction:** Aims to correct camera distortions such as shearing, radial distortion
+ * and making easier to get real points from image points.
+ * 2. **Image Filtering:** Aims to improve the image quality, facilitating further processing. One
+ * goal of the image filtering step is minimizing the image noise.
+ * 3. **Segmentation:** Aims to group similar pixels tagging them with the same tag (Usually the tag
+ * is represented as a color in RGB). Non relevant elements will be tagged together usually with a
+ * black color.
+ * 4. **Tracking and Detection:** The detect part aims to, given the segmented frame, identify
+ * similar region as a entity and extract the **position and velocity** informations. The tracking
+ * part aims to, given previous detection points, accelerate the detection process of the same
+ * points in subsequent frames.
  *
  */
 #ifndef VISION_H
@@ -34,17 +43,16 @@
 //#include "Utils/Entity.h"
 #include "Utils/Utils.h"
 
-
 /**
  * @brief    Class for vision module.
  *
- * This is the Vision module of the RoboCIn VSSL Software. It is responsible to process the camera frames and retreive **position and velocity**
- * of all robots in field using Image Processing and Computacional Vision algorithms, creating a abstraction to other layers of the project.
+ * This is the Vision module of the RoboCIn VSSL Software. It is responsible to process the camera
+ * frames and retreive **position and velocity** of all robots in field using Image Processing and
+ * Computacional Vision algorithms, creating a abstraction to other layers of the project.
  *
  */
 class Vision {
-private:
-
+ private:
   /**
    * @brief    Private Construtor
    */
@@ -122,13 +130,14 @@ private:
   int _teamColor;
 
   /**
-   * { Entity vector that keeps in output information of vision module. For mode information @see entities }
+   * { Entity vector that keeps in output information of vision module. For mode information @see
+   * entities }
    */
   std::vector<Entity> _robotPositions;
 
-  void setObjectsSpeed(QTime timeStamp, std::vector<Entity> &currentPositions);
+  void setObjectsSpeed(QTime timeStamp, std::vector<Entity>& currentPositions);
 
-  std::vector < std::queue < std::pair<cv::Point2d, QTime> > > _lastPositions;
+  std::vector<std::queue<std::pair<cv::Point2d, QTime>>> _lastPositions;
 
   bool _firstFrameDeepLog, _deepLogRecord, _deepLogRecordingVideo;
 
@@ -143,21 +152,22 @@ private:
 
   Point _frameDimensions;
 
-  void saveFrameDimensions(cv::Mat &frame);
+  void saveFrameDimensions(cv::Mat& frame);
 
   /**
    * @brief    Sets the frame that will be processed by vision module.
    *
    * @param[in]  frame  The frame wanted to be processed
    */
-  void setFrame(cv::Mat &frame);
+  void setFrame(cv::Mat& frame);
 
   /**
-   * @brief    Process the frame , generating as output to (VSS) GameInfo entity's vector with velocity and position of all detected robots .
+   * @brief    Process the frame , generating as output to (VSS) GameInfo entity's vector with
+   * velocity and position of all detected robots .
    */
   void update();
 
-public:
+ public:
   /**
    * @brief    Singleton method to acess Vision module
    *
@@ -177,15 +187,16 @@ public:
   void update(cv::Mat& frame, QTime timeStamp);
 
   /**
-   * @brief    Gets the debug segmentation frame with all segmented regions colorized with your tag color.
+   * @brief    Gets the debug segmentation frame with all segmented regions colorized with your tag
+   * color.
    *
    * @param[in]   The segmentation frame.
    */
   void getSegmentationDebugFrame(cv::Mat& frame);
 
   /**
-   * @brief    Gets the debug tracking frame with information of the area the tracking algorithm points as area with
-   * 			   highest probability to find the tracked robot.
+   * @brief    Gets the debug tracking frame with information of the area the tracking algorithm
+   * points as area with highest probability to find the tracked robot.
    *
    * @param[in]   The tracking frame.
    */
@@ -196,7 +207,6 @@ public:
    * @param[in]   The tracking frame.
    */
   void getDetectionDebugFrame(cv::Mat& frame);
-
 
   ImageProcessing* getSegmentationObject();
 
@@ -231,7 +241,7 @@ public:
    *
    * @param value the value of new param
    */
-  void setDetectionParam(std::string var,int value);
+  void setDetectionParam(std::string var, int value);
   /**
    * @brief setTrackParam
    *
@@ -239,7 +249,7 @@ public:
    *
    * @param value value of the new param
    */
-  void setTrackParam(std::string var,int value);
+  void setTrackParam(std::string var, int value);
   /**
    * @brief SetDetectionParamFromXml set detection param from a xml file
    */
@@ -297,7 +307,7 @@ public:
    * @return   True if correction enabled, False otherwise.
    */
   bool isCorrectionEnabled();
-  
+
   /**
    * @brief    Enable/Disable the correction.
    *
@@ -343,12 +353,11 @@ public:
   void closeDeepLog();
   void recordDeepLog();
 
-
   /**
-    * @brief Retrieves  the current runtime of the vision system
-    *
-    *
-  */
+   * @brief Retrieves  the current runtime of the vision system
+   *
+   *
+   */
   double getVisionRunTime();
 };
 

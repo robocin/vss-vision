@@ -17,18 +17,18 @@ class GameInfo {
   Players m_players;
   int m_half;
 
-  void setLockedFrame(const bool &t_active = true);
+  void setLockedFrame(const bool& t_active = true);
 
-public:
+ public:
   GameInfo();
 
-  static GameInfo &singleton();
+  static GameInfo& singleton();
 
-  void setFrame(const cv::Mat &t_frame);
+  void setFrame(const cv::Mat& t_frame);
 
   void clearFrame();
 
-  void mergeFrame(const cv::Mat &t_frame);
+  void mergeFrame(const cv::Mat& t_frame);
 
   // Pega uma copia do frame
   cv::Mat frameCopy();
@@ -45,7 +45,7 @@ public:
 
   void setPlayers(Players& t_players);
 
-  void setEntities(Entity &t_ball, Players &t_players);
+  void setEntities(Entity& t_ball, Players& t_players);
 
   Timer time();
 
@@ -53,6 +53,6 @@ public:
 };
 
 // Singleton
-static GameInfo &vss = GameInfo::singleton();
+static GameInfo& vss = GameInfo::singleton();
 
 #endif // GAMEINFO_H

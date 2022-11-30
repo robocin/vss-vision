@@ -5,7 +5,7 @@
 #define KMEANS_LABEL "KMEANS"
 #define WHEREARE_LABEL "WHEREARETHOSE"
 #define GENERIC_TRACKING_LABEL "GENERICTRACKINGLABEL"
-#define SEGMENTATION_DEFAULT_FILE  "Config/Segmentation/Default.xml"
+#define SEGMENTATION_DEFAULT_FILE "Config/Segmentation/Default.xml"
 
 /**
  * { Structure to represent pixels in YUV color space }
@@ -42,12 +42,9 @@ typedef struct ColorInterval {
   YUV min;
 } ColorInterval;
 
-
 namespace ColorSpace {
   extern RGB markerColors[NUMBEROFCOLOR];
   extern std::string colorNames[NUMBEROFCOLOR];
-}
-
-
+} // namespace ColorSpace
 
 #endif // COLORSPACE_H

@@ -1,33 +1,31 @@
 #include "ColorSpace.h"
 
 RGB ColorSpace::markerColors[NUMBEROFCOLOR] = {
-        //order: blue, green, red
-        {0,0,0},//NoCOL
-        {0,128,255},//OrangeCOL
-        {255,0,0},//BlueCOL
-        {0,255,255},//YellowCOL
-        {0,0,255},//RedCOL
-        {0,255,0},//GreenCOL
-        {255,0,255},//PinkCOL
-        {255,255,0},//LightBlueCOL
-        {191,15,179},//PurpleCOL
-        {25,0,51},//BrownCOL
-        {0,0,0}//ColorStrange
+    // order: blue, green, red
+    {0, 0, 0},      // NoCOL
+    {0, 128, 255},  // OrangeCOL
+    {255, 0, 0},    // BlueCOL
+    {0, 255, 255},  // YellowCOL
+    {0, 0, 255},    // RedCOL
+    {0, 255, 0},    // GreenCOL
+    {255, 0, 255},  // PinkCOL
+    {255, 255, 0},  // LightBlueCOL
+    {191, 15, 179}, // PurpleCOL
+    {25, 0, 51},    // BrownCOL
+    {0, 0, 0}       // ColorStrange
 };
 
-std::string ColorSpace::colorNames[NUMBEROFCOLOR] = {
-    "black",
-    "orange",
-    "blue",
-    "yellow",
-    "red",
-    "green",
-    "magenta",
-    "cyan",
-    "purple",
-    "brown",
-    "colorStrange"
-};
+std::string ColorSpace::colorNames[NUMBEROFCOLOR] = {"black",
+                                                     "orange",
+                                                     "blue",
+                                                     "yellow",
+                                                     "red",
+                                                     "green",
+                                                     "magenta",
+                                                     "cyan",
+                                                     "purple",
+                                                     "brown",
+                                                     "colorStrange"};
 
 // LEGACY
 /*

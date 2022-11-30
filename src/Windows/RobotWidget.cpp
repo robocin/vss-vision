@@ -3,8 +3,8 @@
 #include "ui_RobotWidget.h"
 #include "Vision/Vision.h"
 
-RobotWidget::RobotWidget(const size_t &t_index, QWidget *parent)
-  : QWidget(parent),
+RobotWidget::RobotWidget(const size_t& t_index, QWidget* parent) :
+    QWidget(parent),
     m_ui(new Ui::RobotWidget),
     m_index(t_index),
     m_borderImage(":/image/icon/border.png"),
@@ -33,26 +33,27 @@ QPixmap RobotWidget::getRobotId() {
   return colorArea;
 }
 
-void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
+void RobotWidget::setPrimaryColor(QPixmap& t_robotId) {
   QPainter paint(&t_robotId);
   int teamColor = Vision::singleton().getTeamColor();
   if (teamColor == Color::BLUE) {
     paint.setBrush(QBrush(Qt::blue));
   } else if (teamColor == Color::YELLOW) {
     paint.setBrush(QBrush(Qt::yellow));
-  } else paint.setBrush(QBrush(Qt::black));
+  } else
+    paint.setBrush(QBrush(Qt::black));
   paint.drawRect(0, 0, 200, 100);
 }
 
-void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
+void RobotWidget::setSecodaryColor(QPixmap& t_robotId) {
   QPainter paint(&t_robotId);
 
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = this->m_robotId%100 + Color::RED;
+  int t_id = this->m_robotId % 100 + Color::RED;
 
-  for (const char *str : Color::_names()) {
+  for (const char* str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
@@ -70,11 +71,9 @@ void RobotWidget::update() {
   int offset_y = 0;
   int teamColor = Vision::singleton().getTeamColor();
   // printf("Team Color %d\n", teamColor);
-  Players players = vss.players(
-              static_cast<uint>(teamColor)
-              );
+  Players players = vss.players(static_cast<uint>(teamColor));
   if (m_index < players.size()) {
-    Ally &ally = players[m_index];
+    Ally& ally = players[m_index];
     this->m_robotId = ally.id();
     m_ui->idRobot->setPixmap(getRobotId());
     std::stringstream ss;
@@ -85,7 +84,7 @@ void RobotWidget::update() {
     ss.clear();
     value = str.c_str();
     m_ui->positionValueRobot->setText(value);
-    //ss << std::fixed << std::setprecision(2) << ally.speed();
+    // ss << std::fixed << std::setprecision(2) << ally.speed();
     getline(ss, str);
     ss.clear();
     value = str.c_str();
@@ -94,7 +93,7 @@ void RobotWidget::update() {
     getline(ss, str);
     value = str.c_str();
     m_ui->angleValueRobot->setText(value + " degrees.");
-    //y += 50;
+    // y += 50;
   } else {
     m_ui->idRobot->setPixmap(m_borderImage);
   }
@@ -102,4 +101,5 @@ void RobotWidget::update() {
   m_ui->numberRobot->setPixmap(m_numbersImage.copy(region));
 }
 
-void RobotWidget::on_toolsButtonRobot_clicked() { }
+void RobotWidget::on_toolsButtonRobot_clicked() {
+}

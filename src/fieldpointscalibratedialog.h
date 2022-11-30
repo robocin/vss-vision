@@ -25,21 +25,20 @@
 #define HALF "half"
 
 namespace Ui {
-class FieldPointsCalibrateDialog;
+  class FieldPointsCalibrateDialog;
 }
 
 class FieldPointsCalibrateDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit FieldPointsCalibrateDialog(const bool videoFlag,
-                                      QWidget *parent = 0);
+  explicit FieldPointsCalibrateDialog(const bool videoFlag, QWidget* parent = 0);
   ~FieldPointsCalibrateDialog();
 
  protected:
-  void keyPressEvent(QKeyEvent *e);
-  void mousePressEvent(QMouseEvent *event);
-  void showEvent(QShowEvent *event);
+  void keyPressEvent(QKeyEvent* e);
+  void mousePressEvent(QMouseEvent* event);
+  void showEvent(QShowEvent* event);
 
  private slots:
   void on_buttonBox_accepted();
@@ -48,16 +47,16 @@ class FieldPointsCalibrateDialog : public QDialog {
   void on_buttonBox_rejected();
 
  private:
-  Ui::FieldPointsCalibrateDialog *ui;
+  Ui::FieldPointsCalibrateDialog* ui;
   cv::Point _limitPoints[4];
   int _selectedPointIndex, _frameRows, _frameCols;
   cv::Mat _cameraFrame;
   std::string _filePath;
   bool _videoFlag;
-  QTimer *_updateFrameTimer;
+  QTimer* _updateFrameTimer;
 
   void getPointsFromFile(std::string path);
   void drawPoints();
 };
 
-#endif  // FIELDPOINTSCALIBRATEDIALOG_H
+#endif // FIELDPOINTSCALIBRATEDIALOG_H

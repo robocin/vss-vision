@@ -1,10 +1,13 @@
 #include "WarpCorrection.h"
 
-WarpCorrection::WarpCorrection() {}
+WarpCorrection::WarpCorrection() {
+}
 
-WarpCorrection::~WarpCorrection() {}
+WarpCorrection::~WarpCorrection() {
+}
 
-void WarpCorrection::init(std::map<std::string, int>) {}
+void WarpCorrection::init(std::map<std::string, int>) {
+}
 
 void WarpCorrection::initFromFile(std::string path, cv::Point2d* convert) {
   QFile file(QString::fromStdString(path));
@@ -43,24 +46,21 @@ void WarpCorrection::initFromFile(std::string path, cv::Point2d* convert) {
 
   cv::RotatedRect box = cv::minAreaRect(cv::Mat(boxPoints));
 
-  convert->x = (170.0 / ((float)box.boundingRect().width));
-  convert->y = (130.0 / ((float)box.boundingRect().height));
+  convert->x = (170.0 / ((float) box.boundingRect().width));
+  convert->y = (130.0 / ((float) box.boundingRect().height));
 
   cv::Point2f dstPoints[4];
 
   dstPoints[0] = cv::Point(0, 0);
   dstPoints[1] = cv::Point(0, box.boundingRect().height - 1);
-  dstPoints[2] =
-      cv::Point(box.boundingRect().width - 1, box.boundingRect().height - 1);
+  dstPoints[2] = cv::Point(box.boundingRect().width - 1, box.boundingRect().height - 1);
   dstPoints[3] = cv::Point(box.boundingRect().width - 1, 0);
 
   this->_mapsLocker.lock();
 
-  this->_warpPespectiveMatrix =
-      cv::getPerspectiveTransform(_correctionPoints, dstPoints);
+  this->_warpPespectiveMatrix = cv::getPerspectiveTransform(_correctionPoints, dstPoints);
 
-  this->_matrixSize =
-      cv::Size(box.boundingRect().width, box.boundingRect().height);
+  this->_matrixSize = cv::Size(box.boundingRect().width, box.boundingRect().height);
 
   this->defineMaps();
 
@@ -112,34 +112,31 @@ void WarpCorrection::defineMaps() {
   this->_transformationX.create(this->_matrixSize, CV_16SC2);
   this->_transformationY.create(this->_matrixSize, CV_16UC1);
 
-  cv::convertMaps(mapX, mapY, this->_transformationX, this->_transformationY,
-                  false);
+  cv::convertMaps(mapX, mapY, this->_transformationX, this->_transformationY, false);
 }
 
-void WarpCorrection::setup(std::string, int) {}
+void WarpCorrection::setup(std::string, int) {
+}
 
 cv::Mat WarpCorrection::run(cv::Mat& frame) {
   cv::Mat tmp = cv::Mat::zeros(this->_matrixSize, CV_8UC3);
-  cv::remap(frame, tmp, this->_transformationX, this->_transformationY,
-            cv::INTER_LINEAR);
+  cv::remap(frame, tmp, this->_transformationX, this->_transformationY, cv::INTER_LINEAR);
 
   // Masking corners
-  int w = this->_matrixSize.width * (1 / (float)17);
-  int h = this->_matrixSize.height * (45 / (float)130);
+  int w = this->_matrixSize.width * (1 / (float) 17);
+  int h = this->_matrixSize.height * (45 / (float) 130);
 
   // top left
   cv::rectangle(tmp, cv::Rect(0, 0, w, h), cv::Scalar(0, 0, 0), -1);
   // top right
-  cv::rectangle(tmp, cv::Rect(this->_matrixSize.width - w, 0, w, h),
-                cv::Scalar(0, 0, 0), -1);
+  cv::rectangle(tmp, cv::Rect(this->_matrixSize.width - w, 0, w, h), cv::Scalar(0, 0, 0), -1);
   // bottom left
-  cv::rectangle(tmp, cv::Rect(0, this->_matrixSize.height - h, w, h),
-                cv::Scalar(0, 0, 0), -1);
+  cv::rectangle(tmp, cv::Rect(0, this->_matrixSize.height - h, w, h), cv::Scalar(0, 0, 0), -1);
   // bottom right
-  cv::rectangle(
-      tmp,
-      cv::Rect(this->_matrixSize.width - w, this->_matrixSize.height - h, w, h),
-      cv::Scalar(0, 0, 0), -1);
+  cv::rectangle(tmp,
+                cv::Rect(this->_matrixSize.width - w, this->_matrixSize.height - h, w, h),
+                cv::Scalar(0, 0, 0),
+                -1);
 
   this->_frameLocker.lock();
   tmp.copyTo(this->_warpPespectiveFrame);
@@ -149,12 +146,12 @@ cv::Mat WarpCorrection::run(cv::Mat& frame) {
 }
 
 void WarpCorrection::getDebugFrame(cv::Mat& frame) {
-    this->_frameLocker.lock();
+  this->_frameLocker.lock();
 
-    if (this->_warpPespectiveFrame.empty()) {
-        this->_warpPespectiveFrame = cv::Mat::zeros(640, 480, CV_8UC3);
-    }
-    this->_warpPespectiveFrame.copyTo(frame);
+  if (this->_warpPespectiveFrame.empty()) {
+    this->_warpPespectiveFrame = cv::Mat::zeros(640, 480, CV_8UC3);
+  }
+  this->_warpPespectiveFrame.copyTo(frame);
 
-    this->_frameLocker.unlock();
+  this->_frameLocker.unlock();
 }

@@ -11,38 +11,30 @@
 #include <QFileDialog>
 #include <dirent.h>
 #include <Windows/FileConstants.h>
-#define SEGMENTATION_SALAMANHA_FILE  "Config/Segmentation/SalaManha.xml"
-#define SEGMENTATION_SALANOITE_FILE  "Config/Segmentation/SalaNoite.xml"
-#define SEGMENTATION_VIDEO_FILE  "Config/Segmentation/Video.xml"
-#define SEGMENTATION_ZEROS_FILE  "Config/Segmentation/Zeros.xml"
+#define SEGMENTATION_SALAMANHA_FILE "Config/Segmentation/SalaManha.xml"
+#define SEGMENTATION_SALANOITE_FILE "Config/Segmentation/SalaNoite.xml"
+#define SEGMENTATION_VIDEO_FILE "Config/Segmentation/Video.xml"
+#define SEGMENTATION_ZEROS_FILE "Config/Segmentation/Zeros.xml"
 #define SEGMENTATION_XML "Config/Segmentation/"
 #define ZOOM_ADJUST_X_MAX 30
 #define ZOOM_ADJUST_X_MIN 0
 #define ZOOM_ADJUST_Y 30
 
-
-enum fileTypes {
-  DefaultFile,
-  Video,
-  SalaManha,
-  SalaNoite,
-  Zeros
-};
+enum fileTypes { DefaultFile, Video, SalaManha, SalaNoite, Zeros };
 
 namespace Ui {
-class SegmentationConfigDialog;
+  class SegmentationConfigDialog;
 }
 
-class SegmentationConfigDialog : public QDialog
-{
+class SegmentationConfigDialog : public QDialog {
   Q_OBJECT
 
-public:
-  explicit SegmentationConfigDialog(const bool videoFlag, QWidget *parent = nullptr);
+ public:
+  explicit SegmentationConfigDialog(const bool videoFlag, QWidget* parent = nullptr);
   ~SegmentationConfigDialog();
   bool getQuantizationBool();
 
-private slots:
+ private slots:
   void on_ParametersListWidget_clicked();
 
   void on_YMinHorizontalSlider_valueChanged(int value);
@@ -65,14 +57,13 @@ private slots:
 
   void on_buttonBox_rejected();
 
-  bool eventFilter(QObject *f_object, QEvent *f_event);
+  bool eventFilter(QObject* f_object, QEvent* f_event);
 
   /**
    *  putZoom take the region of interest and resize that ROI to 100x100
    * @param Frame
    */
   void putZoom(cv::Mat Frame);
-
 
   /**
    * @brief on_saveSegmentationPushButton_clicked
@@ -118,35 +109,34 @@ private slots:
 
   void on_horizontalSlider_grayScale_valueChanged(int value);
 
-private:
-
+ private:
   void setAllCheckBoxUi(bool check);
 
   cv::Mat _zoom;
   cv::Rect _zoomrect;
   bool _click;
   QPoint _qpoint;
-  Ui::SegmentationConfigDialog *ui;
+  Ui::SegmentationConfigDialog* ui;
   ColorInterval* _calibrationParameters;
   int _actualColorIndex;
   QTimer* _updateFrameTimer;
   cv::Mat _actualFrame;
   bool _visibleColors[NUMBEROFCOLOR];
-  std::string _colorLabels[NUMBEROFCOLOR] = { NOCOLLABEL,
-                        ORANGELABEL,
-                        BLUELABEL,
-                        YELLOWLABEL,
-                        REDLABEL,
-                        GREENLABEL,
-                        PINKLABEL,
-                        LIGHTBLUELABEL,
-                        PURPLELABEL,
-                        BROWNLABEL,
-                        COLORSTRANGELABEL };
+  std::string _colorLabels[NUMBEROFCOLOR] = {NOCOLLABEL,
+                                             ORANGELABEL,
+                                             BLUELABEL,
+                                             YELLOWLABEL,
+                                             REDLABEL,
+                                             GREENLABEL,
+                                             PINKLABEL,
+                                             LIGHTBLUELABEL,
+                                             PURPLELABEL,
+                                             BROWNLABEL,
+                                             COLORSTRANGELABEL};
 
   void readFromFile();
   void saveInFile();
-  void setup(int color,int minY,int minU,int minV,int maxY,int maxU,int maxV);
+  void setup(int color, int minY, int minU, int minV, int maxY, int maxU, int maxV);
   void attSliders();
   void setFrameOnScreen();
   void setOriginalFrameOnScreen();

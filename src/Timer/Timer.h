@@ -3,11 +3,12 @@
 #include <chrono>
 
 class Timer {
-private:
+ private:
   bool paused;
   std::chrono::high_resolution_clock::time_point timebegin, timeend;
   std::chrono::nanoseconds::rep nanoseconds;
-public:
+
+ public:
   Timer(); // Starts automatically on construction
   double getSeconds();
   double getMilliseconds();

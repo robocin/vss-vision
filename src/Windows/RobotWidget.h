@@ -13,24 +13,24 @@ class RobotWidget : public QWidget {
   Q_OBJECT
 
  public:
-  explicit RobotWidget(const size_t &t_index, QWidget *parent = nullptr);
+  explicit RobotWidget(const size_t& t_index, QWidget* parent = nullptr);
 
   ~RobotWidget();
 
   QPixmap getRobotId();
-  void setPrimaryColor(QPixmap &t_robotId);
-  void setSecodaryColor(QPixmap &t_robotId);
+  void setPrimaryColor(QPixmap& t_robotId);
+  void setSecodaryColor(QPixmap& t_robotId);
   void update();
 
  private slots:
   void on_toolsButtonRobot_clicked();
 
  private:
-  Ui::RobotWidget *m_ui;
+  Ui::RobotWidget* m_ui;
   size_t m_index;
   QPixmap m_borderImage;
   QPixmap m_numbersImage;
   uint m_robotId;
 };
 
-#endif  // ROBOTWIDGET_H
+#endif // ROBOTWIDGET_H

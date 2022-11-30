@@ -18,11 +18,11 @@
 #include <QString>
 
 namespace Logging {
-  #define SIZE_LOG 1024*1024
-  #define NFILES_LOG 20
-	void init();
-	const std::string currentDateTime();
+#define SIZE_LOG 1024 * 1024
+#define NFILES_LOG 20
+  void init();
+  const std::string currentDateTime();
   void createFolder(QString folderPath);
-};
+}; // namespace Logging
 
 #endif /**		UTILS_H*/

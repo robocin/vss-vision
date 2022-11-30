@@ -7,21 +7,19 @@
 #include <QWaitCondition>
 #include <CameraManager/CameraManager.h>
 
-class CameraThread : public QThread
-{
+class CameraThread : public QThread {
   Q_OBJECT
-public:
+ public:
   CameraThread();
   ~CameraThread();
 
-
-public slots:
+ public slots:
   void pause();
   void startWork();
   void finish();
   void enableResultSignal(bool enabled);
 
-private:
+ private:
   QMutex _threadMutex;
   QWaitCondition _threadController;
 
@@ -30,9 +28,8 @@ private:
   bool _enableResultSignal;
 
   void run() override;
-signals:
+ signals:
   void updatedFrame();
-
 };
 
 #endif // CAMERATHREAD_H

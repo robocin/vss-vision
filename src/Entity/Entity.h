@@ -10,18 +10,17 @@ class Entity {
   float m_angle;
   uint m_team;
 
-public:
-
+ public:
   /**
    * Constructor of Entity's class that uses an default '-1' id.
    * @return An Entity object
    */
-  Entity(const uint &t_id = 99);
+  Entity(const uint& t_id = 99);
 
   /**
    * Update entity's position and angle
    */
-  void update(const Point &t_position, const float &t_angle = 0);
+  void update(const Point& t_position, const float& t_angle = 0);
 
   /**
    * Get entity position
@@ -50,7 +49,7 @@ public:
    * Get entity's id number
    * @return Integer with the entity's id number
    */
-  const uint &id();
+  const uint& id();
 
   /**
    * Set entity's id number
@@ -61,21 +60,20 @@ public:
    * Get entity's team number
    * @return Integer with the entity's team number
    */
-  const uint &team();
+  const uint& team();
 
   /**
    * Set entity's team
    */
   void team(const uint& t_team);
-
 };
 
 typedef Entity Player;
 typedef Player Ally;
 typedef Player Enemy;
 
-using Entities      = std::vector<Entity>;
-using Players       = std::vector<Player>;
+using Entities = std::vector<Entity>;
+using Players = std::vector<Player>;
 
 bool operator<(Entity& a, Entity& b);
 

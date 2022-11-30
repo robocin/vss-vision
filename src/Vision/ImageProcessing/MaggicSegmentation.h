@@ -13,7 +13,7 @@ typedef unsigned char uchar;
 
 #define LUTSIZE 16777216
 
-#define LUT_SIZE 16777216*3
+#define LUT_SIZE 16777216 * 3
 
 #define YMAXLABEL "YMAX"
 #define UMAXLABEL "UMAX"
@@ -35,7 +35,7 @@ typedef unsigned char uchar;
 #define BROWNLABEL "Brown"
 #define COLORSTRANGELABEL "ColorStrange"
 
-template<typename T>
+template <typename T>
 T max_element_of(T* data, size_t size) {
   T r = data[0];
   for (size_t i = 1; i < size; ++i) {
@@ -43,7 +43,6 @@ T max_element_of(T* data, size_t size) {
   }
   return r;
 }
-
 
 enum MaggicVisionDebugSelection {
   MaggicVisionDebugSelection_Undefined = 0,
@@ -54,33 +53,30 @@ enum MaggicVisionDebugSelection {
   MaggicVisionDebugSelection_DetailsFrame
 };
 
-
-
 typedef std::vector<cv::Rect> Rectangles;
 
 /**
  * @brief    Class for segmentation using a Look Up Table (LUT).
  */
-class MaggicSegmentation : public ImageProcessing
-{
+class MaggicSegmentation : public ImageProcessing {
 
-#define min(a,b) (a<b?a:b)
-#define max(a,b) (a>b?a:b)
+#define min(a, b) (a < b ? a : b)
+#define max(a, b) (a > b ? a : b)
 
-public:
-    enum NormalizationMethod {
-        NO_NORMALIZATION= 0,
-        CHROMATIC_NORMALIZATION,
-        VECTOR_NORMALIZATION,
-        WEIGHTED_NORMALIZATION,
-        NORMALIZATION_METHODS_LENGTH
-    };
+ public:
+  enum NormalizationMethod {
+    NO_NORMALIZATION = 0,
+    CHROMATIC_NORMALIZATION,
+    VECTOR_NORMALIZATION,
+    WEIGHTED_NORMALIZATION,
+    NORMALIZATION_METHODS_LENGTH
+  };
 
   bool paused, enableEstimateRobots;
   bool useLoadedValues = false;
   bool m_updateDetails = true;
   bool m_updateFrame = true;
-  
+
   /**
    * @brief    Default Constructor
    */
@@ -114,10 +110,9 @@ public:
    */
   void getSegmentationFrameFromLUT(cv::Mat& frame);
 
+  static uint BGR2RGBHash(cv::Vec3b& v);
 
-  static uint BGR2RGBHash(cv::Vec3b &v);
-
-  static uint RGB2RGBHash(cv::Vec3b &v);
+  static uint RGB2RGBHash(cv::Vec3b& v);
 
   static cv::Vec3b RGBHash2BGR(uint);
 
@@ -125,13 +120,13 @@ public:
 
   static std::string RGBHash2String(uint);
 
-  void calibrate(cv::Mat &frame);
+  void calibrate(cv::Mat& frame);
 
   int getFilterGrayThresholdValue();
 
   void setFilterGrayThresholdValue(int newFilterGrayThreshold);
 
-  void getFilterGrayThresholdValues(int &minimum, int &maximum);
+  void getFilterGrayThresholdValues(int& minimum, int& maximum);
 
   void setFilterGrayThresholdValues(int minimum, int maximum);
 
@@ -145,15 +140,15 @@ public:
 
   void setLearningThresholdValue(bool enabled);
 
-  void getLearningThresholdValue(bool &enabled);
+  void getLearningThresholdValue(bool& enabled);
 
   bool isLearning();
 
   void setLearningThresholdFrames(uint frames);
 
-  void getLearningThresholdFrames(uint &frames);
+  void getLearningThresholdFrames(uint& frames);
 
-  void getCalibrationFrames(uint &frames);
+  void getCalibrationFrames(uint& frames);
 
   void updateFilterGrayThresholdValue();
 
@@ -185,7 +180,7 @@ public:
 
   void setNormalizationMethod(MaggicSegmentation::NormalizationMethod method);
 
-  void getNormalizationMethod(MaggicSegmentation::NormalizationMethod &method);
+  void getNormalizationMethod(MaggicSegmentation::NormalizationMethod& method);
 
   MaggicSegmentation::NormalizationMethod getNormalizationMethod();
 
@@ -202,10 +197,10 @@ public:
   void setLUTCacheEnable(bool enabled = true);
   bool getLUTCacheEnable();
 
-private:
+ private:
   int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40, _intervalGrayThreshold = 30;
   static constexpr float div255 = 1.0f / 255.0f;
-  static constexpr float div3255 = 1.0f/(255.0f+ 255.0f+ 255.0f);
+  static constexpr float div3255 = 1.0f / (255.0f + 255.0f + 255.0f);
   bool normalized_color;
   NormalizationMethod normalization_method, selected_normalization_method;
   static const NormalizationMethod default_normalization_method;
@@ -244,21 +239,21 @@ private:
 
   bool updateColors = false;
 
-  void filterGray(cv::Mat &d, cv::Mat &o);
+  void filterGray(cv::Mat& d, cv::Mat& o);
 
-  void applyLUT(cv::Mat &input, cv::Mat &output, uchar* LUT);
+  void applyLUT(cv::Mat& input, cv::Mat& output, uchar* LUT);
 
-  inline void filterGray(cv::Vec3b &color, cv::Vec3b &coloro);
+  inline void filterGray(cv::Vec3b& color, cv::Vec3b& coloro);
 
-  void filterBinarizeColored(cv::Mat &d, cv::Mat &o);
+  void filterBinarizeColored(cv::Mat& d, cv::Mat& o);
 
-  void filterExtremeSaturation(cv::Mat &d, cv::Mat &o);
+  void filterExtremeSaturation(cv::Mat& d, cv::Mat& o);
 
   void updateHistogramDescriptors();
 
-  void filterGrain(ColorDescriptor &dest, ColorDescriptor &orig);
+  void filterGrain(ColorDescriptor& dest, ColorDescriptor& orig);
 
-  void _layeredAdd(cv::Mat &out, cv::Mat imgA, cv::Mat imgB);
+  void _layeredAdd(cv::Mat& out, cv::Mat imgA, cv::Mat imgB);
 
   bool estimateRobots(cv::Mat img, int manyTimes, int n_components_reference = 7);
 
@@ -275,11 +270,7 @@ private:
   std::vector<std::pair<float, int>> hueList;
   std::vector<std::pair<float, int>> defaultHueList;
 
-
-  cv::Mat colorPalette,
-      colorPaletteYUV,
-      colorPaletteHSV,
-      histo;
+  cv::Mat colorPalette, colorPaletteYUV, colorPaletteHSV, histo;
 
   uchar* _LUT;
   uchar** _LUT_CACHE;
@@ -305,18 +296,17 @@ private:
   bool colorDistribution = false;
   bool enableFilter = false;
 
-  std::string _colorLabels[NUMBEROFCOLOR] = { NOCOLLABEL,
-                        ORANGELABEL,
-                        BLUELABEL,
-                        YELLOWLABEL,
-                        REDLABEL,
-                        GREENLABEL,
-                        PINKLABEL,
-                        LIGHTBLUELABEL,
-                        PURPLELABEL,
-                        BROWNLABEL,
-                        COLORSTRANGELABEL };
-
+  std::string _colorLabels[NUMBEROFCOLOR] = {NOCOLLABEL,
+                                             ORANGELABEL,
+                                             BLUELABEL,
+                                             YELLOWLABEL,
+                                             REDLABEL,
+                                             GREENLABEL,
+                                             PINKLABEL,
+                                             LIGHTBLUELABEL,
+                                             PURPLELABEL,
+                                             BROWNLABEL,
+                                             COLORSTRANGELABEL};
 };
 
 #endif

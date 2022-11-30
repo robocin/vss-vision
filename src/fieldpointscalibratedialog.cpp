@@ -1,9 +1,9 @@
 #include "fieldpointscalibratedialog.h"
 #include "ui_fieldpointscalibratedialog.h"
 
-FieldPointsCalibrateDialog::FieldPointsCalibrateDialog(const bool videoFlag,
-                                                       QWidget *parent)
-    : QDialog(parent), ui(new Ui::FieldPointsCalibrateDialog) {
+FieldPointsCalibrateDialog::FieldPointsCalibrateDialog(const bool videoFlag, QWidget* parent) :
+    QDialog(parent),
+    ui(new Ui::FieldPointsCalibrateDialog) {
   this->_videoFlag = videoFlag;
   ui->setupUi(this);
   this->_updateFrameTimer = new QTimer(this);
@@ -12,11 +12,10 @@ FieldPointsCalibrateDialog::FieldPointsCalibrateDialog(const bool videoFlag,
   } else {
     this->_updateFrameTimer->start(30);
   }
-  connect(this->_updateFrameTimer, SIGNAL(timeout()), this,
-          SLOT(updateFrame()));
+  connect(this->_updateFrameTimer, SIGNAL(timeout()), this, SLOT(updateFrame()));
 }
 
-void FieldPointsCalibrateDialog::showEvent(QShowEvent *event) {
+void FieldPointsCalibrateDialog::showEvent(QShowEvent* event) {
   QDialog::showEvent(event);
 
   this->_selectedPointIndex = 0;
@@ -36,24 +35,16 @@ FieldPointsCalibrateDialog::~FieldPointsCalibrateDialog() {
   delete ui;
 }
 
-void FieldPointsCalibrateDialog::keyPressEvent(QKeyEvent *e) {
+void FieldPointsCalibrateDialog::keyPressEvent(QKeyEvent* e) {
   switch (e->key()) {
     case Qt::Key_Escape:
       this->_updateFrameTimer->stop();
       QDialog::reject();
       break;
-    case Qt::Key_1:
-      _selectedPointIndex = 0;
-      break;
-    case Qt::Key_2:
-      _selectedPointIndex = 1;
-      break;
-    case Qt::Key_3:
-      _selectedPointIndex = 2;
-      break;
-    case Qt::Key_4:
-      _selectedPointIndex = 3;
-      break;
+    case Qt::Key_1: _selectedPointIndex = 0; break;
+    case Qt::Key_2: _selectedPointIndex = 1; break;
+    case Qt::Key_3: _selectedPointIndex = 2; break;
+    case Qt::Key_4: _selectedPointIndex = 3; break;
     case Qt::Key_W:
       if (_limitPoints[_selectedPointIndex].y > 0) {
         _limitPoints[_selectedPointIndex].y--;
@@ -74,22 +65,17 @@ void FieldPointsCalibrateDialog::keyPressEvent(QKeyEvent *e) {
         _limitPoints[_selectedPointIndex].x++;
       }
       break;
-    default:
-      break;
+    default: break;
   }
 }
 
-void FieldPointsCalibrateDialog::mousePressEvent(QMouseEvent *event) {
+void FieldPointsCalibrateDialog::mousePressEvent(QMouseEvent* event) {
   if (event->pos().x() - this->ui->videoLabel->x() > 0 &&
       event->pos().y() - this->ui->videoLabel->y() > 0 &&
-      event->pos().x() -
-              (this->ui->videoLabel->x() + this->ui->videoLabel->width()) <
-          0 &&
-      event->pos().y() -
-              (this->ui->videoLabel->y() + this->ui->videoLabel->height()) <
-          0) {
-    double xConvert = this->_frameCols / (double)this->ui->videoLabel->width();
-    double yConvert = this->_frameRows / (double)this->ui->videoLabel->height();
+      event->pos().x() - (this->ui->videoLabel->x() + this->ui->videoLabel->width()) < 0 &&
+      event->pos().y() - (this->ui->videoLabel->y() + this->ui->videoLabel->height()) < 0) {
+    double xConvert = this->_frameCols / (double) this->ui->videoLabel->width();
+    double yConvert = this->_frameRows / (double) this->ui->videoLabel->height();
 
     this->_limitPoints[this->_selectedPointIndex].x =
         (event->pos().x() - this->ui->videoLabel->x()) * xConvert;
@@ -111,8 +97,11 @@ void FieldPointsCalibrateDialog::updateFrame() {
     cv::Size newSize(ui->videoLabel->width(), ui->videoLabel->height());
     cv::resize(frameToImage, frameToImage, newSize);
     cv::cvtColor(frameToImage, frameToImage, cv::COLOR_BGR2RGB);
-    QImage qimg2((uchar *)frameToImage.data, frameToImage.cols,
-                 frameToImage.rows, frameToImage.step, QImage::Format_RGB888);
+    QImage qimg2((uchar*) frameToImage.data,
+                 frameToImage.cols,
+                 frameToImage.rows,
+                 frameToImage.step,
+                 QImage::Format_RGB888);
     ui->videoLabel->setPixmap(QPixmap::fromImage(qimg2));
   }
   QCoreApplication::processEvents();
@@ -147,30 +136,36 @@ void FieldPointsCalibrateDialog::getPointsFromFile(std::string path) {
 
 void FieldPointsCalibrateDialog::drawPoints() {
   for (int i = 0; i < 4; i++) {
-    cv::line(_cameraFrame, _limitPoints[i], _limitPoints[(i + 1) % 4],
-             YELLOW_SCALAR, LINE_THICKNESS, cv::LINE_AA);
+    cv::line(_cameraFrame,
+             _limitPoints[i],
+             _limitPoints[(i + 1) % 4],
+             YELLOW_SCALAR,
+             LINE_THICKNESS,
+             cv::LINE_AA);
   }
 
   for (int i = 0; i < 4; i++) {
     if (i == _selectedPointIndex) {
-      cv::circle(_cameraFrame, _limitPoints[i], CIRCLE_RADIUS, RED_SCALAR, -1,
-                 1);
+      cv::circle(_cameraFrame, _limitPoints[i], CIRCLE_RADIUS, RED_SCALAR, -1, 1);
     } else {
-      cv::circle(_cameraFrame, _limitPoints[i], CIRCLE_RADIUS, BLUE_SCALAR, -1,
-                 1);
+      cv::circle(_cameraFrame, _limitPoints[i], CIRCLE_RADIUS, BLUE_SCALAR, -1, 1);
     }
 
-    cv::putText(_cameraFrame, std::to_string(i + 1),
+    cv::putText(_cameraFrame,
+                std::to_string(i + 1),
                 cv::Point(_limitPoints[i].x - 10, _limitPoints[i].y - 10),
-                cv::FONT_HERSHEY_PLAIN, 1.5, RED_SCALAR, 2, cv::LINE_4);
+                cv::FONT_HERSHEY_PLAIN,
+                1.5,
+                RED_SCALAR,
+                2,
+                cv::LINE_4);
   }
 }
 
 void FieldPointsCalibrateDialog::on_buttonBox_accepted() {
   QFile file(QString::fromStdString(FIELDLIMITSPATH));
 
-  if (!file.open(
-          (QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
+  if (!file.open((QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
     std::cout << "failed to open file : " << FIELDLIMITSPATH << std::endl;
     exit(1);
   }

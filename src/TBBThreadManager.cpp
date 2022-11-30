@@ -1,12 +1,12 @@
 #include "TBBThreadManager.h"
 
-TBBThreadManager::TBBThreadManager()
-  : _cameraNode(g, cameraBody(&this->_cameraStop), false),
-    _limiterNode(g,1),
+TBBThreadManager::TBBThreadManager() :
+    _cameraNode(g, cameraBody(&this->_cameraStop), false),
+    _limiterNode(g, 1),
     _visionNode(g, tbb::flow::serial, visionBody(&this->_visionStop)),
-//    _visionNode(g, tbb::flow::unlimited, visionBody(&this->_visionStop)),
-//    _visionNode(g, visionBody(&this->_visionStop), false),
-    _indexerNode(g){
+    //    _visionNode(g, tbb::flow::unlimited, visionBody(&this->_visionStop)),
+    //    _visionNode(g, visionBody(&this->_visionStop), false),
+    _indexerNode(g) {
   this->_cameraStop = false;
   this->_visionStop = true;
   tbb::flow::make_edge(this->_limiterNode, this->_visionNode);
@@ -14,7 +14,7 @@ TBBThreadManager::TBBThreadManager()
   tbb::flow::make_edge(this->_cameraNode, this->_limiterNode);
 #ifdef WITHFEEDBACK
   tbb::flow::make_edge(this->_visionNode, input_port<0>(this->_indexerNode));
-  //tbb::flow::make_edge(this->_indexerNode, this->_limiter.decrement);
+  // tbb::flow::make_edge(this->_indexerNode, this->_limiter.decrement);
 #endif
 }
 
@@ -24,7 +24,7 @@ TBBThreadManager::~TBBThreadManager() {
   tbb::flow::remove_edge(this->_cameraNode, this->_visionNode);
 #ifdef WITHFEEDBACK
   tbb::flow::remove_edge(this->_visionNode, input_port<0>(this->_indexerNode));
-  //tbb::flow::remove_edge(this->_indexerNode, this->_limiter.decrement);
+  // tbb::flow::remove_edge(this->_indexerNode, this->_limiter.decrement);
 #endif
 }
 
@@ -40,12 +40,12 @@ void TBBThreadManager::cameraStart() {
 
 void TBBThreadManager::visionPause() {
   this->_visionStop = true;
-//  this->_visionNode.try_consume();
+  //  this->_visionNode.try_consume();
 }
 
 void TBBThreadManager::visionStart() {
   this->_visionStop = false;
-//  this->_visionNode.activate();
+  //  this->_visionNode.activate();
 }
 
 void TBBThreadManager::startAll() {
@@ -57,6 +57,3 @@ void TBBThreadManager::pauseAll() {
   this->visionPause();
   this->cameraPause();
 }
-
-
-

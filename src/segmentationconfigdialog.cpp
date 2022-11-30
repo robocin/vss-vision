@@ -1,9 +1,9 @@
 #include "segmentationconfigdialog.h"
 #include "ui_segmentationconfigdialog.h"
 
-SegmentationConfigDialog::SegmentationConfigDialog(const bool videoFlag,
-                                                   QWidget *parent)
-    : QDialog(parent), ui(new Ui::SegmentationConfigDialog) {
+SegmentationConfigDialog::SegmentationConfigDialog(const bool videoFlag, QWidget* parent) :
+    QDialog(parent),
+    ui(new Ui::SegmentationConfigDialog) {
   ui->setupUi(this);
   this->_calibrationParameters = new ColorInterval[NUMBEROFCOLOR];
   this->_actualColorIndex = 0;
@@ -31,8 +31,7 @@ SegmentationConfigDialog::SegmentationConfigDialog(const bool videoFlag,
   ui->VMaxHorizontalSlider->setMaximum(255);
 
   for (int i = 0; i < NUMBEROFCOLOR; i++) {
-    ui->selectColorComboBox->addItem(
-        QString::fromStdString(this->_colorLabels[i]));
+    ui->selectColorComboBox->addItem(QString::fromStdString(this->_colorLabels[i]));
     this->_visibleColors[i] = true;
   }
 
@@ -43,8 +42,7 @@ SegmentationConfigDialog::SegmentationConfigDialog(const bool videoFlag,
 
   qApp->installEventFilter(this);
   this->_updateFrameTimer = new QTimer(this);
-  connect(this->_updateFrameTimer, SIGNAL(timeout()), this,
-          SLOT(updateFrame()));
+  connect(this->_updateFrameTimer, SIGNAL(timeout()), this, SLOT(updateFrame()));
   if (this->_videoFlag) {
     this->_updateFrameTimer->start(30);
   } else {
@@ -65,8 +63,7 @@ void SegmentationConfigDialog::readFromFile() {
   QFile file(QString::fromStdString(FileConstants::segmentationConfig));
 
   if (!file.open(QIODevice::ReadOnly)) {
-    std::cout << "failed to open file : " << FileConstants::segmentationConfig
-              << std::endl;
+    std::cout << "failed to open file : " << FileConstants::segmentationConfig << std::endl;
     exit(1);
   }
 
@@ -78,19 +75,21 @@ void SegmentationConfigDialog::readFromFile() {
   for (int i = 0; i < NUMBEROFCOLOR; i++) {
     std::string key = this->_colorLabels[i];
     value = json[key.c_str()].toObject();
-    this->setup(i, value[YMINLABEL].toInt(), value[UMINLABEL].toInt(),
-                value[VMINLABEL].toInt(), value[YMAXLABEL].toInt(),
-                value[UMAXLABEL].toInt(), value[VMAXLABEL].toInt());
+    this->setup(i,
+                value[YMINLABEL].toInt(),
+                value[UMINLABEL].toInt(),
+                value[VMINLABEL].toInt(),
+                value[YMAXLABEL].toInt(),
+                value[UMAXLABEL].toInt(),
+                value[VMAXLABEL].toInt());
   }
 }
 
 void SegmentationConfigDialog::saveInFile() {
   QFile file(QString::fromStdString(FileConstants::segmentationConfig));
 
-  if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate |
-                 QIODevice::Text)) {
-    std::cout << "failed to open file : " << FileConstants::segmentationConfig
-              << std::endl;
+  if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text)) {
+    std::cout << "failed to open file : " << FileConstants::segmentationConfig << std::endl;
     exit(1);
   }
 
@@ -115,8 +114,13 @@ void SegmentationConfigDialog::saveInFile() {
   file.close();
 }
 
-void SegmentationConfigDialog::setup(int color, int minY, int minU, int minV,
-                                     int maxY, int maxU, int maxV) {
+void SegmentationConfigDialog::setup(int color,
+                                     int minY,
+                                     int minU,
+                                     int minV,
+                                     int maxY,
+                                     int maxU,
+                                     int maxV) {
   this->_calibrationParameters[color].min.y = minY;
   this->_calibrationParameters[color].min.u = minU;
   this->_calibrationParameters[color].min.v = minV;
@@ -127,18 +131,18 @@ void SegmentationConfigDialog::setup(int color, int minY, int minU, int minV,
 
 void SegmentationConfigDialog::attSliders() {
   // Set Current Value in UI
-  ui->YMinLabel->setText(QString::number(
-      this->_calibrationParameters[this->_actualColorIndex].min.y));
-  ui->UMinLabel->setText(QString::number(
-      this->_calibrationParameters[this->_actualColorIndex].min.u));
-  ui->VMinLabel->setText(QString::number(
-      this->_calibrationParameters[this->_actualColorIndex].min.v));
-  ui->YMaxLabel->setText(QString::number(
-      this->_calibrationParameters[this->_actualColorIndex].max.y));
-  ui->UMaxLabel->setText(QString::number(
-      this->_calibrationParameters[this->_actualColorIndex].max.u));
-  ui->VMaxLabel->setText(QString::number(
-      this->_calibrationParameters[this->_actualColorIndex].max.v));
+  ui->YMinLabel->setText(
+      QString::number(this->_calibrationParameters[this->_actualColorIndex].min.y));
+  ui->UMinLabel->setText(
+      QString::number(this->_calibrationParameters[this->_actualColorIndex].min.u));
+  ui->VMinLabel->setText(
+      QString::number(this->_calibrationParameters[this->_actualColorIndex].min.v));
+  ui->YMaxLabel->setText(
+      QString::number(this->_calibrationParameters[this->_actualColorIndex].max.y));
+  ui->UMaxLabel->setText(
+      QString::number(this->_calibrationParameters[this->_actualColorIndex].max.u));
+  ui->VMaxLabel->setText(
+      QString::number(this->_calibrationParameters[this->_actualColorIndex].max.v));
   ui->GrayLevel->setText(QString::number(this->_grayTrashHoldLevel));
 
   // Set Min, Max and Slider Position
@@ -154,8 +158,7 @@ void SegmentationConfigDialog::attSliders() {
       this->_calibrationParameters[this->_actualColorIndex].max.u);
   ui->VMaxHorizontalSlider->setSliderPosition(
       this->_calibrationParameters[this->_actualColorIndex].max.v);
-  this->ui->horizontalSlider_grayScale->setSliderPosition(
-      this->_grayTrashHoldLevel);
+  this->ui->horizontalSlider_grayScale->setSliderPosition(this->_grayTrashHoldLevel);
 }
 
 void SegmentationConfigDialog::on_ParametersListWidget_clicked() {
@@ -230,20 +233,18 @@ cv::Mat SegmentationConfigDialog::segmentFrameWithIntervals(cv::Mat frame) {
           abs(colorRGB.blue - colorRGB.green) < this->_grayTrashHoldLevel) {
         frame.ptr<RGB>(j)[i] = ColorSpace::markerColors[ColorStrange];
       } else {
-        colorYUV.y = static_cast<int>(Utils::bound(
-            (306 * colorRGB.red + 601 * colorRGB.green + 117 * colorRGB.blue) >>
-                10,
-            0, 255));
-        colorYUV.u = static_cast<int>(Utils::bound(((-172 * colorRGB.red - 340 * colorRGB.green +
-                                    512 * colorRGB.blue) >>
-                                   10) +
-                                      128,
-                                  0, 255));
+        colorYUV.y = static_cast<int>(
+            Utils::bound((306 * colorRGB.red + 601 * colorRGB.green + 117 * colorRGB.blue) >> 10,
+                         0,
+                         255));
+        colorYUV.u = static_cast<int>(Utils::bound(
+            ((-172 * colorRGB.red - 340 * colorRGB.green + 512 * colorRGB.blue) >> 10) + 128,
+            0,
+            255));
         colorYUV.v = static_cast<int>(Utils::bound(
-            ((512 * colorRGB.red - 419 * colorRGB.green - 83 * colorRGB.blue) >>
-             10) +
-                128,
-            0, 255));
+            ((512 * colorRGB.red - 419 * colorRGB.green - 83 * colorRGB.blue) >> 10) + 128,
+            0,
+            255));
 
         for (int k = 0; k < NUMBEROFCOLOR; k++) {
           if (colorYUV.y >= this->_calibrationParameters[k].min.y &&
@@ -251,8 +252,7 @@ cv::Mat SegmentationConfigDialog::segmentFrameWithIntervals(cv::Mat frame) {
               colorYUV.u >= this->_calibrationParameters[k].min.u &&
               colorYUV.u <= this->_calibrationParameters[k].max.u &&
               colorYUV.v >= this->_calibrationParameters[k].min.v &&
-              colorYUV.v <= this->_calibrationParameters[k].max.v &&
-              this->_visibleColors[k]) {
+              colorYUV.v <= this->_calibrationParameters[k].max.v && this->_visibleColors[k]) {
             frame.ptr<RGB>(j)[i] = ColorSpace::markerColors[k];
             haveRecievedLabel = true;
             break;
@@ -274,36 +274,32 @@ cv::Mat SegmentationConfigDialog::segmentFrameWithIntervals(cv::Mat frame) {
 void SegmentationConfigDialog::setFrameOnScreen() {
   if (!this->_actualFrame.empty()) {
     cv::Mat tempFrame = this->_actualFrame.clone();
-    cv::Size newSize(this->ui->visualizationLabel->width(),
-                     this->ui->visualizationLabel->height());
+    cv::Size newSize(this->ui->visualizationLabel->width(), this->ui->visualizationLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
     cv::cvtColor(tempFrame, tempFrame, cv::COLOR_BGR2RGB);
     if (this->getClick()) {
       this->putZoom(tempFrame);
-      if (this->_qpoint.x() + ZOOM_ADJUST_X_MAX <=
-              this->ui->visualizationLabel->width() &&
+      if (this->_qpoint.x() + ZOOM_ADJUST_X_MAX <= this->ui->visualizationLabel->width() &&
           this->_qpoint.x() - ZOOM_ADJUST_X_MIN >= 0 &&
-          this->_qpoint.y() + ZOOM_ADJUST_Y <=
-              this->ui->visualizationLabel->height()) {
-        cv::Point rect1 = cv::Point(_qpoint.x() - ZOOM_ADJUST_X_MIN,
-                                    _qpoint.y() - ZOOM_ADJUST_Y);
-        cv::Point rect2 =
-            cv::Point(_qpoint.x() + ZOOM_ADJUST_X_MAX, _qpoint.y());
+          this->_qpoint.y() + ZOOM_ADJUST_Y <= this->ui->visualizationLabel->height()) {
+        cv::Point rect1 = cv::Point(_qpoint.x() - ZOOM_ADJUST_X_MIN, _qpoint.y() - ZOOM_ADJUST_Y);
+        cv::Point rect2 = cv::Point(_qpoint.x() + ZOOM_ADJUST_X_MAX, _qpoint.y());
         cv::rectangle(tempFrame, rect1, rect2, cv::Scalar(63, 27, 181));
       }
     }
-    QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
-                 static_cast<int>(tempFrame.step), QImage::Format_RGB888);
+    QImage qimg2(reinterpret_cast<uchar*>(tempFrame.data),
+                 tempFrame.cols,
+                 tempFrame.rows,
+                 static_cast<int>(tempFrame.step),
+                 QImage::Format_RGB888);
     this->ui->visualizationLabel->setPixmap(QPixmap::fromImage(qimg2));
   } else {
-    spdlog::get("General")->warn(
-        "You are setting a empty frame to QT Interface (function : "
-        "SegmentationConfigDialog::setFrameOnScreen)");
+    spdlog::get("General")->warn("You are setting a empty frame to QT Interface (function : "
+                                 "SegmentationConfigDialog::setFrameOnScreen)");
   }
 }
 
-void SegmentationConfigDialog::on_selectColorComboBox_currentIndexChanged(
-    int index) {
+void SegmentationConfigDialog::on_selectColorComboBox_currentIndexChanged(int index) {
   this->_actualColorIndex = index;
   this->attSliders();
 }
@@ -320,29 +316,26 @@ void SegmentationConfigDialog::on_buttonBox_rejected() {
 
 void SegmentationConfigDialog::putZoom(cv::Mat Frame) {
   this->_zoom = Frame.clone();
-  if (this->_qpoint.x() + ZOOM_ADJUST_X_MAX <=
-          this->ui->visualizationLabel->width() &&
-      this->_qpoint.x() - ZOOM_ADJUST_X_MIN >= 0 &&
-      this->_qpoint.y() - ZOOM_ADJUST_Y >= 0 &&
-      this->_qpoint.y() + ZOOM_ADJUST_Y <=
-          this->ui->visualizationLabel->height()) {
-    cv::Point rect1 =
-        cv::Point(_qpoint.x() - ZOOM_ADJUST_X_MIN, _qpoint.y() - ZOOM_ADJUST_Y);
-    cv::Point rect2 =
-        cv::Point(_qpoint.x() + ZOOM_ADJUST_X_MAX, _qpoint.y() + ZOOM_ADJUST_Y);
+  if (this->_qpoint.x() + ZOOM_ADJUST_X_MAX <= this->ui->visualizationLabel->width() &&
+      this->_qpoint.x() - ZOOM_ADJUST_X_MIN >= 0 && this->_qpoint.y() - ZOOM_ADJUST_Y >= 0 &&
+      this->_qpoint.y() + ZOOM_ADJUST_Y <= this->ui->visualizationLabel->height()) {
+    cv::Point rect1 = cv::Point(_qpoint.x() - ZOOM_ADJUST_X_MIN, _qpoint.y() - ZOOM_ADJUST_Y);
+    cv::Point rect2 = cv::Point(_qpoint.x() + ZOOM_ADJUST_X_MAX, _qpoint.y() + ZOOM_ADJUST_Y);
     cv::Rect roi(rect1, rect2);
     this->_zoom = this->_zoom(roi);
     cv::resize(this->_zoom, this->_zoom, cv::Size(100, 100));
   }
-  QImage q_zoom(reinterpret_cast<uchar *>(this->_zoom.data), this->_zoom.cols, this->_zoom.rows,
-                static_cast<int>(this->_zoom.step), QImage::Format_RGB888);
+  QImage q_zoom(reinterpret_cast<uchar*>(this->_zoom.data),
+                this->_zoom.cols,
+                this->_zoom.rows,
+                static_cast<int>(this->_zoom.step),
+                QImage::Format_RGB888);
   ui->zoomlabel->setPixmap(QPixmap::fromImage(q_zoom));
 }
 
-bool SegmentationConfigDialog::eventFilter(QObject *f_object, QEvent *f_event) {
-  if (f_object == this->ui->visualizationLabel &&
-      f_event->type() == QEvent::MouseMove) {
-    QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(f_event);
+bool SegmentationConfigDialog::eventFilter(QObject* f_object, QEvent* f_event) {
+  if (f_object == this->ui->visualizationLabel && f_event->type() == QEvent::MouseMove) {
+    QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(f_event);
     this->_qpoint = mouseEvent->pos();
     this->_click = true;
   }
@@ -361,9 +354,11 @@ bool SegmentationConfigDialog::getClick() {
 }
 
 void SegmentationConfigDialog::on_saveSegmentationPushButton_clicked() {
-  QString newSegmentationFile = QFileDialog::getSaveFileName(
-      this, tr("Save Segmentation XML"), "./Config/Segmentation",
-      tr("Vision Segmentation config file (*.xml)"));
+  QString newSegmentationFile =
+      QFileDialog::getSaveFileName(this,
+                                   tr("Save Segmentation XML"),
+                                   "./Config/Segmentation",
+                                   tr("Vision Segmentation config file (*.xml)"));
 
   if (newSegmentationFile != nullptr) {
     this->_newSegmentationStdFile = newSegmentationFile.toStdString();
@@ -377,8 +372,8 @@ void SegmentationConfigDialog::on_saveSegmentationPushButton_clicked() {
 }
 
 void SegmentationConfigDialog::initList() {
-  DIR *dpdf;
-  struct dirent *epdf;
+  DIR* dpdf;
+  struct dirent* epdf;
   dpdf = opendir("./Config/Segmentation/");
   this->ui->ParametersListWidget->clear();
 
@@ -435,12 +430,14 @@ void SegmentationConfigDialog::on_ColorStrangeCheckBox_clicked(bool checked) {
 }
 
 void SegmentationConfigDialog::on_checkAll_clicked() {
-  for (int i = 0; i < NUMBEROFCOLOR; i++) this->_visibleColors[i] = true;
+  for (int i = 0; i < NUMBEROFCOLOR; i++)
+    this->_visibleColors[i] = true;
   this->setAllCheckBoxUi(true);
 }
 
 void SegmentationConfigDialog::on_UnCheckAll_clicked() {
-  for (int i = 0; i < NUMBEROFCOLOR; i++) this->_visibleColors[i] = false;
+  for (int i = 0; i < NUMBEROFCOLOR; i++)
+    this->_visibleColors[i] = false;
   this->setAllCheckBoxUi(false);
 }
 
@@ -475,18 +472,19 @@ void SegmentationConfigDialog::on_pushButton_OpenColor_clicked() {
 void SegmentationConfigDialog::setOriginalFrameOnScreen() {
   if (!this->_actualFrame.empty()) {
     cv::Mat tempFrame = this->_actualFrame.clone();
-    cv::Size newSize(this->ui->originalLabel->width(),
-                     this->ui->originalLabel->height());
+    cv::Size newSize(this->ui->originalLabel->width(), this->ui->originalLabel->height());
     cv::resize(tempFrame, tempFrame, newSize);
     cv::cvtColor(tempFrame, tempFrame, cv::COLOR_BGR2RGB);
 
-    QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
-                 static_cast<int>(tempFrame.step), QImage::Format_RGB888);
+    QImage qimg2(reinterpret_cast<uchar*>(tempFrame.data),
+                 tempFrame.cols,
+                 tempFrame.rows,
+                 static_cast<int>(tempFrame.step),
+                 QImage::Format_RGB888);
     this->ui->originalLabel->setPixmap(QPixmap::fromImage(qimg2));
   } else {
-    spdlog::get("General")->warn(
-        "You are setting a empty frame to QT Interface (function : "
-        "SegmentationConfigDialog::setFrameOnScreen)");
+    spdlog::get("General")->warn("You are setting a empty frame to QT Interface (function : "
+                                 "SegmentationConfigDialog::setFrameOnScreen)");
   }
 }
 
@@ -496,11 +494,9 @@ void SegmentationConfigDialog::resizeCamera(void) {
 
   if ((w > h && w != h * 4 / 3) || (h > w && h != w * 3 / 4)) {
     if (w > h) {
-      this->ui->originalLabel->setGeometry((w - h * 4 / 3) / 2, 0, h * 4 / 3,
-                                           h);
+      this->ui->originalLabel->setGeometry((w - h * 4 / 3) / 2, 0, h * 4 / 3, h);
     } else {
-      this->ui->originalLabel->setGeometry(0, (h - w * 3 / 4) / 2, w,
-                                           w * 3 / 4);
+      this->ui->originalLabel->setGeometry(0, (h - w * 3 / 4) / 2, w, w * 3 / 4);
     }
   }
 
@@ -509,19 +505,16 @@ void SegmentationConfigDialog::resizeCamera(void) {
 
   if ((w > h && w != h * 4 / 3) || (h > w && h != w * 3 / 4)) {
     if (w > h) {
-      this->ui->visualizationLabel->setGeometry((w - h * 4 / 3) / 2, 0,
-                                                h * 4 / 3, h);
+      this->ui->visualizationLabel->setGeometry((w - h * 4 / 3) / 2, 0, h * 4 / 3, h);
     } else {
-      this->ui->visualizationLabel->setGeometry(0, (h - w * 3 / 4) / 2, w,
-                                                w * 3 / 4);
+      this->ui->visualizationLabel->setGeometry(0, (h - w * 3 / 4) / 2, w, w * 3 / 4);
     }
   }
 
   QTimer::singleShot(30, this, SLOT(resizeCamera()));
 }
 
-void SegmentationConfigDialog::on_horizontalSlider_grayScale_valueChanged(
-    int value) {
+void SegmentationConfigDialog::on_horizontalSlider_grayScale_valueChanged(int value) {
   this->ui->GrayLevel->setText(QString::number(value));
   this->_grayTrashHoldLevel = value;
 }

@@ -14,8 +14,7 @@
  * @brief    Class for detection algorithm based on brutal force DFS.
  */
 class BlobDetection : public PositionProcessing {
-public:
-
+ public:
   BlobDetection();
 
   /**
@@ -28,14 +27,14 @@ public:
    * @return   Vector of positions
    */
 
-  void run(std::vector<std::vector<Run> > runs, int rows = DEFAULT_ROWS, int cols = DEFAULT_COLS);
+  void run(std::vector<std::vector<Run>> runs, int rows = DEFAULT_ROWS, int cols = DEFAULT_COLS);
 
-	/**
+  /**
    * @brief    Initialize the algorithm
-	 *
-	 */	
+   *
+   */
   void init();
-  
+
   /**
    * @brief    Get a frame that helps to debug a function
    *
@@ -48,17 +47,13 @@ public:
    */
   void saveParam();
 
-
-private:
-
-
-  
+ private:
   /**
    * @brief    Calculate the centroid for every color, using the _runLengthEncoding
    *
    * @param[in]  debugFrame   will have circles in each centroid, to help debugging
    */
-  void findBlobs(cv::Mat &debugFrame);
+  void findBlobs(cv::Mat& debugFrame);
 
   /**
    * @brief    match a centroid of the team color with other centroid to
@@ -71,7 +66,7 @@ private:
   cv::Mat _visit;
   int _clusterCount[CLUSTERSPERCOLOR];
 
-  std::vector< std::vector< Run > > _runs;
+  std::vector<std::vector<Run>> _runs;
 };
 
 #endif
