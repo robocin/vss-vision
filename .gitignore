@@ -19,6 +19,7 @@ src/Utils/dest.txt
 
 build/
 bin/
+*avi
 
 #All logging files (including rotative)
 src/Log/*
@@ -41,3 +42,6 @@ client/RCClient
 
 # Python Cache
 *__pycache__/
+
+# Compiled protobuf
+*_pb2.py
