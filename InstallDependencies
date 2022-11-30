@@ -1,4 +1,5 @@
 #!/bin/bash
+# Ubuntu 20.04 LTS
 
 # Install SFML
 sudo apt install libsfml-dev -y
@@ -8,6 +9,9 @@ sudo apt install libopencv-dev -y
 
 # Install OpenGL + FreeGLUT3
 sudo apt install freeglut3-dev -y
+
+# Install QT5
+sudo apt install qt5-default -y
 
 # Update packages
 sudo apt update -y
