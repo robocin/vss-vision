@@ -1,5 +1,5 @@
-#ifndef ENUMSANDCONSTANTS_H
-#define ENUMSANDCONSTANTS_H
+#ifndef VSS_VISION_ENUMSANDCONSTANTS_H
+#define VSS_VISION_ENUMSANDCONSTANTS_H
 
 #include "Defines.h"
 #include "BetterEnum.h"
@@ -117,4 +117,4 @@ namespace Constants {
 
 using namespace Constants;
 
-#endif // ENUMSANDCONSTANTS_H
+#endif // VSS_VISION_ENUMSANDCONSTANTS_H

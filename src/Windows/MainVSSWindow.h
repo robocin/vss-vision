@@ -1,5 +1,5 @@
-#ifndef MAINVSSWINDOW_H
-#define MAINVSSWINDOW_H
+#ifndef VSS_VISION_MAINVSSWINDOW_H
+#define VSS_VISION_MAINVSSWINDOW_H
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -142,4 +142,4 @@ class MainVSSWindow : public QMainWindow {
   void finishVisionThread();
 };
 
-#endif // MAINVSSWINDOW_H
+#endif // VSS_VISION_MAINVSSWINDOW_H

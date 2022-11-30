@@ -1,5 +1,6 @@
-#ifndef CAMERACONFIGURATIONDIALOG_H
-#define CAMERACONFIGURATIONDIALOG_H
+#ifndef VSS_VISION_CAMERACONFIGURATIONDIALOG_H
+#define VSS_VISION_CAMERACONFIGURATIONDIALOG_H
+
 #include <iostream>
 #include <QDialog>
 #include <CameraManager/CameraManager.h>
@@ -78,4 +79,4 @@ class CameraConfigurationDialog : public QDialog {
   bool _isSetup;
 };
 
-#endif // CAMERACONFIGURATIONDIALOG_H
+#endif // VSS_VISION_CAMERACONFIGURATIONDIALOG_H

@@ -1,5 +1,5 @@
-#ifndef CAMERATHREAD_H
-#define CAMERATHREAD_H
+#ifndef VSS_VISION_CAMERATHREAD_H
+#define VSS_VISION_CAMERATHREAD_H
 
 #include <QThread>
 #include <QMutex>
@@ -32,4 +32,4 @@ class CameraThread : public QThread {
   void updatedFrame();
 };
 
-#endif // CAMERATHREAD_H
+#endif // VSS_VISION_CAMERATHREAD_H

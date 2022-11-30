@@ -1,5 +1,6 @@
-#ifndef KALMANFILTER_H
-#define KALMANFILTER_H
+#ifndef VSS_VISION_KALMANFILTER_H
+#define VSS_VISION_KALMANFILTER_H
+
 #include "Utils/matrix2d.h"
 #include "Utils/Geometry.h"
 
@@ -30,4 +31,4 @@ class KalmanFilter {
   bool ifInit;
 };
 
-#endif // KALMANFILTER_H
+#endif // VSS_VISION_KALMANFILTER_H

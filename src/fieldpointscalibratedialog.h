@@ -1,5 +1,5 @@
-#ifndef FIELDPOINTSCALIBRATEDIALOG_H
-#define FIELDPOINTSCALIBRATEDIALOG_H
+#ifndef VSS_VISION_FIELDPOINTSCALIBRATEDIALOG_H
+#define VSS_VISION_FIELDPOINTSCALIBRATEDIALOG_H
 
 #include <QDialog>
 #include <QKeyEvent>
@@ -59,4 +59,4 @@ class FieldPointsCalibrateDialog : public QDialog {
   void drawPoints();
 };
 
-#endif // FIELDPOINTSCALIBRATEDIALOG_H
+#endif // VSS_VISION_FIELDPOINTSCALIBRATEDIALOG_H

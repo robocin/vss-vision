@@ -1,5 +1,5 @@
-#ifndef LUT_H
-#define LUT_H
+#ifndef VSS_VISION_LUTSEGMENATION_H
+#define VSS_VISION_LUTSEGMENATION_H
 
 #include "ImageProcessing.h"
 #include "Vision/ColorSpace.h"
@@ -132,4 +132,4 @@ class LUTSegmentation : public ImageProcessing {
   int _grayTrashHoldLevel;
 };
 
-#endif
+#endif // VSS_VISION_LUTSEGMENATION_H

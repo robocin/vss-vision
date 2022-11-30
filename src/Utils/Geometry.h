@@ -1,5 +1,5 @@
-#ifndef GEOMETRY_H
-#define GEOMETRY_H
+#ifndef VSS_VISION_GEOMETRY_H
+#define VSS_VISION_GEOMETRY_H
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -369,4 +369,4 @@ namespace Geometry {
 
 } // namespace Geometry
 
-#endif // GEOMETRY_H
+#endif // VSS_VISION_GEOMETRY_H

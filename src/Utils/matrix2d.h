@@ -1,5 +1,6 @@
-#ifndef MATRIX2D_H
-#define MATRIX2D_H
+#ifndef VSS_VISION_MATRIX2D_H
+#define VSS_VISION_MATRIX2D_H
+
 #include <iostream>
 
 class Matrix2d {
@@ -65,4 +66,5 @@ Matrix2d operator*(const Matrix2d&, const Matrix2d&);
 Matrix2d operator*(const Matrix2d&, double);
 Matrix2d operator*(double, const Matrix2d&);
 Matrix2d operator/(const Matrix2d&, double);
-#endif // MATRIX2D_H
+
+#endif // VSS_VISION_MATRIX2D_H

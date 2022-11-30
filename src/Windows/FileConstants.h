@@ -1,5 +1,6 @@
-#ifndef FILECONSTANTS_H
-#define FILECONSTANTS_H
+#ifndef VSS_VISION_FILECONSTANTS_H
+#define VSS_VISION_FILECONSTANTS_H
+
 #include <string>
 
 class FileConstants {
@@ -12,4 +13,4 @@ class FileConstants {
   static constexpr const char* segmentationConfig = "Config/Segmentation/Default.json";
 };
 
-#endif // FILECONSTANTS_H
+#endif // VSS_VISION_FILECONSTANTS_H

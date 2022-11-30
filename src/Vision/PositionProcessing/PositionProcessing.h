@@ -4,8 +4,8 @@
  * This class is a interface for both, tracking and detection algorithm
  *
  */
-#ifndef POSITIONPROCESSING
-#define POSITIONPROCESSING
+#ifndef VSS_VISION_POSITIONPROCESSING_H
+#define VSS_VISION_POSITIONPROCESSING_H
 
 #include <iostream>
 #include <cmath>
@@ -271,4 +271,4 @@ class PositionProcessing {
   float _ballLastTime;
 };
 
-#endif
+#endif // VSS_VISION_POSITIONPROCESSING_H

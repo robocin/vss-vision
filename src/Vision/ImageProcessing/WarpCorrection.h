@@ -1,5 +1,5 @@
-#ifndef WARPCORRECTION_H
-#define WARPCORRECTION_H
+#ifndef VSS_VISION_WARPCORRECTION_H
+#define VSS_VISION_WARPCORRECTION_H
 
 #include "ImageProcessing.h"
 #include "Vision/ColorSpace.h"
@@ -71,4 +71,4 @@ class WarpCorrection : public ImageProcessing {
   std::mutex _frameLocker, _mapsLocker, _pointsLocker;
 };
 
-#endif
+#endif // VSS_VISION_WARPCORRECTION_H

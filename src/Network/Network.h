@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef VSS_VISION_NETWORK_H
+#define VSS_VISION_NETWORK_H
 
 #ifndef EXTERNAL_COMPILATION
   #include "Entity/Entity.h"
@@ -34,4 +34,4 @@ class Network {
   static void buttonsMessageStop();
 };
 
-#endif /**		NETWORK_H*/
+#endif // VSS_VISION_NETWORK_H

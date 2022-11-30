@@ -1,5 +1,5 @@
-#ifndef SEGMENTATIONCONFIGDIALOG_H
-#define SEGMENTATIONCONFIGDIALOG_H
+#ifndef VSS_VISION_SEGMENTATIONCONFIGDIALOG_H
+#define VSS_VISION_SEGMENTATIONCONFIGDIALOG_H
 
 #include <QDialog>
 #include <QMouseEvent>
@@ -149,4 +149,4 @@ class SegmentationConfigDialog : public QDialog {
   int _grayTrashHoldLevel;
 };
 
-#endif // SEGMENTATIONCONFIGDIALOG_H
+#endif // VSS_VISION_SEGMENTATIONCONFIGDIALOG_H

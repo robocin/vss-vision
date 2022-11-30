@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef VSS_VISION_UTILS_H
+#define VSS_VISION_UTILS_H
 
 // Open CV
 #include "opencv2/highgui/highgui.hpp"
@@ -261,4 +261,4 @@ namespace Utils {
 
 }; // namespace Utils
 
-#endif /* UTILS_H */
+#endif // VSS_VISION_UTILS_H

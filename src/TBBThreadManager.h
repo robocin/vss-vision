@@ -1,5 +1,5 @@
-#ifndef THREADMANAGER_H
-#define THREADMANAGER_H
+#ifndef VSS_VISION_TBBTHREADMANAGER_H
+#define VSS_VISION_TBBTHREADMANAGER_H
 
 #include <tbb/flow_graph.h>
 #include <CameraManager/CameraManager.h>
@@ -74,4 +74,4 @@ class TBBThreadManager : public QObject {
   bool _visionStop;
 };
 
-#endif // THREADMANAGER_H
+#endif // VSS_VISION_TBBTHREADMANAGER_H

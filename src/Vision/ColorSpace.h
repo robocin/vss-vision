@@ -1,5 +1,5 @@
-#ifndef COLORSPACE_H
-#define COLORSPACE_H
+#ifndef VSS_VISION_COLORSPACE_H
+#define VSS_VISION_COLORSPACE_H
 
 #include "Utils/Utils.h"
 #define KMEANS_LABEL "KMEANS"
@@ -47,4 +47,4 @@ namespace ColorSpace {
   extern std::string colorNames[NUMBEROFCOLOR];
 } // namespace ColorSpace
 
-#endif // COLORSPACE_H
+#endif // VSS_VISION_COLORSPACE_H

@@ -1,5 +1,5 @@
-#ifndef TRACKCONFIGDIALOG_H
-#define TRACKCONFIGDIALOG_H
+#ifndef VSS_VISION_TRACKCONFIGDIALOG_H
+#define VSS_VISION_TRACKCONFIGDIALOG_H
 
 #include <QDialog>
 #include <iostream>
@@ -173,4 +173,4 @@ class TrackConfigDialog : public QDialog {
                             "darkGray"};
 };
 
-#endif // TRACKCONFIGDIALOG_H
+#endif // VSS_VISION_TRACKCONFIGDIALOG_H

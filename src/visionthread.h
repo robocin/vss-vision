@@ -1,5 +1,5 @@
-#ifndef VISIONTHREAD_H
-#define VISIONTHREAD_H
+#ifndef VSS_VISION_VISIONTHREAD_H
+#define VSS_VISION_VISIONTHREAD_H
 
 #include <QThread>
 #include <QMutex>
@@ -37,4 +37,4 @@ class VisionThread : public QThread {
   void run() override;
 };
 
-#endif // VISIONTHREAD_H
+#endif // VSS_VISION_VISIONTHREAD_H

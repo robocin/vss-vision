@@ -1,5 +1,5 @@
-#ifndef DRAW_H
-#define DRAW_H
+#ifndef VSS_VISION_DRAW_H
+#define VSS_VISION_DRAW_H
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -18,4 +18,4 @@ namespace Draw {
 
 }
 
-#endif // DRAW_H
+#endif // VSS_VISION_DRAW_H

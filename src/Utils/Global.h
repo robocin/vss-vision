@@ -1,5 +1,5 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#ifndef VSS_VISION_GLOBAL_H
+#define VSS_VISION_GLOBAL_H
 
 #include "Types.h"
 #include "EnumsAndConstants.h"
@@ -30,4 +30,4 @@ class Global {
   static const float& halfAxis();
 };
 
-#endif // GLOBAL_H
+#endif // VSS_VISION_GLOBAL_H

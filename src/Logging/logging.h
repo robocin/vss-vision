@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef LOGGING_H
-#define LOGGING_H
+#ifndef VSS_VISION_LOGGING_H
+#define VSS_VISION_LOGGING_H
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/dist_sink.h>
@@ -25,4 +25,4 @@ namespace Logging {
   void createFolder(QString folderPath);
 }; // namespace Logging
 
-#endif /**		UTILS_H*/
+#endif // VSS_VISION_UTILS_H

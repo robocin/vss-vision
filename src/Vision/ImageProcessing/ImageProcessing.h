@@ -1,5 +1,5 @@
-#ifndef IMAGEPROCESSING_H
-#define IMAGEPROCESSING_H
+#ifndef VSS_VISION_IMAGEPROCESSING_H
+#define VSS_VISION_IMAGEPROCESSING_H
 
 #include <stdio.h>
 #include "opencv2/highgui/highgui.hpp"
@@ -31,4 +31,4 @@ class ImageProcessing {
   virtual ~ImageProcessing() = default;
 };
 
-#endif
+#endif // VSS_VISION_IMAGEPROCESSING_H

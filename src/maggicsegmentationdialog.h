@@ -1,5 +1,5 @@
-#ifndef MAGGICSEGMENTATIONDIALOG_H
-#define MAGGICSEGMENTATIONDIALOG_H
+#ifndef VSS_VISION_MAGGICSEGMENTATIONDIALOG_H
+#define VSS_VISION_MAGGICSEGMENTATIONDIALOG_H
 
 #include <QDialog>
 #include <QTimer>
@@ -101,4 +101,4 @@ class MaggicSegmentationDialog : public QDialog {
   QTimer* getUpdateFrameTimer();
 };
 
-#endif // MAGGICSEGMENTATIONDIALOG_H
+#endif // VSS_VISION_MAGGICSEGMENTATIONDIALOG_H

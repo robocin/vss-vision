@@ -1,5 +1,5 @@
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef VSS_VISION_TYPES_H
+#define VSS_VISION_TYPES_H
 
 #include <opencv2/opencv.hpp>
 
@@ -7,4 +7,4 @@
 
 using Point = cv::Point_<float>;
 
-#endif // TYPES_H
+#endif // VSS_VISION_TYPES_H

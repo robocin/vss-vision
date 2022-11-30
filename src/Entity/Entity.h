@@ -1,5 +1,5 @@
-#ifndef Entity_H
-#define Entity_H
+#ifndef VSS_VISION_ENTITY_H
+#define VSS_VISION_ENTITY_H
 
 #include "Utils/Types.h"
 
@@ -77,4 +77,4 @@ using Players = std::vector<Player>;
 
 bool operator<(Entity& a, Entity& b);
 
-#endif // Entity_H
+#endif // VSS_VISION_ENTITY_H

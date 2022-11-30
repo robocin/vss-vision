@@ -24,8 +24,8 @@
  * points in subsequent frames.
  *
  */
-#ifndef VISION_H
-#define VISION_H
+#ifndef VSS_VISION_VISION_H
+#define VSS_VISION_VISION_H
 
 #include <opencv2/opencv.hpp>
 #include "Entity/Entity.h"
@@ -361,4 +361,4 @@ class Vision {
   double getVisionRunTime();
 };
 
-#endif
+#endif // VSS_VISION_VISION_H

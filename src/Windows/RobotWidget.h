@@ -1,5 +1,5 @@
-#ifndef ROBOTWIDGET_H
-#define ROBOTWIDGET_H
+#ifndef VSS_VISION_ROBOTWIDGET_H
+#define VSS_VISION_ROBOTWIDGET_H
 
 #include <QWidget>
 #include <QPixmap>
@@ -33,4 +33,4 @@ class RobotWidget : public QWidget {
   uint m_robotId;
 };
 
-#endif // ROBOTWIDGET_H
+#endif // VSS_VISION_ROBOTWIDGET_H

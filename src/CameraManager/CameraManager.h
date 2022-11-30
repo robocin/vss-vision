@@ -1,5 +1,5 @@
-#ifndef CAMERAMANIPULATION_H
-#define CAMERAMANIPULATION_H
+#ifndef VSS_VISION_CAMERAMANIPULATION_H
+#define VSS_VISION_CAMERAMANIPULATION_H
 
 #include <Timer/Timer.h>
 #include <QFile>
@@ -464,4 +464,4 @@ class CameraManager {
   cv::Mat _map_y;
 };
 
-#endif
+#endif // VSS_VISION_CAMERAMANIPULATION_H

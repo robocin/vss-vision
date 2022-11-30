@@ -1,5 +1,5 @@
-#ifndef FIELD_H
-#define FIELD_H
+#ifndef VSS_VISION_FIELD_H
+#define VSS_VISION_FIELD_H
 
 #include "Utils/Types.h"
 #include "Utils/EnumsAndConstants.h"
@@ -61,4 +61,4 @@ class Field {
   static const Point& goalAreaMax();
 };
 
-#endif // FIELD_H
+#endif // VSS_VISION_FIELD_H

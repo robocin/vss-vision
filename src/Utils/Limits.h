@@ -1,5 +1,5 @@
-#ifndef LIMITS_H
-#define LIMITS_H
+#ifndef VSS_VISION_LIMITS_H
+#define VSS_VISION_LIMITS_H
 
 /*#ifdef MIN
   #undef MIN
@@ -9,4 +9,4 @@
   #undef MAX
 #endif*/
 
-#endif // LIMITS_H
+#endif // VSS_VISION_LIMITS_H

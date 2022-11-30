@@ -1,5 +1,5 @@
-#ifndef COACHUTILS_H
-#define COACHUTILS_H
+#ifndef VSS_VISION_COACHUTILS_H
+#define VSS_VISION_COACHUTILS_H
 
 #include <Entity/Entity.h>
 #include <Utils/EnumsAndConstants.h>
@@ -40,4 +40,4 @@ namespace CoachUtils {
   void debugObjective(cv::Mat cameraFrame, std::vector<Entity>& entities, int job);
 } // namespace CoachUtils
 
-#endif // COACHUTILS_H
+#endif // VSS_VISION_COACHUTILS_H

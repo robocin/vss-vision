@@ -1,8 +1,9 @@
+#ifndef VSS_VISION_CONNECTEDCOMPONENTS_H
+#define VSS_VISION_CONNECTEDCOMPONENTS_H
+
 #include <opencv2/opencv.hpp>
 
-#ifndef _H_CONNECTED_COMPONENTS_
-  #define _H_CONNECTED_COMPONENTS_
-  #if CV_MAJOR_VERSION == 2
+#if CV_MAJOR_VERSION == 2
 //#define CV_EXPORTS_AS(x)
 //#define CV_EXPORTS_W(x)
 
@@ -86,5 +87,6 @@ namespace cv {
 
 }; // namespace cv
 
-  #endif
-#endif // _H_CONNECTED_COMPONENTS_
+#endif // CV_MAJOR_VERSION == 2
+
+#endif // VSS_VISION_CONNECTEDCOMPONENTS_H

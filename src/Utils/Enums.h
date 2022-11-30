@@ -1,4 +1,4 @@
-#ifndef ENUMS_H
-#define ENUMS_H
+#ifndef VSS_VISION_ENUMS_H
+#define VSS_VISION_ENUMS_H
 
-#endif // ENUMS_H
+#endif // VSS_VISION_ENUMS_H

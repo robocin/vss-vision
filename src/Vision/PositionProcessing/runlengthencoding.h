@@ -1,5 +1,5 @@
-#ifndef RUNLENGHTENCODING_H
-#define RUNLENGHTENCODING_H
+#ifndef VSS_VISION_RUNLENGHTENCODING_H
+#define VSS_VISION_RUNLENGHTENCODING_H
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -32,4 +32,4 @@ class RunLengthEncoding {
   std::vector<std::vector<Run>> run(const cv::Mat& matrix);
 };
 
-#endif // RUNLENGHTENCODING_H
+#endif // VSS_VISION_RUNLENGHTENCODING_H

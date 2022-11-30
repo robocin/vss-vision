@@ -1,5 +1,5 @@
-#ifndef DEFINES_H
-#define DEFINES_H
+#ifndef VSS_VISION_DEFINES_H
+#define VSS_VISION_DEFINES_H
 
 #include <cstdarg>
 
@@ -23,4 +23,4 @@
 // Nao pode ser um static const pois eh utilizada sua referencia
 #define EMPTY_MATRIX cv::Mat::zeros(480, 640, CV_8UC3)
 
-#endif // DEFINES_H
+#endif // VSS_VISION_DEFINES_H

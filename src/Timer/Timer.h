@@ -1,5 +1,6 @@
-#ifndef _H_TIMER_
-#define _H_TIMER_
+#ifndef VSS_VISION_TIMER_H
+#define VSS_VISION_TIMER_H
+
 #include <chrono>
 
 class Timer {
@@ -21,4 +22,4 @@ class Timer {
   bool isPaused();
 };
 
-#endif
+#endif // VSS_VISION_TIMER_H

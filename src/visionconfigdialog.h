@@ -1,5 +1,5 @@
-#ifndef VISIONCONFIGDIALOG_H
-#define VISIONCONFIGDIALOG_H
+#ifndef VSS_VISION_VISIONCONFIGDIALOG_H
+#define VSS_VISION_VISIONCONFIGDIALOG_H
 
 #include <QDialog>
 
@@ -41,4 +41,4 @@ class VisionConfigDialog : public QDialog {
   bool _visionStarted;
 };
 
-#endif // VISIONCONFIGDIALOG_H
+#endif // VSS_VISION_VISIONCONFIGDIALOG_H

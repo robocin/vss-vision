@@ -1,5 +1,5 @@
-#ifndef MAGGICSEGMENTATION_H
-#define MAGGICSEGMENTATION_H
+#ifndef VSS_VISION_MAGGICSEGMENTATION_H
+#define VSS_VISION_MAGGICSEGMENTATION_H
 
 #include "ImageProcessing.h"
 #include "Vision/ColorSpace.h"
@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <fstream>
+
 typedef unsigned char uchar;
 
 #define LUTSIZE 16777216
@@ -309,4 +310,4 @@ class MaggicSegmentation : public ImageProcessing {
                                              COLORSTRANGELABEL};
 };
 
-#endif
+#endif // VSS_VISION_MAGGICSEGMENTATION_H
