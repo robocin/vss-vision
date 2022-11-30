@@ -1,7 +1,6 @@
 #ifndef VSS_VISION_ENUMSANDCONSTANTS_H
 #define VSS_VISION_ENUMSANDCONSTANTS_H
 
-#include "Defines.h"
 #include "BetterEnum.h"
 #include <cstddef>
 #include <vector>

@@ -4,8 +4,8 @@
  * This class is a detection algorithm
  *
  */
-#ifndef WHEREARETHOSE_H
-#define WHEREARETHOSE_H
+#ifndef VSS_VISION_BLOBDETECTION_H
+#define VSS_VISION_BLOBDETECTION_H
 
 #include "PositionProcessing.h"
 #include "Entity/Entity.h"
@@ -69,4 +69,4 @@ class BlobDetection : public PositionProcessing {
   std::vector<std::vector<Run>> _runs;
 };
 
-#endif
+#endif // VSS_VISION_BLOBDETECTION_H

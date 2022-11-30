@@ -17,6 +17,46 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin")
 
+set(HEADERS
+    src/Entity/Entity.h
+    src/Utils/Utils.h
+    src/Utils/kalmanfilter.h
+    src/Utils/matrix2d.h
+    src/Vision/Vision.h
+    src/Vision/PositionProcessing/PositionProcessing.h
+    src/Vision/ImageProcessing/ImageProcessing.h
+    src/Vision/ImageProcessing/LUTSegmentation.h
+    src/Vision/ImageProcessing/MaggicSegmentation.h
+    src/Vision/ImageProcessing/WarpCorrection.h
+    src/Vision/ColorSpace.h
+    src/Vision/ImageProcessing/OpenCV/connectedcomponents.hpp
+    src/visionconfigdialog.h
+    src/fieldpointscalibratedialog.h
+    src/segmentationconfigdialog.h
+    src/cameraconfigurationdialog.h
+    src/Logging/logging.h
+    src/maggicsegmentationdialog.h
+    src/Timer/Timer.h
+    src/visionthread.h
+    src/CameraManager/CameraManager.h
+    src/CameraManager/CameraThread.h
+    src/Vision/PositionProcessing/runlengthencoding.h
+    src/Vision/PositionProcessing/BlobDetection.h
+    src/TBBThreadManager.h
+    src/Utils/Types.h
+    src/Field/Field.h
+    src/Utils/EnumsAndConstants.h
+    src/GameInfo/GameInfo.h
+    src/Utils/Global.h
+    src/Windows/MainVSSWindow.h
+    src/Utils/Geometry.h
+    src/Windows/RobotWidget.h
+    src/Utils/BetterEnum.h
+    src/trackconfigdialog.h
+    src/Windows/FileConstants.h
+    src/Network/Network.h
+)
+
 set(SOURCES
     src/main.cpp
     src/Utils/Utils.cpp
@@ -49,53 +89,10 @@ set(SOURCES
     src/Utils/Global.cpp
     src/Windows/MainVSSWindow.cpp
     src/Utils/Geometry.cpp
-    src/Utils/Draw.cpp
     src/Utils/EnumsAndConstants.cpp
     src/Windows/RobotWidget.cpp
     src/trackconfigdialog.cpp
     src/Network/Network.cpp
-)
-
-set(HEADERS
-    src/Entity/Entity.h
-    src/Utils/Utils.h
-    src/Utils/kalmanfilter.h
-    src/Utils/matrix2d.h
-    src/Vision/Vision.h
-    src/Vision/PositionProcessing/PositionProcessing.h
-    src/Vision/ImageProcessing/ImageProcessing.h
-    src/Vision/ImageProcessing/LUTSegmentation.h
-    src/Vision/ImageProcessing/MaggicSegmentation.h
-    src/Vision/ImageProcessing/WarpCorrection.h
-    src/Vision/ColorSpace.h
-    src/Vision/ImageProcessing/OpenCV/connectedcomponents.hpp
-    src/visionconfigdialog.h
-    src/fieldpointscalibratedialog.h
-    src/segmentationconfigdialog.h
-    src/cameraconfigurationdialog.h
-    src/Logging/logging.h
-    src/maggicsegmentationdialog.h
-    src/Timer/Timer.h
-    src/visionthread.h
-    src/CameraManager/CameraManager.h
-    src/CameraManager/CameraThread.h
-    src/Vision/PositionProcessing/runlengthencoding.h
-    src/Vision/PositionProcessing/BlobDetection.h
-    src/TBBThreadManager.h
-    src/Utils/Types.h
-    src/Field/Field.h
-    src/Utils/EnumsAndConstants.h
-    src/GameInfo/GameInfo.h
-    src/Utils/Defines.h
-    src/Utils/Global.h
-    src/Windows/MainVSSWindow.h
-    src/Utils/Geometry.h
-    src/Utils/Draw.h
-    src/Windows/RobotWidget.h
-    src/Utils/BetterEnum.h
-    src/trackconfigdialog.h
-    src/Windows/FileConstants.h
-    src/Network/Network.h
 )
 
 set(RESOURCES
@@ -103,7 +100,7 @@ set(RESOURCES
     src/iconTools/icontools.qrc
 )
 
-add_executable(vss-vision ${SOURCES} ${HEADERS} ${RESOURCES})
+add_executable(vss-vision ${HEADERS} ${SOURCES} ${RESOURCES})
 
 target_include_directories(vss-vision PUBLIC "${PROJECT_SOURCE_DIR}/src")
 target_include_directories(vss-vision PUBLIC "${PROJECT_SOURCE_DIR}/include")

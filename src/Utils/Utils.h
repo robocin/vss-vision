@@ -21,9 +21,6 @@
 // C++ Libs
 #include <bits/stdc++.h>
 
-// Definicoes utilizadas no programa
-#include "Defines.h"
-
 // Enumerações e constantes utlizadas no codigo
 #include "EnumsAndConstants.h"
 
@@ -39,9 +36,11 @@
 // Constantes do Campo, que podem ser alteradas de acordo com a quantidade de jogadores
 #include "Field/Field.h"
 
-#include "Draw.h"
-
 #include "Geometry.h"
+
+// Matriz vazia, com os tamanhos utilizados em todo o programa
+// Nao pode ser um static const pois eh utilizada sua referencia
+#define EMPTY_MATRIX cv::Mat::zeros(480, 640, CV_8UC3)
 
 // A ideia eh manter todos os arquivos de include aqui, na utils. Porem, isso gera cross reference.
 // Verificar como ajustar depois.

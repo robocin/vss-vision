@@ -1,4 +1,0 @@
-#ifndef VSS_VISION_ENUMS_H
-#define VSS_VISION_ENUMS_H
-
-#endif // VSS_VISION_ENUMS_H

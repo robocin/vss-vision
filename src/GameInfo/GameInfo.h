@@ -1,5 +1,5 @@
-#ifndef GAMEINFO_H
-#define GAMEINFO_H
+#ifndef VSS_VISION_GAMEINFO_H
+#define VSS_VISION_GAMEINFO_H
 
 #include "Utils/EnumsAndConstants.h"
 #include "opencv2/opencv.hpp"
@@ -55,4 +55,4 @@ class GameInfo {
 // Singleton
 static GameInfo& vss = GameInfo::singleton();
 
-#endif // GAMEINFO_H
+#endif // VSS_VISION_GAMEINFO_H

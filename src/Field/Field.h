@@ -52,7 +52,6 @@ class Field {
   static const Point& enemyGoalCenter();
   static const Point& goalMin();
   static const Point& goalMax();
-  static const Point& convertRatio();
   static const float& offsetX();
   static const float& offsetY();
   static const float& goalAreaWidth();
