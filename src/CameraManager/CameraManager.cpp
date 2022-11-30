@@ -17,7 +17,7 @@ CameraManager::CameraManager() {
       "CameraManager/radialDistortion/camera_matrices.xml",
       cv::FileStorage::READ);
   if (!opencv_file.isOpened()) {
-    std::cerr << "erro ao abrir o arquivo de distorção da camera" << std::endl;
+    std::cerr << "erro ao abrir o arquivo de distorção da camera CameraManager/radialDistortion/camera_matrices.xml" << std::endl;
     return;
   }
   opencv_file["matrix_x"] >> this->_map_x;
@@ -631,7 +631,7 @@ void CameraManager::getDistortionParameters() {
           "CameraManager/radialDistortion/camera_matrices.xml",
           cv::FileStorage::READ);
       if (!opencv_file.isOpened()) {
-        std::cout << "erro ao abrir o arquivo" << std::endl;
+        std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices.xml" << std::endl;
       }
       opencv_file["matrix_x"] >> this->_map_x;
       opencv_file["matrix_y"] >> this->_map_y;

@@ -16,6 +16,9 @@ src/VSSL\.app/Contents/PkgInfo
 src/VSSL\.app/Contents/Resources/empty\.lproj
 src/Utils/dest.txt
 \.DS_Store
+
+build/
+bin/
 *avi
 
 #All logging files (including rotative)

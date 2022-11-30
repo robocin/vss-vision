@@ -599,7 +599,7 @@ void MainVSSWindow::getHalfFromFile() {
   QFile file(QString::fromStdString(HALF_FILE));
 
   if (!file.open((QIODevice::ReadOnly))) {
-    std::cout << "failed to open file : " << SECONDARY_COLOR_FILE << std::endl;
+    std::cout << "failed to open file : " << HALF_FILE << std::endl;
     exit(1);
   }
 
@@ -702,7 +702,7 @@ void MainVSSWindow::readMainWindowConfig()
 {
     QFile loadFile("./config.json");
     if (!loadFile.open(QIODevice::ReadOnly)) {
-        std::cout <<  "Couldn't open config file." << std::endl;
+        std::cout <<  "Couldn't open config file ./config.json" << std::endl;
         return ;
       }
    QByteArray savedData = loadFile.readAll();
