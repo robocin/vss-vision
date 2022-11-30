@@ -9,9 +9,9 @@
 // Cria uma matriz ja convertendo as dimensoes em cm para pixels, com a figura desenhada, pois durante todo o sw
 // se trabalha apenas com cm.
 namespace Draw {
-  cv::Mat circle(const Point &t_center, const Int &t_radius,
-                 const cv::Scalar &t_color, const Int &t_thickness,
-                 const Int &t_lineType, const Int &t_shift);
+  cv::Mat circle(const Point &t_center, const int &t_radius,
+                 const cv::Scalar &t_color, const int &t_thickness,
+                 const int &t_lineType, const int &t_shift);
 
 }
 

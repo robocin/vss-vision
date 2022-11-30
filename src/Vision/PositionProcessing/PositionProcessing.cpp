@@ -83,7 +83,7 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
           newPosition = lastPosition;
         }
 
-        Float newAngle = Utils::angle(b1.position, b2.position);
+        float newAngle = Utils::angle(b1.position, b2.position);
 
         auto & playerPosVel = _kalmanFilterRobots[0][robot.id()%100].update(newPosition.x,newPosition.y);
 
@@ -131,7 +131,7 @@ void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std:
           newPosition = lastPosition;
         }
 
-        Float newAngle = Utils::angle(b2.position, b2.position);
+        float newAngle = Utils::angle(b2.position, b2.position);
         robot.update(newPosition, newAngle);
         players.push_back(robot);
       }
@@ -143,7 +143,7 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
     // a bola no frame atual
     ball.outdate();
     Blob blobBall;
-    Int maxArea = -1;
+    int maxArea = -1;
     blobBall.valid = false;
 
     for (size_t i = 0; i < CLUSTERSPERCOLOR; i++) {
@@ -160,11 +160,11 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
         Geometry::PT filtPoint (ballPosVel(0, 0), ballPosVel(1, 0));
         Geometry::PT ballVel(ballPosVel(2, 0)*fps, ballPosVel(3, 0)*fps);
 
-        Float actualTime = vss.time().getMilliseconds();
-        Float dt = (actualTime-this->_ballLastTime)/1000; // dt in seconds
+        float actualTime = vss.time().getMilliseconds();
+        float dt = (actualTime-this->_ballLastTime)/1000; // dt in seconds
         this->_ballLastTime = actualTime;
 
-        Float lostFrames = dt*fps;
+        float lostFrames = dt*fps;
         ballVel = ballVel/lostFrames;
         filtPoint.x = filtPoint.x + ballVel.x*dt;
         filtPoint.y = filtPoint.y + ballVel.y*dt;

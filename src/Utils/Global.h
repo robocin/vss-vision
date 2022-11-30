@@ -6,28 +6,28 @@
 #include <opencv2/opencv.hpp>
 
 class Global {
-  static Float m_spinDistance;
-  static Float m_nearDistance;
+  static float m_spinDistance;
+  static float m_nearDistance;
   static Point m_convertRatio;
-  static Float m_minPositionDifference;
+  static float m_minPositionDifference;
   // Qualquer valor menor que essa margem é igual a 0
-  static Float m_eps;
-  static Float m_halfAxis;
+  static float m_eps;
+  static float m_halfAxis;
 
 public:
-  static Void setSpinDistance(const Float &t_spinDistance);
-  static Void setNearDistance(const Float &t_nearDistance);
-  static Void setConvertRatio(const Point &t_convertRatio);
-  static Void setMinPositionDifference(const Float &t_minPositionDifference);
-  static Void setEps(const Float &t_eps);
-  static Void setHalfAxis(const Float &t_halfAxis);
+  static void setSpinDistance(const float &t_spinDistance);
+  static void setNearDistance(const float &t_nearDistance);
+  static void setConvertRatio(const Point &t_convertRatio);
+  static void setMinPositionDifference(const float &t_minPositionDifference);
+  static void setEps(const float &t_eps);
+  static void setHalfAxis(const float &t_halfAxis);
 
-  static const Float &spinDistance();
-  static const Float &nearDistance();
+  static const float &spinDistance();
+  static const float &nearDistance();
   static const Point &convertRatio();
-  static const Float &minPositionDifference();
-  static const Float &eps();
-  static const Float &halfAxis();
+  static const float &minPositionDifference();
+  static const float &eps();
+  static const float &halfAxis();
 };
 
 #endif // GLOBAL_H

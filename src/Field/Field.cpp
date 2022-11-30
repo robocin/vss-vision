@@ -10,11 +10,11 @@ Point(10.0, 65.0)  // enemy_goal_center
 */
 
 void Field::set(Point t_size,
-                Float t_offsetX,
-                Float t_offsetY,
-                Float t_goalSize,
-                Float t_goalAreaWidth,
-                Float t_goalAreaHeight) {
+                float t_offsetX,
+                float t_offsetY,
+                float t_goalSize,
+                float t_goalAreaWidth,
+                float t_goalAreaHeight) {
   m_size = t_size;//Point(170.0, 130.0)
   m_offsetX = t_offsetX; // 10
   m_offsetY = t_offsetY; //0
@@ -91,19 +91,19 @@ const Point &Field::goalMax() {
   return m_goalMax;
 }
 
-const Float &Field::offsetX() {
+const float &Field::offsetX() {
     return m_offsetX;
 }
 
-const Float &Field::offsetY() {
+const float &Field::offsetY() {
     return m_offsetY;
 }
 
-const Float &Field::goalAreaWidth() {
+const float &Field::goalAreaWidth() {
     return m_goalAreaWidth;
 }
 
-const Float &Field::goalAreaHeight() {
+const float &Field::goalAreaHeight() {
     return m_goalAreaHeight;
 }
 
@@ -125,9 +125,9 @@ Point Field::m_goalCenter;
 Point Field::m_enemyGoalCenter;
 Point Field::m_goalMin;
 Point Field::m_goalMax;
-Float Field::m_offsetX;
-Float Field::m_offsetY;
-Float Field::m_goalAreaWidth;
-Float Field::m_goalAreaHeight;
+float Field::m_offsetX;
+float Field::m_offsetY;
+float Field::m_goalAreaWidth;
+float Field::m_goalAreaHeight;
 Point Field::m_goalAreaMin;
 Point Field::m_goalAreaMax;

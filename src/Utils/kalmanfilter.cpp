@@ -26,7 +26,7 @@ KalmanFilter::~KalmanFilter() {
  * @param vx
  * @param vy
  */
-void KalmanFilter::init(Float px, Float py, Float vx, Float vy) {
+void KalmanFilter::init(float px, float py, float vx, float vy) {
     this->x = Matrix2d(4, 1, { px, py, vx, vy });
     this->K  = Matrix2d(4, 2);
     this->P  = Matrix2d::createIdentity(4) * 5;
@@ -39,7 +39,7 @@ void KalmanFilter::init(Float px, Float py, Float vx, Float vy) {
  * @param py
  * @return
  */
-const Matrix2d& KalmanFilter::update(Float px, Float py) {
+const Matrix2d& KalmanFilter::update(float px, float py) {
     if (ifInit == false) {
         ifInit = true;
         init(px, py, 0, 0);
@@ -63,7 +63,7 @@ const Matrix2d& KalmanFilter::update(Geometry::PT pos){
  * @param py
  * @return
  */
-const Matrix2d& KalmanFilter::follow(Float px, Float py) {
+const Matrix2d& KalmanFilter::follow(float px, float py) {
     x = Matrix2d(4, 1, { z(0, 0), z(1, 0), px - z(0, 0), py - z(1, 0) });
     return update(px, py);
 }

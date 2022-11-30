@@ -17,18 +17,18 @@ class GameInfo {
   Players m_players;
   int m_half;
 
-  Void setLockedFrame(const Bool &t_active = true);
+  void setLockedFrame(const bool &t_active = true);
 
 public:
   GameInfo();
 
   static GameInfo &singleton();
 
-  Void setFrame(const cv::Mat &t_frame);
+  void setFrame(const cv::Mat &t_frame);
 
-  Void clearFrame();
+  void clearFrame();
 
-  Void mergeFrame(const cv::Mat &t_frame);
+  void mergeFrame(const cv::Mat &t_frame);
 
   // Pega uma copia do frame
   cv::Mat frameCopy();

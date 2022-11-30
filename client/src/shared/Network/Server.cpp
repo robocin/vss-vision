@@ -33,9 +33,9 @@ sf::Packet Network::Server::_buildPacket(Frame &t_frame) {
 
     for (int i=0; i < entities.size(); ++i) {
         packet  << static_cast<sf::Uint8>(entities[i].id())
-                << static_cast<Float>(entities[i].position().x)
-                << static_cast<Float>(entities[i].position().y)
-                << static_cast<Float>(entities[i].angle());
+                << static_cast<float>(entities[i].position().x)
+                << static_cast<float>(entities[i].position().y)
+                << static_cast<float>(entities[i].angle());
     }
     
     return packet;

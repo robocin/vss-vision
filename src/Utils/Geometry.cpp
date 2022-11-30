@@ -1,18 +1,18 @@
 #include "Geometry.h"
 
-Int Geometry::sign(const Float &t_difference) {
+int Geometry::sign(const float &t_difference) {
   return (std::abs(t_difference) < Global::eps()) ? EQUAL : (t_difference > 0) ? GREATER : LESS;
 }
 
-Bool Geometry::cmp(const Float &t_lhs, const Int &t_op, const Float &t_rhs) {
+bool Geometry::cmp(const float &t_lhs, const int &t_op, const float &t_rhs) {
   return sign(t_rhs - t_lhs) == t_op;
 }
 
-Float Geometry::area(const Point &t_a, const Point &t_b, const Point &t_c) {
+float Geometry::area(const Point &t_a, const Point &t_b, const Point &t_c) {
   return area2(t_a, t_b, t_c) / 2;
 }
 
-Float Geometry::area(const Polygon &t_polygon) {
+float Geometry::area(const std::vector<Point> &t_polygon) {
   return area2(t_polygon) / 2;
 }
 
@@ -26,7 +26,7 @@ Point Geometry::reflectPointLine(const Point &t_a, const Point &t_b, const Point
 }
 
 Point Geometry::projectPointSegment(const Point &t_a, const Point &t_b, const Point &t_c) {
-  Float r = dot(t_b - t_a, t_b - t_a);
+  float r = dot(t_b - t_a, t_b - t_a);
 
   if (cmp(r, EQUAL, 0)) {
     return t_a;
@@ -45,7 +45,7 @@ Point Geometry::projectPointSegment(const Point &t_a, const Point &t_b, const Po
   return t_a + (t_b - t_a) * r;
 }
 
-Float Geometry::distancePointSegment(const Point &t_a, const Point &t_b, const Point &t_c) {
+float Geometry::distancePointSegment(const Point &t_a, const Point &t_b, const Point &t_c) {
   return distance(t_c, projectPointSegment(t_a, t_b, t_c));
 }
 
@@ -70,24 +70,24 @@ Point Geometry::computeCircleCenter(Point t_a, Point t_b, Point t_c) {
   return computeLineIntersection(t_b, t_b + rotateCW90(t_a - t_b), t_c, t_c + rotateCW90(t_a - t_c));
 }
 
-Float Geometry::circleCircleIntersectionAngle(const Float &t_r1, const Float &t_r2,
-                                              const Float &t_d) {
+float Geometry::circleCircleIntersectionAngle(const float &t_r1, const float &t_r2,
+                                              const float &t_d) {
   assert(isTriangle(t_r1, t_r2, t_d));
   return 2 * std::acos(((t_d * t_d + t_r2 * t_r2) - t_r1 * t_r1) / (2 * t_r2 * t_d));
 }
 
-Points Geometry::circleCircleIntersection(const Point &t_p, const Float &t_r1, const Point &t_q,
-                                          const Float t_r2) {
-  Float d = distance(t_p, t_q);
+std::vector<Point> Geometry::circleCircleIntersection(const Point &t_p, const float &t_r1, const Point &t_q,
+                                          const float t_r2) {
+  float d = distance(t_p, t_q);
 
   if (cmp(d, GREATER, t_r1 + t_r2) || cmp(d + std::min(t_r1, t_r2), LESS, std::max(t_r1, t_r2))) {
-    return Points();
+    return std::vector<Point>();
   }
 
-  Float x = (d * d - t_r2 * t_r2 + t_r1 * t_r1) / (2 * d);
-  Float y = std::sqrt(t_r1 * t_r1 - x * x);
+  float x = (d * d - t_r2 * t_r2 + t_r1 * t_r1) / (2 * d);
+  float y = std::sqrt(t_r1 * t_r1 - x * x);
   Point v = (t_q - t_p) / d;
-  Points ret;
+  std::vector<Point> ret;
   ret.push_back(t_p + v * x + rotateCCW90(v) * y);
 
   if (cmp(y, GREATER, 0)) {
@@ -98,7 +98,7 @@ Points Geometry::circleCircleIntersection(const Point &t_p, const Float &t_r1, c
 }
 
 
-int Geometry::cmp(Float a, Float b) {
+int Geometry::cmp(float a, float b) {
     if (fabs(a-b) < EPS) return 0;
     else if (a < b) return -1;
     return 1;
@@ -106,7 +106,7 @@ int Geometry::cmp(Float a, Float b) {
 
 Geometry::PT Geometry::rotateCCW90(Geometry::PT p) { return Geometry::PT(-p.y,p.x); }
 Geometry::PT Geometry::rotateCW90(Geometry::PT p)  { return Geometry::PT(p.y,-p.x); }
-Geometry::PT Geometry::rotateCCW(Geometry::PT p, Float t) {
+Geometry::PT Geometry::rotateCCW(Geometry::PT p, float t) {
     return Geometry::PT(p.x * cos(t) - p.y * sin(t), p.x * sin(t) + p.y * cos(t));
 }
 
@@ -117,7 +117,7 @@ Geometry::PT Geometry::projPtLine(Geometry::PT a, Geometry::PT b, Geometry::PT c
 
 Geometry::PT Geometry::projPtSeg(Geometry::PT a, Geometry::PT b, Geometry::PT c) {
     b = b - a; c = c - a;
-    Float r = b * b;
+    float r = b * b;
     if (cmp(r) == 0) return a;
     r = c * b / r;
     if (r < 0) return a;
@@ -125,11 +125,11 @@ Geometry::PT Geometry::projPtSeg(Geometry::PT a, Geometry::PT b, Geometry::PT c)
     return a + b * r;
 }
 
-Float Geometry::distPtSeg(Geometry::PT a, Geometry::PT b, Geometry::PT c) {
+float Geometry::distPtSeg(Geometry::PT a, Geometry::PT b, Geometry::PT c) {
     return !(c - projPtSeg(a, b, c));
 }
 
-Float Geometry::distPtPlane(Float x, Float y, Float z, Float a, Float b, Float c, Float d) {
+float Geometry::distPtPlane(float x, float y, float z, float a, float b, float c, float d) {
     return fabs(a*x + b*y + c*z - d) / sqrt(a*a + b*b + c*c);
 }
 
@@ -193,14 +193,14 @@ bool Geometry::PointOnPolygon(const std::vector<Geometry::PT> &p, Geometry::PT q
     return false;
 }
 
-std::vector<Geometry::PT> Geometry::circleLine(Geometry::PT a, Geometry::PT b, Geometry::PT c, Float r) {
+std::vector<Geometry::PT> Geometry::circleLine(Geometry::PT a, Geometry::PT b, Geometry::PT c, float r) {
     std::vector<Geometry::PT> ret;
     b = b-a;
     a = a-c;
-    Float A = b*b;
-    Float B = a*b;
-    Float C = a*a - r*r;
-    Float D = B*B - A*C;
+    float A = b*b;
+    float B = a*b;
+    float C = a*a - r*r;
+    float D = B*B - A*C;
     if (D < -EPS) return ret;
     ret.push_back(c + a + b*(-B + sqrt(D + EPS)) / A);
     if (D > EPS)
@@ -208,12 +208,12 @@ std::vector<Geometry::PT> Geometry::circleLine(Geometry::PT a, Geometry::PT b, G
     return ret;
 }
 
-std::vector<Geometry::PT> Geometry::circleCircle(Geometry::PT a, Geometry::PT b, Float r, Float R) {
+std::vector<Geometry::PT> Geometry::circleCircle(Geometry::PT a, Geometry::PT b, float r, float R) {
     std::vector<Geometry::PT> ret;
-    Float d = !(a-b);
+    float d = !(a-b);
     if (d > r + R || d + std::min(r, R) < std::max(r, R)) return ret;
-    Float x = (d*d - R*R + r*r) / (2*d);
-    Float y = sqrt(r*r - x*x);
+    float x = (d*d - R*R + r*r) / (2*d);
+    float y = sqrt(r*r - x*x);
     Geometry::PT v = (b - a)/d;
     ret.push_back(a + v*x + rotateCCW90(v)*y);
     if (y > 0)
@@ -221,8 +221,8 @@ std::vector<Geometry::PT> Geometry::circleCircle(Geometry::PT a, Geometry::PT b,
     return ret;
 }
 
-Float Geometry::signedArea(const std::vector<Geometry::PT> &p) {
-    Float area = 0;
+float Geometry::signedArea(const std::vector<Geometry::PT> &p) {
+    float area = 0;
     for(unsigned int i = 0; i < p.size(); i++) {
         int j = (i+1) % p.size();
         area += p[i] % p[j];
@@ -230,13 +230,13 @@ Float Geometry::signedArea(const std::vector<Geometry::PT> &p) {
     return area / 2.0;
 }
 
-Float Geometry::area(const std::vector<Geometry::PT> &p) {
+float Geometry::area(const std::vector<Geometry::PT> &p) {
     return fabs(signedArea(p));
 }
 
 Geometry::PT Geometry::centroid(const std::vector<Geometry::PT> &p) {
     Geometry::PT c(0,0);
-    Float scale = 6.0 * signedArea(p);
+    float scale = 6.0 * signedArea(p);
     for (unsigned int i = 0; i < p.size(); i++){
         int j = (i+1) % p.size();
         c = c + (p[i] + p[j]) * (p[i].x * p[j].y - p[j].x * p[i].y);
@@ -257,12 +257,12 @@ bool Geometry::isSimple(const std::vector<Geometry::PT> &p) {
     return true;
 }
 
-bool Geometry::circle2PtsRad(Geometry::PT p1, Geometry::PT p2, Float r, Geometry::PT &c) {
-    Float d2 = !(p1 - p2);
+bool Geometry::circle2PtsRad(Geometry::PT p1, Geometry::PT p2, float r, Geometry::PT &c) {
+    float d2 = !(p1 - p2);
     d2 *= d2;
-    Float det = r * r / d2 - 0.25;
+    float det = r * r / d2 - 0.25;
     if (det < 0.0) return false;
-    Float h = sqrt(det);
+    float h = sqrt(det);
     c.x = (p1.x + p2.x) * 0.5 + (p1.y - p2.y) * h;
     c.y = (p1.y + p2.y) * 0.5 + (p2.x - p1.x) * h;
     return true;
@@ -272,17 +272,17 @@ bool Geometry::areClockwise(Geometry::PT p1, Geometry::PT p2) {
     return (-p1.x*p2.y + p1.y*p2.x) > 0;
 }
 
-bool Geometry::isWithinRadius(Geometry::PT p1, Float sectorRadius) {
-    Float sectorRadiusSquared = sectorRadius*sectorRadius;
+bool Geometry::isWithinRadius(Geometry::PT p1, float sectorRadius) {
+    float sectorRadiusSquared = sectorRadius*sectorRadius;
     return p1.x*p1.x + p1.y*p1.y <= sectorRadiusSquared;
 }
 
-bool Geometry::isPointInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, Float sectorRadius) {
+bool Geometry::isPointInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, float sectorRadius) {
     Geometry::PT relPoint(p1.x-center.x, p1.y-center.y);
     return !areClockwise(sectorStart, relPoint) && areClockwise(sectorEnd, relPoint) && isWithinRadius(relPoint, sectorRadius);
 }
 
-bool Geometry::isRangeInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, Float sectorRadius, Float rangeRadius) {
+bool Geometry::isRangeInsideSector(Geometry::PT p1, Geometry::PT center, Geometry::PT sectorStart, Geometry::PT sectorEnd, float sectorRadius, float rangeRadius) {
     return isPointInsideSector(Geometry::PT(p1.x,p1.y-rangeRadius), center, sectorStart, sectorEnd, sectorRadius)
             || isPointInsideSector(Geometry::PT(p1.x,p1.y), center, sectorStart, sectorEnd, sectorRadius)
             || isPointInsideSector(Geometry::PT(p1.x,p1.y+rangeRadius), center, sectorStart, sectorEnd, sectorRadius);

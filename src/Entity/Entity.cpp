@@ -3,11 +3,11 @@
 Entity::Entity(const uint &t_id):m_id(t_id) {
 }
 
-Void Entity::outdate() {
+void Entity::outdate() {
     m_updated = false;
 }
 
-Void Entity::update(const Point &t_position, const Float &t_angle) {
+void Entity::update(const Point &t_position, const float &t_angle) {
     m_position = t_position;
     m_angle = t_angle;
     m_updated = true;
@@ -17,12 +17,12 @@ Point Entity::position() {
     return m_position;
 }
 
-Bool Entity::updated()
+bool Entity::updated()
 {
   return m_updated;
 }
 
-Float Entity::angle()
+float Entity::angle()
 {
   return m_angle;
 }
@@ -45,6 +45,6 @@ const uint &Entity::team()
   return m_team;
 }
 
-Bool operator<(Entity& a, Entity& b) {
+bool operator<(Entity& a, Entity& b) {
     return a.id() < b.id();
 }

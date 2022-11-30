@@ -1,7 +1,7 @@
 #include "GameInfo.h"
 #include "Utils/Utils.h"
 
-Void GameInfo::setLockedFrame(const Bool &t_active) {
+void GameInfo::setLockedFrame(const bool &t_active) {
     if (t_active) {
         m_frameLocker.lock();
     } else {
@@ -20,17 +20,17 @@ GameInfo &GameInfo::singleton() {
     return instance;
 }
 
-Void GameInfo::setFrame(const cv::Mat &t_frame) {
+void GameInfo::setFrame(const cv::Mat &t_frame) {
   setLockedFrame(true);
   m_frame = t_frame.clone();
   setLockedFrame(false);
 }
 
-Void GameInfo::clearFrame() {
+void GameInfo::clearFrame() {
   setFrame(EMPTY_MATRIX);
 }
 
-Void GameInfo::mergeFrame(const cv::Mat &t_frame) {
+void GameInfo::mergeFrame(const cv::Mat &t_frame) {
   setLockedFrame(true);
   m_frame += t_frame.clone();
   setLockedFrame(false);

@@ -15,7 +15,7 @@ RGB ColorSpace::markerColors[NUMBEROFCOLOR] = {
         {0,0,0}//ColorStrange
 };
 
-String ColorSpace::colorNames[NUMBEROFCOLOR] = {
+std::string ColorSpace::colorNames[NUMBEROFCOLOR] = {
     "black",
     "orange",
     "blue",

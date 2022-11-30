@@ -8,8 +8,9 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/dist_sink.h"
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/dist_sink.h>
+
 #include <memory>
 #include <ctime>
 #include <cstring>

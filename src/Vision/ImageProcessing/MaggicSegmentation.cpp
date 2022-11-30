@@ -199,9 +199,9 @@ cv::Vec3b MaggicSegmentation::RGBHash2BGR(uint h) {
             static_cast<uchar>((h&0x00ff0000) >> 16));
 }
 
-String MaggicSegmentation::RGBHash2String(uint h) {
+std::string MaggicSegmentation::RGBHash2String(uint h) {
     static bool preprocess = true;
-    static std::map<uint, String> colorNames;
+    static std::map<uint, std::string> colorNames;
     if (preprocess) {
         preprocess = false;
         // Initializing stats

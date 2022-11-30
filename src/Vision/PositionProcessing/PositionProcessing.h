@@ -274,7 +274,7 @@ protected:
   KalmanFilter _kalmanFilterBall[1][1];
   KalmanFilter _dirFilterBall[1][1];
   Point _ballLastPosition;
-  Float _ballLastTime;
+  float _ballLastTime;
 
 };
 

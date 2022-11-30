@@ -120,8 +120,8 @@ private:
   QString m_videoFileName;
   QString m_savedVideofileName;
 
-  Array<RobotWidget*, MAX_PLAYERS> m_robotWidgets;
-  Array<QFrame*, MAX_PLAYERS - 1> m_robotLines;
+  std::array<RobotWidget*, MAX_PLAYERS> m_robotWidgets;
+  std::array<QFrame*, MAX_PLAYERS - 1> m_robotLines;
 
   FieldPointsCalibrateDialog* m_fieldDialog;  // crop window
   VisionConfigDialog* m_visionDialog;

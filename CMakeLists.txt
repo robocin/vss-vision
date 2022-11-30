@@ -1,15 +1,21 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(VSS-VISION)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+project(vss-vision LANGUAGES CXX)
+
+include_directories(${CMAKE_BINARY_DIR})
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/src")
-
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin")
 
 set(SOURCES
     src/main.cpp
@@ -97,19 +103,19 @@ set(RESOURCES
     src/iconTools/icontools.qrc
 )
 
-add_executable(VSS-VISION ${SOURCES} ${HEADERS} ${RESOURCES})
+add_executable(vss-vision ${SOURCES} ${HEADERS} ${RESOURCES})
 
-target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/src")
-target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(vss-vision PUBLIC "${PROJECT_SOURCE_DIR}/src")
+target_include_directories(vss-vision PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
-target_link_libraries(VSS-VISION Qt5::Core Qt5::Widgets Qt5::Gui)
+target_link_libraries(vss-vision Qt5::Core Qt5::Widgets Qt5::Gui)
 
 find_package(OpenCV REQUIRED)
-target_link_libraries(VSS-VISION ${OpenCV_LIBS})
+target_link_libraries(vss-vision ${OpenCV_LIBS})
 
 find_package(TBB REQUIRED)
-target_link_libraries(VSS-VISION TBB::tbb)
+target_link_libraries(vss-vision TBB::tbb)
 
 find_package(SFML REQUIRED COMPONENTS network system)
-target_link_libraries(VSS-VISION sfml-network sfml-system)
+target_link_libraries(vss-vision sfml-network sfml-system)

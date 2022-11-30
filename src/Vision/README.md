@@ -132,7 +132,7 @@ For example, let's say i want to create a **Warp Correction** implementation. Yo
 And in you .cpp file you will need at least this:
 
 ```c++
-	void WarpCorrection::init(map <String, Int> parameters) {
+	void WarpCorrection::init(map <std::string, int> parameters) {
 		//set your parameters here
 
 	}

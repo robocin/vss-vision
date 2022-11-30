@@ -21,9 +21,9 @@ void Network::sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_mse
 
     for (size_t i=0; i < entities.size(); ++i) {
         packet  << static_cast<sf::Uint8>(entities[i].id())
-                << static_cast<Float>(entities[i].position().x)
-                << static_cast<Float>(entities[i].position().y)
-                << static_cast<Float>(entities[i].angle());
+                << static_cast<float>(entities[i].position().x)
+                << static_cast<float>(entities[i].position().y)
+                << static_cast<float>(entities[i].angle());
     }
     
     if (Network::socket.send(packet, recipient, port) != sf::Socket::Done)

@@ -7,12 +7,12 @@
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM 17
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM 45
 
-String MaggicSegmentationDialog::_inputFolderName = "Input";
-String MaggicSegmentationDialog::_outputFolderName = "Output";
-String MaggicSegmentationDialog::_groundTruthFolderName = "GroundTruth";
+std::string MaggicSegmentationDialog::_inputFolderName = "Input";
+std::string MaggicSegmentationDialog::_outputFolderName = "Output";
+std::string MaggicSegmentationDialog::_groundTruthFolderName = "GroundTruth";
 
-Strings getFileList(String &path, QDir **_dir = nullptr){
-    Strings list;
+std::vector<std::string> getFileList(std::string &path, QDir **_dir = nullptr){
+    std::vector<std::string> list;
     QDir *dir = nullptr;
     if (_dir == nullptr) {
         if (*_dir == nullptr) *_dir = new QDir(path.c_str());
@@ -410,7 +410,7 @@ void MaggicSegmentationDialog::saveStats(Statistics &gstats, Statistics &sstats)
         MaggicSegmentation::NormalizationMethod method;
         this->maggicSegmentation->getNormalizationMethod(method);
         int method_number = (this->maggicSegmentation->getNormalizedEnabled() ? static_cast<int>(method) : 0);
-        String filepath = this->_outputDir->absolutePath().toStdString()
+        std::string filepath = this->_outputDir->absolutePath().toStdString()
                 +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
                 + std::to_string(method_number) + ".txt";
         std::cout << "Saving stats (" << this->maggicSegmentation->getFilterGrayThresholdValue()
@@ -449,7 +449,7 @@ void MaggicSegmentationDialog::saveStats(Statistics &gstats, Statistics &sstats)
 
 //    if (latex) {
 //        size_t fileNameUsableLen = this->_inputFileName.size()-4;
-//        String filepath = this->_outputDir->absolutePath().toStdString()
+//        std::string filepath = this->_outputDir->absolutePath().toStdString()
 //                +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
 //                +"_"+ std::to_string(this->maggicSegmentation->getFilterGrayThresholdValue()) +".tex";
 //        std::cout << "Saving stats in " << filepath << std::endl;
@@ -479,7 +479,7 @@ void MaggicSegmentationDialog::saveStats(Statistics &gstats, Statistics &sstats)
 //    }
 //    {
 //        size_t fileNameUsableLen = this->_inputFileName.size()-4;
-//        String filepath = this->_outputDir->absolutePath().toStdString()
+//        std::string filepath = this->_outputDir->absolutePath().toStdString()
 //                +"/"+this->_inputFileName.substr(0,fileNameUsableLen)
 //                +"_"+ std::to_string(this->maggicSegmentation->getFilterGrayThresholdValue()) +".txt";
 //        std::cout << "Saving stats in " << filepath << std::endl;
@@ -498,13 +498,13 @@ void MaggicSegmentationDialog::saveStats(Statistics &gstats, Statistics &sstats)
 //            }
 //            fout << "Correct:" << std::endl;
 //            for (auto &e : sstats) {
-//                String colorName = MaggicSegmentation::RGBHash2String(e.first);
+//                std::string colorName = MaggicSegmentation::RGBHash2String(e.first);
 //                float pct = e.second/static_cast<float>(gstats[e.first]);
 //                fout << colorName << "\t" << std::fixed << std::setprecision(3) << pct << std::endl;
 //            }
 //            fout << "Wrong:" << std::endl;
 //            for (auto &e : sstats) {
-//                String colorName = MaggicSegmentation::RGBHash2String(e.first);
+//                std::string colorName = MaggicSegmentation::RGBHash2String(e.first);
 //                float pct = (gstats[e.first] - e.second)/static_cast<float>(gstats[e.first]);
 //                fout << colorName << "\t" << std::fixed << std::setprecision(3) << pct << std::endl;
 //            }
@@ -559,10 +559,10 @@ void MaggicSegmentationDialog::useNextImage() { // Circular function
     this->_selectedFileIndex = (this->_selectedFileIndex+1)
             %static_cast<int>(this->_inputFileList.size());
     this->_inputFileName = this->_inputFileList[this->_selectedFileIndex];
-    String input_impath = this->_inputDir->absolutePath().toStdString()
+    std::string input_impath = this->_inputDir->absolutePath().toStdString()
             +"/"
             +this->_inputFileName;
-    String ground_truth_impath = this->_groundTruthDir->absolutePath().toStdString()
+    std::string ground_truth_impath = this->_groundTruthDir->absolutePath().toStdString()
             +"/"
             +this->_groundTruthFileList[this->_selectedFileIndex];
     // IN

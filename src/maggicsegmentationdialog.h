@@ -82,9 +82,9 @@ private:
   CameraManager* _cameraMan;
   cv::Mat _actualFrame, _segmentedFrame, _groundTruthFrame;
   cv::Mat _inputFrame;
-  static String _inputFolderName, _outputFolderName, _groundTruthFolderName;
-  String _inputFileName;
-  Strings _inputFileList, _groundTruthFileList;
+  static std::string _inputFolderName, _outputFolderName, _groundTruthFolderName;
+  std::string _inputFileName;
+  std::vector<std::string> _inputFileList, _groundTruthFileList;
   int _selectedFileIndex;
   QDir *_inputDir, *_outputDir, *_groundTruthDir;
 

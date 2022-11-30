@@ -5,9 +5,9 @@
 
 class Entity {
   uint m_id;
-  Bool m_updated;
+  bool m_updated;
   Point m_position;
-  Float m_angle;
+  float m_angle;
   uint m_team;
 
 public:
@@ -21,7 +21,7 @@ public:
   /**
    * Update entity's position and angle
    */
-  Void update(const Point &t_position, const Float &t_angle = 0);
+  void update(const Point &t_position, const float &t_angle = 0);
 
   /**
    * Get entity position
@@ -33,18 +33,18 @@ public:
    * Get if entity is updated or not
    * @return Boolean that is true if entity is updated or false if entity is not updated
    */
-  Bool updated();
+  bool updated();
 
   /**
    * Set updated as false, invalidating values
    */
-  Void outdate();
+  void outdate();
 
   /**
    * Get entity's angle
-   * @return Float with the entity's angle in radians
+   * @return float with the entity's angle in radians
    */
-  Float angle();
+  float angle();
 
   /**
    * Get entity's id number
@@ -74,9 +74,9 @@ typedef Entity Player;
 typedef Player Ally;
 typedef Player Enemy;
 
-using Entities      = Vector<Entity>;
-using Players       = Vector<Player>;
+using Entities      = std::vector<Entity>;
+using Players       = std::vector<Player>;
 
-Bool operator<(Entity& a, Entity& b);
+bool operator<(Entity& a, Entity& b);
 
 #endif // Entity_H

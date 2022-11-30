@@ -123,7 +123,7 @@ public:
 
   static cv::Vec3b RGBHash2RGB(uint);
 
-  static String RGBHash2String(uint);
+  static std::string RGBHash2String(uint);
 
   void calibrate(cv::Mat &frame);
 
