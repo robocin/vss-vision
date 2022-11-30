@@ -5,28 +5,35 @@
 
 > Implementation of Very Small Size League Vision Software
 
-## Installing the Dependencies
+## Dependecies
 
-1. Install the needed dependencies beyond Qt Creator.
+```
+Qt5
+OpenCV
+SFML
+TBB
+```
+
+## Building (Ubuntu 20.04 LTS)
+
+1. Install the needed dependencies.
 ```bash
 ./InstallDependencies
 ```
 
-2. i. Install Qt Creator (5.12.0) using the maintanance tool of Qt from linorg.usp.br repository. Use this script to make this simpler.
+2. Build via CMake
 ```bash
-./InstallQt
+# From repository root
+mkdir build
+cd build
+cmake ..
+make
 ```
-2. ii. Select (only) the packages below:
+3. Running:
 ```bash
-. Qt
-│
-.
-.
-.
-└── Qt 5.12.0
-    ├── Desktop gcc 64-bit
-    ├── Qt Charts
-    └── Qt Data Visualization
+# From repository root
+cd src
+./VSS-VISION
 ```
 
 ## Repository Tree
