@@ -1,6 +1,9 @@
 #!/bin/bash
 # Ubuntu 20.04 LTS
 
+# Update repos
+sudo apt update -y
+
 # Install SFML
 sudo apt install libsfml-dev -y
 
@@ -12,7 +15,3 @@ sudo apt install freeglut3-dev -y
 
 # Install QT5
 sudo apt install qt5-default -y
-
-# Update packages
-sudo apt update -y
-sudo apt upgrade -y

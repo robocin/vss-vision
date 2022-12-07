@@ -10,10 +10,15 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     v4l-utils \
     libsfml-dev \
     libopencv-dev \
-    freeglut3-dev
+    freeglut3-dev \
+    cmake
 
-WORKDIR /workspaces/vss-vision
+COPY . /opt/vss-vision
 
-COPY . .
+WORKDIR /opt/vss-vision/build
 
-RUN cd src && qmake && make clean && make -j8
+RUN cmake clean .. && make -j4
+
+WORKDIR /opt/vss-vision/src
+
+CMD ["./VSS-VISION"]
