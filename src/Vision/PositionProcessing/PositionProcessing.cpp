@@ -106,56 +106,37 @@ void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std:
 
     players.clear();
 
-    std::bitset<MAX_PLAYERS> markedColors;
+    //std::bitset<MAX_PLAYERS> markedColors;
     uint teamColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
 
 
     for (Region &region : enemyRegions) {
       if (region.distance < blobMaxDist()) {
-        //int colorIndex = Utils::convertOldColorToNewColor(region.color);
         int colorIndex = region.color;
-        //printf(" %d", colorIndex);
-        if (!Utils::isRobotColor(colorIndex)) {
-          // cor invalida
-          continue;
-        }
-
-        if (markedColors[size_t(colorIndex)]){
-          continue;
-        }
-
-        markedColors[size_t(colorIndex)] = true;
         Blob b1, b2;
         std::tie(b1, b2) = region.blobs;
         Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED);
         robot.team(teamColor);
         Point lastPosition = robot.position();
-        Point newPositionInPixels = (b1.position + b2.position) * 0.5;
+        Point newPositionInPixels = b2.position ;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
         // Debug
-        //cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, cv::LINE_AA);
+        cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, cv::LINE_AA);
+        //cv::circle(debugFrame,Utils::convertPositionCmToPixel(Point(170/2,130/2)),10,cv::Scalar(0,255,0));
+        // Para evitar ruido, se o robo se movimentar muito pouco,
+        // ele permanece no mesmo local
+
         if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
             std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
           newPosition = lastPosition;
         }
 
-        Float newAngle = Utils::angle(b1.position, b2.position);
-
-        auto & playerPosVel = _kalmanFilterRobots[0][robot.id()%100].update(newPosition.x,newPosition.y);
-
-        Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
-        Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
-
-        auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
-        double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
-        robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
+        Float newAngle = Utils::angle(b2.position, b2.position);
+        robot.update(newPosition, newAngle);
         players.push_back(robot);
-
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[colorIndex+1], 1, cv::LINE_AA);
       }
     }
-
 }
 
 void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
@@ -229,7 +210,7 @@ std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> Positio
   Blob choosen;
   NearestBlobInfo result;
 
-  for(int teamColor = Color::BLUE ; teamColor <= Color::YELLOW ; teamColor++) {
+  for(int teamColor = Color::BLUE ; teamColor <= Color::YidColorELLOW ; teamColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ;i++) {
       if(blob[teamColor][i].valid) {
         distance = static_cast<int>(Utils::sumOfSquares(current.position,blob[teamColor][i].position));
