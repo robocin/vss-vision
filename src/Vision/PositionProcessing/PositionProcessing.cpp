@@ -86,17 +86,18 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
 
         Float newAngle = Utils::angle(b1.position, b2.position);
 
-        auto & playerPosVel = _kalmanFilterRobots[0][robot.id()%100].update(newPosition.x,newPosition.y);
+        auto & playerPosVel = _kalmanFilterRobots[(teamColor % 100) - 2][robot.id()%100].update(newPosition.x,newPosition.y);
 
         Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
         Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
 
-        auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
+        auto &playerRotVel = _dirFilteRobots[(teamColor % 100) - 2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
         double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
         robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
         players.push_back(robot);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 12, _colorCar[colorIndex], 1, cv::LINE_AA);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[teamColor], 1, cv::LINE_AA);
 
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[colorIndex+1], 1, cv::LINE_AA);
       }
     }
 
@@ -210,7 +211,7 @@ std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> Positio
   Blob choosen;
   NearestBlobInfo result;
 
-  for(int teamColor = Color::BLUE ; teamColor <= Color::YidColorELLOW ; teamColor++) {
+  for(int teamColor = Color::BLUE ; teamColor <= Color::YELLOW ; teamColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ;i++) {
       if(blob[teamColor][i].valid) {
         distance = static_cast<int>(Utils::sumOfSquares(current.position,blob[teamColor][i].position));
@@ -244,13 +245,8 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
 
         current.blobs = std::make_pair(blob[idColor][i], primary.first);
         current.team = primary.second.teamIndex;
-        if(current.team == Color::YELLOW) {
-          current.color = idColor + 3;
-        }
-        else {
-          current.color = idColor;
-        }
-        
+        current.color = idColor;
+
         current.distance = primary.second.distance;
         if (current.team == this->_teamId) result.team.push_back(current);
         else result.enemys.push_back(current);
