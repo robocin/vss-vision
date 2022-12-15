@@ -17,9 +17,9 @@ class RobotWidget : public QWidget {
 
   ~RobotWidget();
 
-  QPixmap getRobotId(int team_color);
-  void setPrimaryColor(QPixmap &t_robotId, int team_color);
-  void setSecodaryColor(QPixmap &t_robotId, int team_color);
+  QPixmap getRobotId();
+  void setPrimaryColor(QPixmap &t_robotId);
+  void setSecodaryColor(QPixmap &t_robotId);
   void update();
 
  private slots:
