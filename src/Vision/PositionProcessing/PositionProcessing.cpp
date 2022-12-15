@@ -33,7 +33,7 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
   findTeam(teamA, debugFrame, groupedBlobs.team);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
   Players teamB;
-  findEnemys(teamB, debugFrame, groupedBlobs.enemys);
+  USE_PATTERN_FOR_ENEMIES ? findTeam(teamB, debugFrame, groupedBlobs.enemys) : findEnemys(teamB, debugFrame, groupedBlobs.enemys);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
   Players allPlayers;
@@ -85,17 +85,18 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
 
         Float newAngle = Utils::angle(b1.position, b2.position);
 
-        auto & playerPosVel = _kalmanFilterRobots[0][robot.id()%100].update(newPosition.x,newPosition.y);
+        auto & playerPosVel = _kalmanFilterRobots[teamColor-2][robot.id()%100].update(newPosition.x,newPosition.y);
 
         Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
         Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
 
-        auto &playerRotVel = _dirFilteRobots[0][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
+        auto &playerRotVel = _dirFilteRobots[teamColor-2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
         double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
         robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
         players.push_back(robot);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[teamColor], 2, cv::LINE_AA);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 12, _colorCar[colorIndex], 2, cv::LINE_AA);
 
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[colorIndex+1], 1, cv::LINE_AA);
       }
     }
 
@@ -121,7 +122,7 @@ void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std:
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
         // Debug
-        cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, cv::LINE_AA);
+        cv::circle(debugFrame, newPositionInPixels, 12, _colorCar[colorIndex], 2, cv::LINE_AA);
         //cv::circle(debugFrame,Utils::convertPositionCmToPixel(Point(170/2,130/2)),10,cv::Scalar(0,255,0));
         // Para evitar ruido, se o robo se movimentar muito pouco,
         // ele permanece no mesmo local
@@ -244,14 +245,15 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
         current.blobs = std::make_pair(blob[idColor][i], primary.first);
         current.team = primary.second.teamIndex;
         current.color = idColor;
+
         current.distance = primary.second.distance;
         if (current.team == this->_teamId) result.team.push_back(current);
-        //else result.enemys.push_back(current);
+        else if (USE_PATTERN_FOR_ENEMIES) result.enemys.push_back(current);
       } else break;
     }
   }
 
-  if(result.enemys.empty() || result.enemys.size() < 3)
+  if(!USE_PATTERN_FOR_ENEMIES && (result.enemys.empty() || result.enemys.size() < 3))
   {
       int idColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
       int qnt = 0;

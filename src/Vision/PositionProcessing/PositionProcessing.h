@@ -22,7 +22,7 @@
 #include <Utils/kalmanfilter.h>
 
 #define CLUSTERSPERCOLOR 8
-#define MAX_ROBOTS 3
+#define MAX_ROBOTS 6
 #define BALL_INDEX 6
 
 #define POSITION_PROCESSING_FILE  "Config/PositionProcessing.xml"
@@ -275,6 +275,7 @@ protected:
   KalmanFilter _dirFilterBall[1][1];
   Point _ballLastPosition;
   Float _ballLastTime;
+  static const bool USE_PATTERN_FOR_ENEMIES = true;
 
 };
 
