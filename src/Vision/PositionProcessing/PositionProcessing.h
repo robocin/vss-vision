@@ -275,6 +275,7 @@ protected:
   KalmanFilter _dirFilterBall[1][1];
   Point _ballLastPosition;
   Float _ballLastTime;
+  static const bool USE_PATTERN_FOR_ENEMIES = true;
 
 };
 

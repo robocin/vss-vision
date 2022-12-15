@@ -33,7 +33,7 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
   findTeam(teamA, debugFrame, groupedBlobs.team);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
   Players teamB;
-  findTeam(teamB, debugFrame, groupedBlobs.enemys);
+  USE_PATTERN_FOR_ENEMIES ? findTeam(teamB, debugFrame, groupedBlobs.enemys) : findEnemys(teamB, debugFrame, groupedBlobs.enemys);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
   Players allPlayers;
@@ -122,7 +122,7 @@ void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std:
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
         // Debug
-        cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, cv::LINE_AA);
+        cv::circle(debugFrame, newPositionInPixels, 12, _colorCar[colorIndex], 2, cv::LINE_AA);
         //cv::circle(debugFrame,Utils::convertPositionCmToPixel(Point(170/2,130/2)),10,cv::Scalar(0,255,0));
         // Para evitar ruido, se o robo se movimentar muito pouco,
         // ele permanece no mesmo local
@@ -248,26 +248,26 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
 
         current.distance = primary.second.distance;
         if (current.team == this->_teamId) result.team.push_back(current);
-        else result.enemys.push_back(current);
+        else if (USE_PATTERN_FOR_ENEMIES) result.enemys.push_back(current);
       } else break;
     }
   }
 
-  // if(result.enemys.empty() || result.enemys.size() < 3)
-  // {
-  //     int idColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
-  //     int qnt = 0;
-  //     for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
-  //       if(blob[idColor][i].valid) {
+  if(!USE_PATTERN_FOR_ENEMIES && (result.enemys.empty() || result.enemys.size() < 3))
+  {
+      int idColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
+      int qnt = 0;
+      for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
+        if(blob[idColor][i].valid) {
 
-  //         current.blobs = std::make_pair(blob[idColor][i], blob[idColor][i]);
-  //         current.team = idColor;
-  //         current.color = Color::RED + qnt++;
-  //         current.distance = 0.0;
-  //         result.enemys.push_back(current);
-  //       }
-  //     }
-  // }
+          current.blobs = std::make_pair(blob[idColor][i], blob[idColor][i]);
+          current.team = idColor;
+          current.color = Color::RED + qnt++;
+          current.distance = 0.0;
+          result.enemys.push_back(current);
+        }
+      }
+  }
   return result;
 }
 
