@@ -1,5 +1,4 @@
 #include "PositionProcessing.h"
-#include <iostream>
 
 
 void PositionProcessing::saveXML()
@@ -86,12 +85,12 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
 
         Float newAngle = Utils::angle(b1.position, b2.position);
 
-        auto & playerPosVel = _kalmanFilterRobots[(teamColor % 100) - 2][robot.id()%100].update(newPosition.x,newPosition.y);
+        auto & playerPosVel = _kalmanFilterRobots[teamColor-2][robot.id()%100].update(newPosition.x,newPosition.y);
 
         Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
         Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
 
-        auto &playerRotVel = _dirFilteRobots[(teamColor % 100) - 2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
+        auto &playerRotVel = _dirFilteRobots[teamColor-2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
         double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
         robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
         players.push_back(robot);
