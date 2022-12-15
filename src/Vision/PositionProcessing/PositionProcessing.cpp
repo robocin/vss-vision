@@ -94,8 +94,8 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
         double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
         robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
         players.push_back(robot);
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 12, _colorCar[colorIndex], 1, cv::LINE_AA);
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[teamColor], 1, cv::LINE_AA);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[teamColor], 2, cv::LINE_AA);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 12, _colorCar[colorIndex], 2, cv::LINE_AA);
 
       }
     }
