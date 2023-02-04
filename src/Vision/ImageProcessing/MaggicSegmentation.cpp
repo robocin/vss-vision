@@ -945,7 +945,7 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
           cv::cvtColor(cores, cores, cv::COLOR_HSV2BGR_FULL);
           cv::cvtColor(t, t, cv::COLOR_HSV2BGR_FULL);
           static char str[2000];
-          sprintf(str,"robocin-robotColors.png");
+          // sprintf(str,"robocin-robotColors.png");
           //cv::imwrite(str, cores);
           //cv::imshow(str,cores);
 
@@ -1597,25 +1597,25 @@ void MaggicSegmentation::saveSelectedDebug() {
     static char normalizedOrNot[100];
 
     normalizedOrNot[0] = 0;
-    if (this->normalized_color) sprintf(normalizedOrNot,"normalized_");
+    // if (this->normalized_color) sprintf(normalizedOrNot,"normalized_");
 
     if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
-        sprintf(fileName,"maggic_thresholded_%s%03d.png", normalizedOrNot, filterGrayThreshold);
+        // sprintf(fileName,"maggic_thresholded_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_firstThreshold);
         std::cout << "Saved thresholded" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_SegmentationFrame) {
-        sprintf(fileName,"maggic_segmentation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
+        // sprintf(fileName,"maggic_segmentation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_segmentationFrame);
         std::cout << "Saved segmentation" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
-        sprintf(fileName,"maggic_extremeSaturation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
+        // sprintf(fileName,"maggic_extremeSaturation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_extremeSaturation);
         std::cout << "Saved extreme saturation" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
-        sprintf(fileName,"maggic_detailsFrame_%s%03d.png", normalizedOrNot, filterGrayThreshold);
+        // sprintf(fileName,"maggic_detailsFrame_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_detailsFrame);
         std::cout << "Saved details frame" << std::endl;
 

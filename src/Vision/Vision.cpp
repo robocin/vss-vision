@@ -69,7 +69,7 @@ Point Vision::getFrameDimensions(){
 void Vision::update()
 {
     Global::setConvertRatio(_convert);
-
+    
     this->_processingFrame = this->_currentFrame.clone();
 
     if (this->_isProcessingEnabled) {
@@ -96,11 +96,13 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   entities[0] = vss.ball();
   Players players = vss.players();
   entities.insert(entities.end(),players.begin(),players.end());
-
+  VisionServer* server = new VisionServer("0.0.0.0", 8000);
     // NETWORK
     if (this->_isProcessingEnabled) {
         //spdlog::get("Vision")->info("update:: Seding frame.\n");
-        Network::sendFrame(entities, actualTime);
+        // Network::sendFrame(entities, actualTime);
+        server->send(entities, actualTime);
+
         //spdlog::get("Vision")->info("update:: Frame sent.\n");
     } else {
         Network::frameId = 0;

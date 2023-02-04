@@ -48,6 +48,8 @@ set(SOURCES
     src/Windows/RobotWidget.cpp
     src/trackconfigdialog.cpp
     src/Network/Network.cpp
+    src/Network/visionServer/server.cpp
+
 )
 
 set(HEADERS
@@ -90,6 +92,7 @@ set(HEADERS
     src/trackconfigdialog.h
     src/Windows/FileConstants.h
     src/Network/Network.h
+    src/Network/visionServer/server.h
 )
 
 set(RESOURCES

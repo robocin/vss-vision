@@ -11,9 +11,13 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libsfml-dev \
     libopencv-dev \
     freeglut3-dev \
+    protobuf-compiler \
+    libprotobuf-dev \ 
     cmake
 
 COPY . /opt/vss-vision
+
+RUN cd /opt/vss-vision/src/Network/pb && protoc --cpp_out=.. *.proto
 
 WORKDIR /opt/vss-vision/build
 
