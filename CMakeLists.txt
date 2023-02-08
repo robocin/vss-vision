@@ -122,3 +122,6 @@ target_link_libraries(VSS-VISION TBB::tbb)
 
 find_package(SFML REQUIRED COMPONENTS network system)
 target_link_libraries(VSS-VISION sfml-network sfml-system)
+
+find_package(Protobuf)
+target_link_libraries(VSS-VISION protobuf::libprotobuf)
