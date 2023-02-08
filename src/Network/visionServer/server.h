@@ -1,8 +1,10 @@
 #ifndef C5873298_24F8_46ED_B84A_3ED979543C50
 #define C5873298_24F8_46ED_B84A_3ED979543C50
 
-#include <QtNetwork/QUdpSocket>
-#include <QString>
+#include <QtNetwork/qtnetworkglobal.h>
+#include <QtNetwork/qudpsocket.h>
+#include <QtNetwork/qhostaddress.h>
+#include <QtCore/qstring.h>
 
 #include "Network/messages_robocup_ssl_detection.pb.h"
 #include "Network/messages_robocup_ssl_geometry.pb.h"

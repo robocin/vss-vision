@@ -101,7 +101,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
     if (this->_isProcessingEnabled) {
         //spdlog::get("Vision")->info("update:: Seding frame.\n");
         // Network::sendFrame(entities, actualTime);
-        server->send(entities, actualTime);
+        server->send(entities);
 
         //spdlog::get("Vision")->info("update:: Frame sent.\n");
     } else {

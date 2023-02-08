@@ -49,6 +49,9 @@ set(SOURCES
     src/trackconfigdialog.cpp
     src/Network/Network.cpp
     src/Network/visionServer/server.cpp
+    src/Network/messages_robocup_ssl_detection.pb.cc
+    src/Network/messages_robocup_ssl_geometry.pb.cc
+    src/Network/wrapper.pb.cc
 
 )
 
@@ -93,6 +96,9 @@ set(HEADERS
     src/Windows/FileConstants.h
     src/Network/Network.h
     src/Network/visionServer/server.h
+    src/Network/messages_robocup_ssl_detection.pb.h
+    src/Network/messages_robocup_ssl_geometry.pb.h
+    src/Network/wrapper.pb.h
 )
 
 set(RESOURCES
@@ -105,8 +111,8 @@ add_executable(VSS-VISION ${SOURCES} ${HEADERS} ${RESOURCES})
 target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/src")
 target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
-target_link_libraries(VSS-VISION Qt5::Core Qt5::Widgets Qt5::Gui)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Network)
+target_link_libraries(VSS-VISION Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network)
 
 find_package(OpenCV REQUIRED)
 target_link_libraries(VSS-VISION ${OpenCV_LIBS})

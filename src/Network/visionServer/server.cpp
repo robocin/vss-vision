@@ -1,5 +1,10 @@
 #include "server.h"
-#include<QUdpSocket>
+
+#include <QtNetwork>
+#include <QtNetwork/QUdpSocket>
+#include <QtNetwork/QHostAddress>
+#include <QtCore/QString>
+
 
 VisionServer::VisionServer(QString address, int port){
 
@@ -20,14 +25,14 @@ VisionServer::~VisionServer(){
 }
 
 void VisionServer::send(std::vector<Entity> &entities) {
-    packet::SSL_WrapperPacket packet;
+    SSL_WrapperPacket packet;
 
     // SSL_WrapperPacket packet;
     SSL_DetectionFrame *frame = packet.mutable_detection();
     frame->set_camera_id(0);
-    frame->set_frame_number(timestamp_in_msec);
-    frame->set_t_capture(timestamp_in_msec);
-    frame->set_t_sent(timestamp_in_msec);
+    frame->set_frame_number(0);
+    frame->set_t_capture(0);
+    frame->set_t_sent(0);
 
     SSL_DetectionBall *ball = frame->mutable_balls()->Add();
 
@@ -40,24 +45,21 @@ void VisionServer::send(std::vector<Entity> &entities) {
     // geometry
     SSL_GeometryData *geometry = packet.mutable_geometry();
     SSL_GeometryFieldSize *field = geometry->mutable_field();
-    field->set_line_width(1300);
+    field->set_field_width(1300);
     field->set_field_length(1500);
-    field->goal_width(100);
-    field->goal_depth(100);
-    field->boundary_width(100);
+    field->set_goal_width(100);
+    field->set_goal_depth(100);
+    field->set_boundary_width(100);
 
     // serialize packet to send
     QByteArray dgram;
-    dgram.resize(packet.ByteSize());
-    packet.SerializeToArray(dgram.data(), dgram.size());
+    std::string data;
+
+    packet.SerializeToString(&data);
+
+    QString qstr = QString::fromStdString(data);
+    dgram = qstr.toUtf8();
     if(socket->writeDatagram(dgram, this->_addr, this->_port) > -1){
         printf("send data\n");
-    }
-
-    QByteArray dgram;
-    dgram.resize(packet.ByteSize());
-    packet.SerializeToArray(dgram.data(), dgram.size());
-    if(socket->writeDatagram(dgram, this->_addr, this->_port) > -1){
-        //printf("send data\n");
     }
 }
