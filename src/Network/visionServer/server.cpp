@@ -36,8 +36,8 @@ void VisionServer::send(std::vector<Entity> &entities) {
     for(int i=0;i<entities.size();i++){
         if(i == 0){
             SSL_DetectionBall *ball = frame->mutable_balls()->Add();
-            ball->set_x(entities[0].position().x);
-            ball->set_y(entities[0].position().y);
+            ball->set_x(entities[0].position().x * 10);
+            ball->set_y(entities[0].position().y * 10);
             ball->set_confidence(1);
             ball->set_pixel_x(entities[0].position().x * 100);
             ball->set_pixel_y(entities[0].position().y * 100);
@@ -45,8 +45,8 @@ void VisionServer::send(std::vector<Entity> &entities) {
             if((int)entities[i+1].team() == 2){
                 SSL_DetectionRobot *robot = frame->mutable_robots_yellow()->Add();
                 robot->set_robot_id(entities[i+1].id());
-                robot->set_x(entities[i+1].position().x);
-                robot->set_y(entities[i+1].position().y);
+                robot->set_x(entities[i+1].position().x * 10);
+                robot->set_y(entities[i+1].position().y * 10);
                 robot->set_orientation(entities[i+1].angle());
                 robot->set_confidence(1);
                 robot->set_pixel_x(robot->x()*100);
@@ -54,8 +54,8 @@ void VisionServer::send(std::vector<Entity> &entities) {
             }else if((int)entities[i+1].team() == 3){
                 SSL_DetectionRobot *robot = frame->mutable_robots_blue()->Add();
                 robot->set_robot_id(entities[i+1].id());
-                robot->set_x(entities[i+1].position().x);
-                robot->set_y(entities[i+1].position().y);
+                robot->set_x(entities[i+1].position().x * 10);
+                robot->set_y(entities[i+1].position().y * 10);
                 robot->set_orientation(entities[i+1].angle());
                 robot->set_confidence(1);
                 robot->set_pixel_x(robot->x()*100);
@@ -69,7 +69,7 @@ void VisionServer::send(std::vector<Entity> &entities) {
     SSL_GeometryFieldSize *field = geometry->mutable_field();
     field->set_field_width(1300);
     field->set_field_length(1500);
-    field->set_goal_width(100);
+    field->set_goal_width(400);
     field->set_goal_depth(100);
     field->set_boundary_width(100);
 
