@@ -208,14 +208,19 @@ namespace Utils {
    * @return inverse angle
    */
   double inverseAngle(double angle);
+  
   /**
-   * Function to convert position in cm's from strategy to position in pixels
+   * Function to convert position in cm's to image pixels
    * @param Point - pair of int (position x and y in cm's)
-   * @param Point convert - first: wConvert - Width , second: hConvert - Height
-   * @return Point - pair of int (position in pixels)
+   * @return Point - pair of int (position in pixels) 
    */
   Point convertPositionCmToPixel(const Point &position);
 
+  /**
+   * Function to convert position in cm's to image pixels
+   * @param Point - pair of int (position in pixels) in which (0,0) is the top left corner of the image
+   * @return Point - pair of int (position x and y in cm's) in which (0,0) is the field center
+   */
   Point convertPositionPixelToCm(const Point &position);
 
   bool between(double number, double min_limit, double range);
