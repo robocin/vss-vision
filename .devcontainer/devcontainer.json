@@ -8,7 +8,8 @@
 
 	"runArgs": [
 		"-e", "DISPLAY=${env:DISPLAY}",
-		"-v", "/tmp/.X11-unix:/tmp/.X11-unix"
+		"-v", "/tmp/.X11-unix:/tmp/.X11-unix",
+		"--network=host"
 	],
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
