@@ -196,8 +196,8 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
     this->_ballLastTime = vss.time().getMilliseconds();
     ball.id(0);
 
-    newPosition.x = Utils::bound(newPosition.x, 0, 170);
-    newPosition.y = Utils::bound(newPosition.y, 0, 130);
+    newPosition.x = Utils::bound(newPosition.x, -85, 85);
+    newPosition.y = Utils::bound(newPosition.y, -65, 65);
 
     cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(newPosition.x),static_cast<int>(newPosition.y))), 9, _colorCar[OrangeCOL], 2, cv::LINE_AA);
     //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
