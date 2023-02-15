@@ -16,7 +16,7 @@ VisionServer::VisionServer(QString address, int port){
 
     this->_addr.setAddress(address);
     this->_port = quint16(port);
-    socket->connectToHost(address,port, QIODevice::WriteOnly, QAbstractSocket::IPv4Protocol);
+    socket->connectToHost(address, port, QIODevice::WriteOnly, QAbstractSocket::IPv4Protocol);
     //socket->bind(this->_addr, this->_port);
 }
 
@@ -27,20 +27,42 @@ VisionServer::~VisionServer(){
 void VisionServer::send(std::vector<Entity> &entities) {
     SSL_WrapperPacket packet;
 
-    // SSL_WrapperPacket packet;
     SSL_DetectionFrame *frame = packet.mutable_detection();
     frame->set_camera_id(0);
     frame->set_frame_number(0);
     frame->set_t_capture(0);
     frame->set_t_sent(0);
 
-    SSL_DetectionBall *ball = frame->mutable_balls()->Add();
-
-    ball->set_x(entities[0].position().x);
-    ball->set_y(entities[0].position().y);
-    ball->set_confidence(1);
-    ball->set_pixel_x(entities[0].position().x * 100);
-    ball->set_pixel_y(entities[0].position().y * 100);
+    for(int i=0;i<entities.size();i++){
+        if(i == 0){
+            SSL_DetectionBall *ball = frame->mutable_balls()->Add();
+            ball->set_x(entities[0].position().x);
+            ball->set_y(entities[0].position().y);
+            ball->set_confidence(1);
+            ball->set_pixel_x(entities[0].position().x * 100);
+            ball->set_pixel_y(entities[0].position().y * 100);
+        } else{
+            if((int)entities[i+1].team() == 2){
+                SSL_DetectionRobot *robot = frame->mutable_robots_yellow()->Add();
+                robot->set_robot_id(entities[i+1].id());
+                robot->set_x(entities[i+1].position().x);
+                robot->set_y(entities[i+1].position().y);
+                robot->set_orientation(entities[i+1].angle());
+                robot->set_confidence(1);
+                robot->set_pixel_x(robot->x()*100);
+                robot->set_pixel_y(robot->y()*100);
+            }else if((int)entities[i+1].team() == 3){
+                SSL_DetectionRobot *robot = frame->mutable_robots_blue()->Add();
+                robot->set_robot_id(entities[i+1].id());
+                robot->set_x(entities[i+1].position().x);
+                robot->set_y(entities[i+1].position().y);
+                robot->set_orientation(entities[i+1].angle());
+                robot->set_confidence(1);
+                robot->set_pixel_x(robot->x()*100);
+                robot->set_pixel_y(robot->y()*100);
+            }
+        }
+    }
 
     // geometry
     SSL_GeometryData *geometry = packet.mutable_geometry();
@@ -52,14 +74,11 @@ void VisionServer::send(std::vector<Entity> &entities) {
     field->set_boundary_width(100);
 
     // serialize packet to send
-    QByteArray dgram;
-    std::string data;
 
-    packet.SerializeToString(&data);
+    QByteArray datagram(static_cast<int>(packet.ByteSizeLong()), static_cast<char>(0));
+    packet.SerializeToArray(datagram.data(), datagram.size());
 
-    QString qstr = QString::fromStdString(data);
-    dgram = qstr.toUtf8();
-    if(socket->writeDatagram(dgram, this->_addr, this->_port) > -1){
+    if(socket->writeDatagram(datagram,this->_addr, this->_port) > -1){
         printf("send data\n");
     }
 }

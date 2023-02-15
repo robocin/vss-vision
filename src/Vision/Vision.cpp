@@ -96,7 +96,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   entities[0] = vss.ball();
   Players players = vss.players();
   entities.insert(entities.end(),players.begin(),players.end());
-  VisionServer* server = new VisionServer("0.0.0.0", 8000);
+  VisionServer* server = new VisionServer("127.0.0.1", 10006);
     // NETWORK
     if (this->_isProcessingEnabled) {
         //spdlog::get("Vision")->info("update:: Seding frame.\n");
