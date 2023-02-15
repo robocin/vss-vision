@@ -135,14 +135,17 @@ double Utils::inverseAngle(double angle) {
 
 Point Utils::convertPositionCmToPixel(const Point &position)
 {
-  Point positionPixels;
-  positionPixels.x = position.x / Global::convertRatio().x;
-  positionPixels.y = (Field::size().y - position.y) / Global::convertRatio().y;
-  return positionPixels;
+  return Point(
+    (position.x + Field::size().x / 2) / Global::convertRatio().x,
+    (Field::size().y / 2 - position.y) / Global::convertRatio().y
+  );
 }
 
 Point Utils::convertPositionPixelToCm(const Point &position) {
-  return Point(position.x * Global::convertRatio().x, Field::size().y - position.y * Global::convertRatio().y);
+  return Point(
+    position.x * Global::convertRatio().x - Field::size().x / 2, 
+    (Field::size().y / 2) - position.y * Global::convertRatio().y
+  );
 }
 
 double Utils::map(double x, double in_min, double in_max, double out_min, double out_max) {

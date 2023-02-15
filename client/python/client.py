@@ -16,10 +16,10 @@ class PROTOClient:
         self.com_address = (self.com_ip, self.com_port)
 
     def fix_x(self, x):
-        return float((x * 10) - 750)
+        return float((x * 10))
 
     def fix_y(self, y):
-        return float((y * 10) - 600)
+        return float((y * 10))
 
     def normalizeAngle(self, a):
         if (a>180): return -360+a
