@@ -72,16 +72,8 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
         std::tie(b1, b2) = region.blobs;
         Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED);
         robot.team(teamColor);
-        Point lastPosition = robot.position();
         Point newPositionInPixels = (b1.position + b2.position) * 0.5;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
-
-        // Debug
-        //cv::circle(debugFrame, newPositionInPixels, 15, _colorCar[colorIndex], 1, cv::LINE_AA);
-        if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
-            std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
-          newPosition = lastPosition;
-        }
 
         Float newAngle = Utils::angle(b1.position, b2.position);
 
