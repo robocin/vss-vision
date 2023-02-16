@@ -109,20 +109,11 @@ void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std:
         std::tie(b1, b2) = region.blobs;
         Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED);
         robot.team(teamColor);
-        Point lastPosition = robot.position();
         Point newPositionInPixels = b2.position ;
         Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
         // Debug
         cv::circle(debugFrame, newPositionInPixels, 12, _colorCar[colorIndex], 2, cv::LINE_AA);
-        //cv::circle(debugFrame,Utils::convertPositionCmToPixel(Point(170/2,130/2)),10,cv::Scalar(0,255,0));
-        // Para evitar ruido, se o robo se movimentar muito pouco,
-        // ele permanece no mesmo local
-
-        if (std::abs(newPosition.x - lastPosition.x) < 2*Global::minPositionDifference() &&
-            std::abs(newPosition.y - lastPosition.y) < 2*Global::minPositionDifference()) {
-          newPosition = lastPosition;
-        }
 
         Float newAngle = Utils::angle(b2.position, b2.position);
         robot.update(newPosition, newAngle);
