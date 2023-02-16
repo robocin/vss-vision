@@ -153,8 +153,8 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
         filtPoint.x = filtPoint.x + ballVel.x*dt;
         filtPoint.y = filtPoint.y + ballVel.y*dt;
 
-        filtPoint.x = Utils::bound(filtPoint.x, 0, 170);
-        filtPoint.y = Utils::bound(filtPoint.y, 0, 130);
+        filtPoint.x = Utils::bound(filtPoint.x, -85, 85);
+        filtPoint.y = Utils::bound(filtPoint.y, -65, 65);
 
         cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(filtPoint.x),static_cast<int>(filtPoint.y))), 9, _colorCar[OrangeCOL], 2, cv::LINE_AA);
         //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
