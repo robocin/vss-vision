@@ -7,7 +7,7 @@ class FiraClient:
 
     def __init__(self, 
             vision_ip="127.0.0.1",
-            vision_port=10006):
+            vision_port=10015):
         """
         Init SSLClient object.
         Extended description of function.

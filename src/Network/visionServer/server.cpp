@@ -72,6 +72,8 @@ void VisionServer::send(std::vector<Entity> &entities) {
     field->set_goal_width(400);
     field->set_goal_depth(100);
     field->set_boundary_width(100);
+    field->set_penalty_area_depth(150);
+    field->set_penalty_area_width(700);
 
     // serialize packet to send
 
