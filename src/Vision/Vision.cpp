@@ -26,6 +26,7 @@ Vision::Vision()
     this->_deepLogRecordingVideo = false;
     this->_visionRunTime = 0;
     this->firstTime = QTime::currentTime();
+    this->server = new VisionServer("127.0.0.1", 10015);
 //    this->_visionStatusLocker.unlock();
 }
 
@@ -96,12 +97,12 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
   entities[0] = vss.ball();
   Players players = vss.players();
   entities.insert(entities.end(),players.begin(),players.end());
-  VisionServer* server = new VisionServer("127.0.0.1", 10015);
+  
     // NETWORK
     if (this->_isProcessingEnabled) {
         //spdlog::get("Vision")->info("update:: Seding frame.\n");
         // Network::sendFrame(entities, actualTime);
-        server->send(entities);
+        this->server->send(entities);
 
         //spdlog::get("Vision")->info("update:: Frame sent.\n");
     } else {

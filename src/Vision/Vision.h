@@ -145,6 +145,8 @@ private:
 
   Point _frameDimensions;
 
+  VisionServer *server;
+
   void saveFrameDimensions(cv::Mat &frame);
 
   /**

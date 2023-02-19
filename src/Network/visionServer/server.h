@@ -6,9 +6,9 @@
 #include <QtNetwork/qhostaddress.h>
 #include <QtCore/qstring.h>
 
-#include "Network/messages_robocup_ssl_detection.pb.h"
-#include "Network/messages_robocup_ssl_geometry.pb.h"
-#include "Network/wrapper.pb.h"
+#include "Network/protobuf/proto/messages_robocup_ssl_detection.pb.h"
+#include "Network/protobuf/proto/messages_robocup_ssl_geometry.pb.h"
+#include "Network/protobuf/proto/wrapper.pb.h"
 
 #ifndef EXTERNAL_COMPILATION
     #include "Entity/Entity.h"

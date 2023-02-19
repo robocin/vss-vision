@@ -17,11 +17,9 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 
 COPY . /opt/vss-vision
 
-RUN cd /opt/vss-vision/src/Network/pb && protoc --cpp_out=.. *.proto
-
 WORKDIR /opt/vss-vision/build
 
-RUN cmake clean .. && make -j4
+RUN cmake clean .. -Wno-dev && make -j4
 
 WORKDIR /opt/vss-vision/src
 
