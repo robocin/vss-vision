@@ -96,9 +96,9 @@ set(HEADERS
     src/Windows/FileConstants.h
     src/Network/Network.h
     src/Network/visionServer/server.h
-    /opt/vss-vision/src/Network/protobuf/proto/messages_robocup_ssl_detection.pb.h
-    /opt/vss-vision/src/Network/protobuf/proto/messages_robocup_ssl_geometry.pb.h
-    /opt/vss-vision/src/Network/protobuf/proto/wrapper.pb.h
+    src/Network/protobuf/proto/messages_robocup_ssl_detection.pb.h
+    src/Network/protobuf/proto/messages_robocup_ssl_geometry.pb.h
+    src/Network/protobuf/proto/wrapper.pb.h
 )
 
 set(RESOURCES
@@ -122,6 +122,9 @@ target_link_libraries(VSS-VISION TBB::tbb)
 
 find_package(SFML REQUIRED COMPONENTS network system)
 target_link_libraries(VSS-VISION sfml-network sfml-system)
+
+find_package(Protobuf REQUIRED)
+target_link_libraries(VSS-VISION protobuf::libprotobuf)
 
 function(ROBOCIN_LINK_PROTOBUFS LIB_PATH)
   add_subdirectory(${LIB_PATH})
