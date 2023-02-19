@@ -42,18 +42,18 @@ void VisionServer::send(std::vector<Entity> &entities) {
             ball->set_pixel_x(entities[0].position().x * 100);
             ball->set_pixel_y(entities[0].position().y * 100);
         } else{
-            if((int)entities[i+1].team() == 2){
+            if((int)entities[i].team() == 3){
                 SSL_DetectionRobot *robot = frame->mutable_robots_yellow()->Add();
-                robot->set_robot_id(entities[i+1].id());
+                robot->set_robot_id(entities[i].id()-200);
                 robot->set_x(entities[i].position().x * 10);
                 robot->set_y(entities[i].position().y * 10);
                 robot->set_orientation(entities[i].angle());
                 robot->set_confidence(1);
                 robot->set_pixel_x(robot->x()*100);
                 robot->set_pixel_y(robot->y()*100);
-            }else if((int)entities[i+1].team() == 3){
+            }else if((int)entities[i].team() == 3){
                 SSL_DetectionRobot *robot = frame->mutable_robots_blue()->Add();
-                robot->set_robot_id(entities[i+1].id());
+                robot->set_robot_id(entities[i].id()-100);
                 robot->set_x(entities[i].position().x * 10);
                 robot->set_y(entities[i].position().y * 10);
                 robot->set_orientation(entities[i].angle());
