@@ -8,7 +8,7 @@
 
 VisionServer::VisionServer(QString address, int port){
 
-    // create a QUDP socket
+    // create socket
     socket = new QUdpSocket();
 
     if(socket->isOpen())
@@ -17,7 +17,6 @@ VisionServer::VisionServer(QString address, int port){
     this->_addr.setAddress(address);
     this->_port = quint16(port);
     socket->connectToHost(address, port, QIODevice::WriteOnly, QAbstractSocket::IPv4Protocol);
-    //socket->bind(this->_addr, this->_port);
 }
 
 VisionServer::~VisionServer(){
@@ -76,11 +75,9 @@ void VisionServer::send(std::vector<Entity> &entities) {
     field->set_penalty_area_width(700);
 
     // serialize packet to send
-
     QByteArray datagram(static_cast<int>(packet.ByteSizeLong()), static_cast<char>(0));
     packet.SerializeToArray(datagram.data(), datagram.size());
 
-    if(socket->writeDatagram(datagram,this->_addr, this->_port) > -1){
-        printf("send data\n");
-    }
+    // send packet
+    socket->writeDatagram(datagram,this->_addr, this->_port);
 }
