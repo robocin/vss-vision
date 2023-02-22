@@ -10,7 +10,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/src")
 
-
 set(SOURCES
     src/main.cpp
     src/Utils/Utils.cpp
@@ -49,10 +48,6 @@ set(SOURCES
     src/trackconfigdialog.cpp
     src/Network/Network.cpp
     src/Network/visionServer/server.cpp
-    src/Network/protobuf/proto/messages_robocup_ssl_detection.pb.cc
-    src/Network/protobuf/proto/messages_robocup_ssl_geometry.pb.cc
-    src/Network/protobuf/proto/wrapper.pb.cc
-
 )
 
 set(HEADERS
@@ -96,9 +91,6 @@ set(HEADERS
     src/Windows/FileConstants.h
     src/Network/Network.h
     src/Network/visionServer/server.h
-    src/Network/protobuf/proto/messages_robocup_ssl_detection.pb.h
-    src/Network/protobuf/proto/messages_robocup_ssl_geometry.pb.h
-    src/Network/protobuf/proto/wrapper.pb.h
 )
 
 set(RESOURCES
@@ -106,29 +98,31 @@ set(RESOURCES
     src/iconTools/icontools.qrc
 )
 
-add_executable(VSS-VISION ${SOURCES} ${HEADERS} ${RESOURCES})
-
-target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/src")
-target_include_directories(VSS-VISION PUBLIC "${PROJECT_SOURCE_DIR}/include")
-
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Network)
-target_link_libraries(VSS-VISION Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network)
-
-find_package(OpenCV REQUIRED)
-target_link_libraries(VSS-VISION ${OpenCV_LIBS})
-
-find_package(TBB REQUIRED)
-target_link_libraries(VSS-VISION TBB::tbb)
-
-find_package(SFML REQUIRED COMPONENTS network system)
-target_link_libraries(VSS-VISION sfml-network sfml-system)
+set(PROTOS
+    src/Network/protobuf/proto/messages_robocup_ssl_detection.proto
+    src/Network/protobuf/proto/messages_robocup_ssl_geometry.proto
+    src/Network/protobuf/proto/wrapper.proto
+)
 
 find_package(Protobuf REQUIRED)
-target_link_libraries(VSS-VISION protobuf::libprotobuf)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTOS})
 
-function(ROBOCIN_LINK_PROTOBUFS LIB_PATH)
-  add_subdirectory(${LIB_PATH})
-  target_link_libraries(VSS-VISION ${PROTOBUF_LIBRARY})
-endfunction()
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${RESOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
 
-ROBOCIN_LINK_PROTOBUFS(src/Network/protobuf/proto)
+target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/src")
+target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Network)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network)
+
+find_package(OpenCV REQUIRED)
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+
+find_package(TBB REQUIRED)
+target_link_libraries(${PROJECT_NAME} TBB::tbb)
+
+find_package(SFML REQUIRED COMPONENTS network system)
+target_link_libraries(${PROJECT_NAME} sfml-network sfml-system)
+
+target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES})
