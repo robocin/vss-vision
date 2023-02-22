@@ -7,7 +7,7 @@
 	},
 
 	"runArgs": [
-		"--device=/dev/video1:/dev/video0",
+		"--device=/dev:/dev/video0",
 		"-e", "DISPLAY=${env:DISPLAY}",
 		"-v", "/tmp/.X11-unix:/tmp/.X11-unix",
 		"--network=host"
