@@ -12,6 +12,7 @@ Qt5
 OpenCV
 SFML
 TBB
+Protobuf
 ```
 ## Running with docker
 1. Build the vss-vision image using the shell script

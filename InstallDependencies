@@ -15,3 +15,7 @@ sudo apt install freeglut3-dev -y
 
 # Install QT5
 sudo apt install qt5-default -y
+
+# Intall Protobuf
+sudo apt install libprotobuf -y
+sudo apt install protobuf-compiler -y
