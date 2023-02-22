@@ -1,5 +1,5 @@
-#ifndef C5873298_24F8_46ED_B84A_3ED979543C50
-#define C5873298_24F8_46ED_B84A_3ED979543C50
+#ifndef SERVER_H
+#define SERVER_H
 
 #include <QtNetwork/qtnetworkglobal.h>
 #include <QtNetwork/qudpsocket.h>
@@ -29,4 +29,4 @@ private:
     QUdpSocket *socket;
 
 };
-#endif /* C5873298_24F8_46ED_B84A_3ED979543C50 */
+#endif /* SERVER_H */
