@@ -26,7 +26,7 @@ Vision::Vision()
     this->_deepLogRecordingVideo = false;
     this->_visionRunTime = 0;
     this->firstTime = QTime::currentTime();
-    this->server = new VisionServer("127.0.0.1", 10015);
+    this->server = new VisionServer("224.5.23.2", 10015);
 //    this->_visionStatusLocker.unlock();
 }
 
