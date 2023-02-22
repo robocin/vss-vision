@@ -9,14 +9,14 @@
 VisionServer::VisionServer(QString address, int port){
 
     // create socket
-    socket = new QUdpSocket();
-
-    if(socket->isOpen())
-        socket->close();
-
+    this->socket = new QUdpSocket();
+    
+    if (this->socket->isOpen())
+        this->socket->close();
+    
+    this->socket->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
     this->_addr.setAddress(address);
     this->_port = quint16(port);
-    socket->connectToHost(address, port, QIODevice::WriteOnly, QAbstractSocket::IPv4Protocol);
 }
 
 VisionServer::~VisionServer(){
