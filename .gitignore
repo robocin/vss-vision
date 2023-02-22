@@ -20,6 +20,7 @@ src/Utils/dest.txt
 build/
 bin/
 *avi
+.cache/
 
 #All logging files (including rotative)
 src/Log/*
