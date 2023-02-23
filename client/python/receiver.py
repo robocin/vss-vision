@@ -6,7 +6,7 @@ import wrapper_pb2 as wr
 class FiraClient:
 
     def __init__(self, 
-            vision_ip="127.0.0.1",
+            vision_ip="224.5.23.2",
             vision_port=10015):
         """
         Init SSLClient object.
