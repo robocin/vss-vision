@@ -64,8 +64,8 @@ typedef std::vector<cv::Rect> Rectangles;
 class MaggicSegmentation : public ImageProcessing
 {
 
-#define min(a,b) (a<b?a:b)
-#define max(a,b) (a>b?a:b)
+// #define min(a,b) (a<b?a:b)
+// #define max(a,b) (a>b?a:b)
 
 public:
     enum NormalizationMethod {

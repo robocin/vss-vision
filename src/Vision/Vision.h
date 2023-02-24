@@ -31,6 +31,8 @@
 #include <QTime>
 #include <QElapsedTimer>
 #include <Timer/Timer.h>
+#include "Network/visionServer/server.h"
+
 //#include "Utils/Entity.h"
 #include "Utils/Utils.h"
 
@@ -142,6 +144,8 @@ private:
   QTime firstTime;
 
   Point _frameDimensions;
+
+  VisionServer *server;
 
   void saveFrameDimensions(cv::Mat &frame);
 

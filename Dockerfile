@@ -11,13 +11,15 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libsfml-dev \
     libopencv-dev \
     freeglut3-dev \
+    protobuf-compiler \
+    libprotobuf-dev \ 
     cmake
 
 COPY . /opt/vss-vision
 
 WORKDIR /opt/vss-vision/build
 
-RUN cmake clean .. && make -j4
+RUN cmake clean .. -Wno-dev && make -j4
 
 WORKDIR /opt/vss-vision/src
 

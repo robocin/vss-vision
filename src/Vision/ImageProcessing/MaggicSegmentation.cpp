@@ -410,9 +410,9 @@ inline void MaggicSegmentation::filterGray(cv::Vec3b &color, cv::Vec3b &coloro) 
     default:
         break;
     }
-    float men = min(min(x, y), z);
-    float lower_bound = max(men - filterGrayThreshold, 0.f);
-    float upper_bound = min(men + filterGrayThreshold, 255.f);
+    float men = std::min(std::min(x, y), z);
+    float lower_bound = std::max(men - filterGrayThreshold, 0.f);
+    float upper_bound = std::min(men + filterGrayThreshold, 255.f);
     if (x >= lower_bound && x <= upper_bound &&
       y >= lower_bound && y <= upper_bound &&
       z >= lower_bound && z <= upper_bound) {
@@ -549,7 +549,7 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
         for (size_t k=0;k<defaultHueList.size();k++) {
           float x = defaultHueList[k].first*255.0f;
           float y = hueChannel;
-          float d = min(fabs(x- y),min(fabs((256 + x) - y), fabs(x - y-256)));
+          float d = std::min(fabs(x- y),std::min(fabs((256 + x) - y), fabs(x - y-256)));
           if (d < bd) {
             bd = d;
             bid = defaultHueList[k].second;
@@ -571,7 +571,7 @@ void MaggicSegmentation::setHUETable(bool fromFile) {
     for (size_t j=0;j<hueList.size();j++) {
       int l = hueList[j].second;
       int x = static_cast<int>(hueList[j].first);
-      int d = min(abs(x- i),min(abs((256 + x) - i), abs(x - i-256)));
+      int d = std::min(abs(x- i),std::min(abs((256 + x) - i), abs(x - i-256)));
 
       if (d < bd) {
         bd = d;
@@ -901,10 +901,10 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
             memset(histo.data, 0, sizeof(float)*static_cast<uint>(histo.cols*histo.rows*histo.channels()));
 
             cv::Rect &r = componentsRectangles[i];
-            r.x = max(r.x-2,0);
-            r.y = max(r.y-2,0);
-            r.width = min(r.width+2,d.cols);
-            r.height = min(r.height+2,d.rows);
+            r.x = std::max(r.x-2,0);
+            r.y = std::max(r.y-2,0);
+            r.width = std::min(r.width+2,d.cols);
+            r.height = std::min(r.height+2,d.rows);
             cv::rectangle(t, r, cv::Scalar(255, 0,0));
 
             for (int x = (r.x << 1); x < (r.x << 1) + (r.width << 1); x++) {
@@ -929,7 +929,7 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
 
           }
           int colorsize = 0;
-          for(int i=0;i<7;++i) colorsize = max(colorsize,static_cast<int>(robotsDescriptors[i].colors.size()));
+          for(int i=0;i<7;++i) colorsize = std::max(colorsize,static_cast<int>(robotsDescriptors[i].colors.size()));
           colorsize++;
           cv::Mat cores = cv::Mat::zeros(cv::Size(colorsize*32,32*7), CV_8UC3);
 
@@ -945,7 +945,7 @@ bool MaggicSegmentation::estimateRobots(cv::Mat img, int manyTimes, int n_compon
           cv::cvtColor(cores, cores, cv::COLOR_HSV2BGR_FULL);
           cv::cvtColor(t, t, cv::COLOR_HSV2BGR_FULL);
           static char str[2000];
-          sprintf(str,"robocin-robotColors.png");
+          // sprintf(str,"robocin-robotColors.png");
           //cv::imwrite(str, cores);
           //cv::imshow(str,cores);
 
@@ -1404,7 +1404,7 @@ void MaggicSegmentation::doDetails() {
     if (this->mouseDrag) {
         if (dragpivotId != -1) {
           //std::cout << "dragging " << dragpivotId << std::endl;
-          int theX = max(colorFrame.x+1,min(colorFrame.x + colorFrame.width-2, this->cursorPos.x));
+          int theX = std::max(colorFrame.x+1,std::min(colorFrame.x + colorFrame.width-2, this->cursorPos.x));
           cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,0),2);
         }
         if (this->enableFilter && firstPress.x > -1) {
@@ -1414,15 +1414,15 @@ void MaggicSegmentation::doDetails() {
                        mY = colorFrame.y + colorFrame.height;
 
             int x, X, y, Y;
-            x = min(this->cursorPos.x,firstPress.x);
-            X = max(this->cursorPos.x,firstPress.x);
-            y = min(this->cursorPos.y,firstPress.y);
-            Y = max(this->cursorPos.y,firstPress.y);
+            x = std::min(this->cursorPos.x,firstPress.x);
+            X = std::max(this->cursorPos.x,firstPress.x);
+            y = std::min(this->cursorPos.y,firstPress.y);
+            Y = std::max(this->cursorPos.y,firstPress.y);
 
-            x = max(min(mX,x),mx);
-            X = max(min(mX,X),mx);
-            y = max(min(mY,y),my);
-            Y = max(min(mY,Y),my);
+            x = std::max(std::min(mX,x),mx);
+            X = std::max(std::min(mX,X),mx);
+            y = std::max(std::min(mY,y),my);
+            Y = std::max(std::min(mY,Y),my);
 
             tmpFilterRect = cv::Rect2i(x, y, X-x, Y-y);
 
@@ -1444,7 +1444,7 @@ void MaggicSegmentation::doDetails() {
     if (this->releasedLeft) {
         bool changed = false;
         if (this->dragpivotId != -1) {
-            int theX = max(colorFrame.x+1,min(colorFrame.x + colorFrame.width-2, this->cursorPos.x)) - colorFrame.x-3;
+            int theX = std::max(colorFrame.x+1,std::min(colorFrame.x + colorFrame.width-2, this->cursorPos.x)) - colorFrame.x-3;
             float newHue = static_cast<float>(theX)*255.0f/static_cast<float>(colorFrame.width);
             this->hueList[static_cast<size_t>(this->dragpivotId)].first = newHue;
             this->dragpivotId = -1;
@@ -1597,25 +1597,25 @@ void MaggicSegmentation::saveSelectedDebug() {
     static char normalizedOrNot[100];
 
     normalizedOrNot[0] = 0;
-    if (this->normalized_color) sprintf(normalizedOrNot,"normalized_");
+    // if (this->normalized_color) sprintf(normalizedOrNot,"normalized_");
 
     if (this->_debugSelection == MaggicVisionDebugSelection_Thresholded) {
-        sprintf(fileName,"maggic_thresholded_%s%03d.png", normalizedOrNot, filterGrayThreshold);
+        // sprintf(fileName,"maggic_thresholded_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_firstThreshold);
         std::cout << "Saved thresholded" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_SegmentationFrame) {
-        sprintf(fileName,"maggic_segmentation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
+        // sprintf(fileName,"maggic_segmentation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_segmentationFrame);
         std::cout << "Saved segmentation" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_ExtremeSaturation) {
-        sprintf(fileName,"maggic_extremeSaturation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
+        // sprintf(fileName,"maggic_extremeSaturation_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_extremeSaturation);
         std::cout << "Saved extreme saturation" << std::endl;
 
     } else if (this->_debugSelection == MaggicVisionDebugSelection_DetailsFrame) {
-        sprintf(fileName,"maggic_detailsFrame_%s%03d.png", normalizedOrNot, filterGrayThreshold);
+        // sprintf(fileName,"maggic_detailsFrame_%s%03d.png", normalizedOrNot, filterGrayThreshold);
         cv::imwrite(fileName, this->_detailsFrame);
         std::cout << "Saved details frame" << std::endl;
 

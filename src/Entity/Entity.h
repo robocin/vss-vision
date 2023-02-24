@@ -74,6 +74,7 @@ typedef Entity Player;
 typedef Player Ally;
 typedef Player Enemy;
 
+
 using Entities      = Vector<Entity>;
 using Players       = Vector<Player>;
 
