@@ -2,7 +2,17 @@
 #include "ui_maggicsegmentationdialog.h"
 #include <QMouseEvent>
 #include <chrono>
-#include <tbb/tbb.h>
+#ifndef Q_MOC_RUN
+#if defined(emit)
+    #undef emit
+    #include <tbb/parallel_for.h>
+    #include <tbb/blocked_range.h>
+    #define emit // restore the macro definition of "emit", as it was defined in gtmetamacros.h
+#else
+    #include <tbb/parallel_for.h>
+    #include <tbb/blocked_range.h>
+#endif // defined(emit)
+#endif // Q_MOC_RUN
 #include <QDir>
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM 17
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM 45

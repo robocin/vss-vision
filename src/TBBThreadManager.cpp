@@ -1,7 +1,7 @@
 #include "TBBThreadManager.h"
 
 TBBThreadManager::TBBThreadManager()
-  : _cameraNode(g, cameraBody(&this->_cameraStop), false),
+  : _cameraNode(g, cameraBody(&this->_cameraStop)),
     _limiterNode(g,1),
     _visionNode(g, tbb::flow::serial, visionBody(&this->_visionStop)),
 //    _visionNode(g, tbb::flow::unlimited, visionBody(&this->_visionStop)),
@@ -10,7 +10,7 @@ TBBThreadManager::TBBThreadManager()
   this->_cameraStop = false;
   this->_visionStop = true;
   tbb::flow::make_edge(this->_limiterNode, this->_visionNode);
-  tbb::flow::make_edge(this->_visionNode, this->_limiterNode.decrement);
+  tbb::flow::make_edge(this->_visionNode, this->_limiterNode.decrementer());
   tbb::flow::make_edge(this->_cameraNode, this->_limiterNode);
 #ifdef WITHFEEDBACK
   tbb::flow::make_edge(this->_visionNode, input_port<0>(this->_indexerNode));
