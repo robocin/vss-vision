@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ubuntu 20.04 LTS
+# Ubuntu 22.04 LTS
 
 # Update repos
 sudo apt update -y
@@ -14,7 +14,7 @@ sudo apt install libopencv-dev -y
 sudo apt install freeglut3-dev -y
 
 # Install QT5
-sudo apt install qt5-default -y
+sudo apt install qtbase5-dev -y
 
 # Intall Protobuf
 sudo apt install libprotobuf -y

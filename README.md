@@ -26,7 +26,7 @@ Protobuf
 ```
 The camera device id should be the id found on /dev/video{id} of the camera which you want to use on vss-vision, if none is given, the image will run without a camera device attached.
 The configuration files are stored on a docker volume named vss-vision-config, so the config files should persist over docker runs
-## Building (Ubuntu 20.04 LTS)
+## Building (Ubuntu 22.04 LTS)
 
 1. Install the needed dependencies.
 ```bash
