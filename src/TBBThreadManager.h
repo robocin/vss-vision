@@ -1,7 +1,16 @@
 #ifndef THREADMANAGER_H
 #define THREADMANAGER_H
 
-#include <tbb/flow_graph.h>
+#ifndef Q_MOC_RUN
+#if defined(emit)
+    #undef emit
+    #include <tbb/flow_graph.h>
+    #define emit // restore the macro definition of "emit", as it was defined in gtmetamacros.h
+#else
+    #include <tbb/flow_graph.h>
+#endif // defined(emit)
+#endif // Q_MOC_RUN
+
 #include <CameraManager/CameraManager.h>
 #include <Vision/Vision.h>
 #include <stdio.h>
@@ -9,18 +18,20 @@
 #include "Entity/Entity.h"
 //#define WITHFEEDBACK
 
-using namespace tbb::flow;
-
 struct cameraBody {
   bool *cameraStop;
   cameraBody(bool *x): cameraStop(x) {}
-  bool operator()(tbb::flow::continue_msg) const {
-    if (!cameraStop) return false;
+  tbb::flow::continue_msg operator()(tbb::flow_control &fc) const {
+    // if (!cameraStop) return false;
 
-    CameraManager::singleton().updateFrame();
-    if (CameraManager::singleton().getCaptureType() == videoCapture) usleep(29000);
-
-    return !*cameraStop;
+    if (*cameraStop) {
+      fc.stop();
+      return {};
+    } else {
+      CameraManager::singleton().updateFrame();
+      if (CameraManager::singleton().getCaptureType() == videoCapture) usleep(29000);
+      return {};
+    }
   }
 };
 
@@ -64,7 +75,7 @@ public slots:
   void pauseAll();
 
 private:
-   tbb::flow::source_node <tbb::flow::continue_msg> _cameraNode;
+   tbb::flow::input_node <tbb::flow::continue_msg> _cameraNode;
    tbb::flow::limiter_node <tbb::flow::continue_msg> _limiterNode;
 //   tbb::flow::source_node <tbb::flow::continue_msg> _visionNode;
    tbb::flow::function_node<tbb::flow::continue_msg, tbb::flow::continue_msg> _visionNode;

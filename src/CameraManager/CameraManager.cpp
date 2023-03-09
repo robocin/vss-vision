@@ -491,7 +491,7 @@ std::vector<int> CameraManager::returnCameraList() {
   int numberToReturn = 0;
 
   while (std::getline(iss, line)) {
-    if (line.find("/dev/") != std::string::npos) {
+    if (line.find("/dev/video") != std::string::npos) {
       QRegExp rx("/dev/video(\\d+)");
       QString str = QString::fromStdString(line);
       QStringList list;

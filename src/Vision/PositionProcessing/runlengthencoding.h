@@ -6,7 +6,17 @@
 #include "opencv2/opencv.hpp"
 #include <vector>
 #include <Utils/Utils.h>
-#include <tbb/tbb.h>
+#ifndef Q_MOC_RUN
+#if defined(emit)
+    #undef emit
+    #include <tbb/parallel_for.h>
+    #include <tbb/blocked_range.h>
+    #define emit // restore the macro definition of "emit", as it was defined in gtmetamacros.h
+#else
+    #include <tbb/parallel_for.h>
+    #include <tbb/blocked_range.h>
+#endif // defined(emit)
+#endif // Q_MOC_RUN
 #include <Timer/Timer.h>
 
 typedef struct{

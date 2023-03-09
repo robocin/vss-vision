@@ -3,7 +3,17 @@
 
 #include "ImageProcessing.h"
 #include "Vision/ColorSpace.h"
-#include <tbb/tbb.h>
+#ifndef Q_MOC_RUN
+#if defined(emit)
+    #undef emit
+    #include <tbb/parallel_for.h>
+    #include <tbb/blocked_range2d.h>
+    #define emit // restore the macro definition of "emit", as it was defined in gtmetamacros.h
+#else
+    #include <tbb/parallel_for.h>
+    #include <tbb/blocked_range2d.h>
+#endif // defined(emit)
+#endif // Q_MOC_RUN
 #include <Timer/Timer.h>
 
 #define LUTSIZE 16777216
