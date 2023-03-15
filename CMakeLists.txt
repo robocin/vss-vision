@@ -102,6 +102,13 @@ set(PROTOS
     src/Network/protobuf/proto/messages_robocup_ssl_detection.proto
     src/Network/protobuf/proto/messages_robocup_ssl_geometry.proto
     src/Network/protobuf/proto/wrapper.proto
+    src/Network/protobuf/proto/command.proto
+    src/Network/protobuf/proto/common.proto
+    src/Network/protobuf/proto/packet.proto
+    src/Network/protobuf/proto/replacement.proto
+    src/Network/protobuf/proto/vssref_command.proto
+    src/Network/protobuf/proto/vssref_common.proto
+    src/Network/protobuf/proto/vssref_placement.proto
 )
 
 find_package(Protobuf REQUIRED)

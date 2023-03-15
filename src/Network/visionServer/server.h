@@ -9,6 +9,10 @@
 #include "messages_robocup_ssl_detection.pb.h"
 #include "messages_robocup_ssl_geometry.pb.h"
 #include "wrapper.pb.h"
+#include "command.pb.h"
+#include "common.pb.h"
+#include "packet.pb.h"
+
 
 #ifndef EXTERNAL_COMPILATION
     #include "Entity/Entity.h"
@@ -27,6 +31,8 @@ public:
 
 private:
     QUdpSocket *socket;
+    QUdpSocket *socket_ref;
+
 
 };
 #endif /* SERVER_H */
