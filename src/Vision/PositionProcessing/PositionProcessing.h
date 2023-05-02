@@ -82,10 +82,11 @@ public:
    */
 
   typedef struct Blob {
+    int       id;
     cv::Point position;
-    double  angle;
-    bool    valid;
-    int     area;
+    double    angle;
+    bool      valid;
+    int       area;
     Blob():angle(0),valid(false),area(0) {}
   } Blob;
 
