@@ -90,13 +90,15 @@ public:
     Blob():angle(0),valid(false),area(0) {}
   } Blob;
 
+  typedef std::vector<Blob> Blobs;
+
   typedef struct NearestBlobInfo{
     int teamIndex;
     double distance;
   } NearestBlobInfo;
 
   typedef struct Region {
-    std::pair <Blob,Blob> blobs;
+    Blobs blobs;
     int team;
     double distance;
     int color;

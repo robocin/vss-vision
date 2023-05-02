@@ -68,8 +68,8 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
         }
 
         markedColors[size_t(colorIndex)] = true;
-        Blob b1, b2;
-        std::tie(b1, b2) = region.blobs;
+        Blobs blobs = region.blobs;
+        Blob b1 = blobs[1], b2 = blobs[0];
         Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED);
         robot.team(teamColor);
         Point newPositionInPixels = (b1.position + b2.position) * 0.5;
@@ -105,8 +105,8 @@ void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std:
     for (Region &region : enemyRegions) {
       if (region.distance < blobMaxDist()) {
         int colorIndex = region.color;
-        Blob b1, b2;
-        std::tie(b1, b2) = region.blobs;
+        Blobs blobs = region.blobs;
+        Blob b1 = blobs[0], b2 = blobs[1];
         Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED);
         robot.team(teamColor);
         Point newPositionInPixels = b2.position ;
@@ -223,9 +223,11 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
   for(int idColor = Color::RED ; idColor < Color::BROWN+1; idColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
       if(blob[idColor][i].valid) {
+        current.blobs.clear();
         primary = this->getNearestPrimary(blob[idColor][i]);
+        current.blobs.push_back(primary.first);
+        current.blobs.push_back(blob[idColor][i]);
 
-        current.blobs = std::make_pair(blob[idColor][i], primary.first);
         current.team = primary.second.teamIndex;
         current.color = idColor;
 
@@ -242,8 +244,10 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
       int qnt = 0;
       for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
         if(blob[idColor][i].valid) {
+          current.blobs.clear();
 
-          current.blobs = std::make_pair(blob[idColor][i], blob[idColor][i]);
+          current.blobs.push_back(blob[idColor][i]);
+          current.blobs.push_back(blob[idColor][i]);    
           current.team = idColor;
           current.color = Color::RED + qnt++;
           current.distance = 0.0;
