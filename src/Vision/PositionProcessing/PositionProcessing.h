@@ -82,12 +82,17 @@ public:
    */
 
   typedef struct Blob {
-    int       id;
+    int     id;
     cv::Point position;
-    double    angle;
-    bool      valid;
-    int       area;
+    double  angle;
+    bool    valid;
+    int     area;
+    int     color;
     Blob():angle(0),valid(false),area(0) {}
+    // This is used to sort the blobs by its
+    bool operator<(Blob &b) {
+        return color < b.color;
+    }
   } Blob;
 
   typedef std::vector<Blob> Blobs;
@@ -101,12 +106,18 @@ public:
     Blobs blobs;
     int team;
     double distance;
-    int color;
+
+    bool operator<(Region &b) {
+        if (blobs.size() == 0 || b.blobs.size() == 0) return false;
+        return blobs[0].id < b.blobs[0].id;
+    }
   } Region;
 
+  typedef std::vector<Region> Regions;
+
   typedef struct FieldRegions {
-    std::vector<Region> team;
-    std::vector<Region> enemys;
+    Regions team;
+    Regions enemies;
   } FieldRegions;
 
   /**
@@ -178,6 +189,13 @@ protected:
    * @param    ball  The entity to be returned
    */
   void findBall(Entity &ball, cv::Mat &debugFrame);
+
+  /**
+   * @brief    Filter blobs to merge valid blos in new tag format.
+   *
+   * @param    regions The regions to filter the blobs into new regions
+   */
+  void filterTeam(Regions &regions);
 
    /**
   * @brief    Identifies from which team the blob belongs to.

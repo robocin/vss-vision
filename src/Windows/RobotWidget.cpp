@@ -26,7 +26,8 @@ RobotWidget::~RobotWidget() {
 QPixmap RobotWidget::getRobotId() {
   QPixmap colorArea(200, 200);
   setPrimaryColor(colorArea);
-  setSecodaryColor(colorArea);
+  setSecondaryColor(colorArea);
+  setSecondSecondary(colorArea);
   QPainter paint(&colorArea);
   paint.drawPixmap(0, 0, m_borderImage);
   paint.end();
@@ -44,7 +45,7 @@ void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
   paint.drawRect(0, 0, 200, 100);
 }
 
-void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
+void RobotWidget::setSecondaryColor(QPixmap &t_robotId) {
   QPainter paint(&t_robotId);
 
   // AJUSTAR
@@ -53,7 +54,8 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   int t_id = this->m_robotId%100 + Color::RED;
 
   for (const char *str : Color::_names()) {
-    if (t_id == Color::_from_string(str)) {
+    printf("ID: %d\n", t_id);
+    if (t_id/10 == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
         color = QColor(correctColor);
@@ -63,6 +65,28 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
 
   paint.setBrush(QBrush(color));
   paint.drawRect(0, 100, 200, 100);
+}
+
+void RobotWidget::setSecondSecondary(QPixmap &t_robotId) {
+  QPainter paint(&t_robotId);
+
+  // AJUSTAR
+  QColor color(Qt::black);
+  QVector<QString> names;
+  int t_id = this->m_robotId%100 + Color::RED;
+
+  for (const char *str : Color::_names()) {
+    printf("ID: %d\n", t_id%10);
+    if (t_id%10 == Color::_from_string(str)) {
+      QString correctColor(str);
+      if (QColor::isValidColor(correctColor)) {
+        color = QColor(correctColor);
+      }
+    }
+  }
+
+  paint.setBrush(QBrush(color));
+  paint.drawRect(100, 100, 100, 100);
 }
 
 void RobotWidget::update() {
