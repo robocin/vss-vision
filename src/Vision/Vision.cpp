@@ -72,7 +72,7 @@ void Vision::update()
     Global::setConvertRatio(_convert);
     
     this->_processingFrame = this->_currentFrame.clone();
-
+    
     if (this->_isProcessingEnabled) {
 
         this->_processingFrame = this->_segmentation->run(this->_processingFrame);

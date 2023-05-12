@@ -88,7 +88,8 @@ public:
     bool    valid;
     int     area;
     int     color;
-    Blob():angle(0),valid(false),area(0) {}
+    int     distance;
+    Blob():angle(0),valid(false),area(0),distance(INT_MAX) {}
     // This is used to sort the blobs by its
     bool operator<(Blob &b) {
         return color < b.color;
@@ -98,14 +99,12 @@ public:
   typedef std::vector<Blob> Blobs;
 
   typedef struct NearestBlobInfo{
-    int teamIndex;
-    double distance;
+    int idColor;
   } NearestBlobInfo;
 
   typedef struct Region {
     Blobs blobs;
     int team;
-    double distance;
 
     bool operator<(Region &b) {
         if (blobs.size() == 0 || b.blobs.size() == 0) return false;
@@ -117,7 +116,6 @@ public:
 
   typedef struct FieldRegions {
     Regions team;
-    Regions enemies;
   } FieldRegions;
 
   /**
@@ -205,7 +203,7 @@ protected:
    /**
   * @brief    combines a color patch identifier with the closer team patch.
   */
-  std::pair<Blob, NearestBlobInfo> getNearestPrimary(Blob current);
+  Blobs getNearestSecondary(Blob current);
 
    /**
   * @brief    Identifies all robots

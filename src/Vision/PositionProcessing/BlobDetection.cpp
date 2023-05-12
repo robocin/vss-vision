@@ -50,6 +50,7 @@ void BlobDetection::findBlobs(cv::Mat& debugFrame) {
       blob[i][j].valid = false;
       blob[i][j].position = cv::Point(0,0);
       blob[i][j].area = 0;
+      blob[i][j].distance = INT_MAX;
     }
   }
 

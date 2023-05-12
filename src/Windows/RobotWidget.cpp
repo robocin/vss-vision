@@ -54,7 +54,6 @@ void RobotWidget::setSecondaryColor(QPixmap &t_robotId) {
   int t_id = this->m_robotId%100 + Color::RED;
 
   for (const char *str : Color::_names()) {
-    printf("ID: %d\n", t_id);
     if (t_id/10 == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
@@ -76,7 +75,6 @@ void RobotWidget::setSecondSecondary(QPixmap &t_robotId) {
   int t_id = this->m_robotId%100 + Color::RED;
 
   for (const char *str : Color::_names()) {
-    printf("ID: %d\n", t_id%10);
     if (t_id%10 == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
