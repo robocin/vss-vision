@@ -58,14 +58,14 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
     Player robot((teamColor-1)*100 + (b2.color + b3.color)); // set the id of the robot
     robot.team(teamColor);
     cv::Point secondaryPosition = (b2.position + b3.position) * 0.5;
-    Point newPositionInPixels = (b1.position + b2.position) * 0.5;
+    Point newPositionInPixels = (b1.position + secondaryPosition) * 0.5;
     Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
 
-    Float newAngle = Utils::angle(b1.position, b2.position);
+    Float newAngle = Utils::angle(b1.position, secondaryPosition);
 
     int firstSecondary = b2.color;
     int secondSecondary = b3.color;
-    int colorIndex = firstSecondary + secondSecondary;
+    int colorIndex = firstSecondary;
 
     robot.update(Point(newPosition.x,newPosition.y), newAngle);
     players.push_back(robot);
@@ -144,12 +144,14 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
 PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) {
   Blobs choosen;
 
-  for(int idColor = Color::RED ; idColor <= Color::BROWN ; idColor++) {
+  for(int idColor = Color::RED ; idColor < Color::BROWN+1; idColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ;i++) {
       if(blob[idColor][i].valid) {
         blob[idColor][i].color = idColor;
-        blob[idColor][i].distance = static_cast<int>(Utils::sumOfSquares(current.position,blob[idColor][i].position));
+        blob[idColor][i].distance = static_cast<int>(Utils::sumOfSquares(blob[idColor][i].position, current.position));
+        printf("%d, %d, %d\n", current.color, idColor, i);
         if(blob[idColor][i].distance < blobMaxDist()) {
+          printf("Entrou\n");
           if(choosen.size() == 2){
             if(choosen.begin()->distance > blob[idColor][i].distance){
               choosen[0] = blob[idColor][i];
@@ -167,7 +169,6 @@ PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) 
       } else break;
     }
   }
-
   return choosen;
 }
 
@@ -204,20 +205,23 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
   for(int teamColor = Color::BLUE; teamColor <= Color::YELLOW; teamColor++) {
     for(int i = 0; i < CLUSTERSPERCOLOR; i++){
       if(blob[teamColor][i].valid){
-        // current.blobs.clear();
-        secondary = this->getNearestSecondary(blob[teamColor][i]);
+        current.blobs.clear();
         blob[teamColor][i].color = teamColor; 
-        
-        current.blobs.push_back(blob[teamColor][i]);
-        current.blobs.push_back(secondary[0]);
-        current.blobs.push_back(secondary[1]);
-        current.team = teamColor;
+        secondary = this->getNearestSecondary(blob[teamColor][i]);
+        if(secondary.size() > 0){
+          
+          current.blobs.push_back(blob[teamColor][i]);
+          current.blobs.push_back(secondary[0]);
+          current.blobs.push_back(secondary[1]);
+          current.team = teamColor;
 
-        result.team.push_back(current);
+          result.team.push_back(current);
+        } else { break; }
       }
     }
   }
 
+  printf("Regioes: %d\n", result.team.size());
   return result;
 }
 
@@ -292,6 +296,7 @@ void PositionProcessing::initBlob(PositionProcessing::Blob &blob)
   blob.area = 0;
   blob.angle = 0;
   blob.valid = false;
+  blob.distance = INT_MAX;
 }
 
 void PositionProcessing::initDefault()
