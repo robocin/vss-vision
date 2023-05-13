@@ -31,7 +31,7 @@ double Utils::double_dif(double x, double y) {
 }
 
 double Utils::sumOfSquares(cv::Point alfa, cv::Point beta) {
-  return (pow(alfa.x - beta.x, 2) + pow(alfa.y - beta.y, 2));
+  return sqrt((pow(alfa.x - beta.x, 2) + pow(alfa.y - beta.y, 2)));
 }
 
 double Utils::angle(cv::Point alfa,cv::Point beta) {
