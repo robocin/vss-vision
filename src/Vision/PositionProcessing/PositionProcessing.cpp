@@ -31,7 +31,7 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
   // Settting team positions
   Players teamA;
   findTeam(teamA, debugFrame, groupedBlobs.team);
-  setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
+  // setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
   //Players teamB;
   //findTeam(teamB, debugFrame, groupedBlobs.team);
   //setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
@@ -149,23 +149,24 @@ PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) 
       if(blob[idColor][i].valid) {
         blob[idColor][i].color = idColor;
         blob[idColor][i].distance = static_cast<int>(Utils::sumOfSquares(blob[idColor][i].position, current.position));
-        printf("%d, %d, %d\n", current.color, idColor, i);
         if(blob[idColor][i].distance < blobMaxDist()) {
-          printf("Entrou\n");
+          printf("%d, %d\n", current.color, idColor);
           if(choosen.size() == 2){
             if(choosen.begin()->distance > blob[idColor][i].distance){
               choosen[0] = blob[idColor][i];
               std::sort(choosen.begin(), choosen.end(), [](Blob a, Blob b) {
                 return a.distance > b.distance;
               });
+              break;
             }
           } else {
             choosen.push_back(blob[idColor][i]);
             std::sort(choosen.begin(),choosen.end(),[](Blob a, Blob b) {
               return a.distance > b.distance;
             });
+            break;
           }
-        } else break;
+        }
       } else break;
     }
   }
@@ -208,7 +209,7 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
         current.blobs.clear();
         blob[teamColor][i].color = teamColor; 
         secondary = this->getNearestSecondary(blob[teamColor][i]);
-        if(secondary.size() > 0){
+        if(secondary.size() == 2){
           
           current.blobs.push_back(blob[teamColor][i]);
           current.blobs.push_back(secondary[0]);
@@ -216,8 +217,8 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
           current.team = teamColor;
 
           result.team.push_back(current);
-        } else { break; }
-      }
+        } else break;
+      } else break;
     }
   }
 
