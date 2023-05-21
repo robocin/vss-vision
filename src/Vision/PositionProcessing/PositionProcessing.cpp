@@ -51,6 +51,9 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
   players.clear();
 
   uint teamColor = static_cast<uint>(getTeamColor());
+
+  filterPattern(teamRegions);
+  
   for (Region &region : teamRegions) {
     Blobs blobs = region.blobs;
     Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
@@ -172,29 +175,19 @@ PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) 
   return choosen;
 }
 
-void PositionProcessing::filterTeam(Regions &regions) {
-    std::unordered_map<int,Region> t_regions;
-    Regions r_regions;
+void PositionProcessing::filterPattern(Regions &regions) {
 
-    for (auto &r : regions) {
-        int id = r.blobs[0].id;
-        if (t_regions.find(id) == t_regions.end()) { // Didn't found region of with given id
-            t_regions[id] = r; // Then, associate it with this region
-        } else {
-            Region &t_r = t_regions[r.blobs[0].id]; // Get already existing region of same id
-            t_r.blobs.push_back(r.blobs[1]); // Insert second secondary color
-        }
+  // Sort regions by leftmost blob
+  for (auto &r : regions) {
+    if(r.blobs[0].position.y > (r.blobs[1].position.y + r.blobs[2].position.y)/2)
+    {
+      if(r.blobs[1].position.x < r.blobs[2].position.x) { std::swap(r.blobs[1], r.blobs[2]); }     
+    } 
+    else if(r.blobs[1].position.x > r.blobs[2].position.x)
+    {
+      std::swap(r.blobs[1], r.blobs[2]); 
     }
-
-    // Set all of the new merged regions into a vector
-    for (auto &r_t : t_regions) {
-        r_regions.push_back(r_t.second);
-    }
-    // Sort them by first blob id
-    std::sort(r_regions.begin(),r_regions.end());
-
-    // Update regions with filtered blobs
-    regions.assign(r_regions.begin(),r_regions.end());
+  }
 }
 
 PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {

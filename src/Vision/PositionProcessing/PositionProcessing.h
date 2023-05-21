@@ -193,7 +193,7 @@ protected:
    *
    * @param    regions The regions to filter the blobs into new regions
    */
-  void filterTeam(Regions &regions);
+  void filterPattern(Regions &regions);
 
    /**
   * @brief    Identifies from which team the blob belongs to.
