@@ -55,7 +55,7 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
     Blobs blobs = region.blobs;
     Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
     // TODO: Implement a better way to identify the color of the robot
-    Player robot((teamColor-1)*100 + (b2.color + b3.color)); // set the id of the robot
+    Player robot((teamColor-1)*100 + (b2.color*10 + b3.color)); // set the id of the robot
     robot.team(teamColor);
     cv::Point secondaryPosition = (b2.position + b3.position) * 0.5;
     Point newPositionInPixels = (b1.position + secondaryPosition) * 0.5;
@@ -150,7 +150,6 @@ PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) 
         blob[idColor][i].color = idColor;
         blob[idColor][i].distance = static_cast<int>(Utils::sumOfSquares(blob[idColor][i].position, current.position));
         if(blob[idColor][i].distance < blobMaxDist()) {
-          printf("%d, %d\n", current.color, idColor);
           if(choosen.size() == 2){
             if(choosen.begin()->distance > blob[idColor][i].distance){
               choosen[0] = blob[idColor][i];
@@ -221,8 +220,6 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
       } else break;
     }
   }
-
-  printf("Regioes: %d\n", result.team.size());
   return result;
 }
 

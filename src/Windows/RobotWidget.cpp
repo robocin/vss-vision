@@ -51,10 +51,10 @@ void RobotWidget::setSecondaryColor(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = this->m_robotId%100 + Color::RED;
+  int t_id = (this->m_robotId % 100) / 10;
 
   for (const char *str : Color::_names()) {
-    if (t_id/10 == Color::_from_string(str)) {
+    if (t_id == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
         color = QColor(correctColor);
@@ -72,10 +72,10 @@ void RobotWidget::setSecondSecondary(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = this->m_robotId%100 + Color::RED;
+  int t_id = this->m_robotId % 10;
 
   for (const char *str : Color::_names()) {
-    if (t_id%10 == Color::_from_string(str)) {
+    if (t_id == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
         color = QColor(correctColor);
@@ -91,7 +91,7 @@ void RobotWidget::update() {
   int offset_x = static_cast<int>(m_index) * 50;
   int offset_y = 0;
   int teamColor = Vision::singleton().getTeamColor();
-  // printf("Team Color %d\n", teamColor);
+
   Players players = vss.players(
               static_cast<uint>(teamColor)
               );
