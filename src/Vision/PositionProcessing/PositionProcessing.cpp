@@ -151,10 +151,14 @@ PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) 
     for(int i = 0 ; i < CLUSTERSPERCOLOR ;i++) {
       if(blob[idColor][i].valid) {
         blob[idColor][i].color = idColor;
-        blob[idColor][i].distance = static_cast<int>(Utils::sumOfSquares(blob[idColor][i].position, current.position));
-        if(blob[idColor][i].distance < blobMaxDist()) {
-          if(choosen.size() == 2){
-            if(choosen.begin()->distance > blob[idColor][i].distance){
+        blob[idColor][i].distance = static_cast<int>(Utils::euclideanDistance(blob[idColor][i].position, current.position));
+        
+        if(blob[idColor][i].distance < blobMaxDist())
+        {
+          if(choosen.size() == 2)
+          {
+            if(choosen.begin()->distance > blob[idColor][i].distance)
+            {
               choosen[0] = blob[idColor][i];
               std::sort(choosen.begin(), choosen.end(), [](Blob a, Blob b) {
                 return a.distance > b.distance;
@@ -177,17 +181,23 @@ PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) 
 
 void PositionProcessing::filterPattern(Regions &regions) {
 
+  Regions f_regions;
   // Sort regions by leftmost blob
   for (auto &r : regions) {
-    if(r.blobs[0].position.y > (r.blobs[1].position.y + r.blobs[2].position.y)/2)
+    if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
     {
-      if(r.blobs[1].position.x < r.blobs[2].position.x) { std::swap(r.blobs[1], r.blobs[2]); }     
+      if(r.blobs[1].position.x > r.blobs[2].position.x)
+      { 
+        std::swap(r.blobs[1], r.blobs[2]); 
+      }     
     } 
-    else if(r.blobs[1].position.x > r.blobs[2].position.x)
+    else if(r.blobs[1].position.x < r.blobs[2].position.x) // Primary blob on bottom
     {
-      std::swap(r.blobs[1], r.blobs[2]); 
+      std::swap(r.blobs[1], r.blobs[2]);
     }
+    f_regions.push_back(r);
   }
+  regions = f_regions;
 }
 
 PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
