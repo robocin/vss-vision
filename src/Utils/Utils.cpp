@@ -30,7 +30,7 @@ double Utils::double_dif(double x, double y) {
   return ((x-y)*(x-y));
 }
 
-double Utils::sumOfSquares(cv::Point alfa, cv::Point beta) {
+double Utils::euclideanDistance(cv::Point alfa, cv::Point beta) {
   return sqrt((pow(alfa.x - beta.x, 2) + pow(alfa.y - beta.y, 2)));
 }
 
