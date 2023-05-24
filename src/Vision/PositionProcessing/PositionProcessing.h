@@ -200,7 +200,7 @@ protected:
   */
   FieldRegions pairBlobs();
 
-   /**
+    /**
   * @brief    combines a color patch identifier with the closer team patch.
   */
   Blobs getNearestSecondary(Blob current);
