@@ -88,8 +88,7 @@ public:
     bool    valid;
     int     area;
     int     color;
-    int     distance;
-    Blob():angle(0),valid(false),area(0),distance(INT_MAX) {}
+    Blob():angle(0),valid(false),area(0) {}
     // This is used to sort the blobs by its
     bool operator<(Blob &b) {
         return color < b.color;
@@ -105,6 +104,7 @@ public:
   typedef struct Region {
     Blobs blobs;
     int team;
+    double distance;
 
     bool operator<(Region &b) {
         if (blobs.size() == 0 || b.blobs.size() == 0) return false;
@@ -116,6 +116,7 @@ public:
 
   typedef struct FieldRegions {
     Regions team;
+    Regions enemies;
   } FieldRegions;
 
   /**
@@ -193,7 +194,7 @@ protected:
    *
    * @param    regions The regions to filter the blobs into new regions
    */
-  void filterPattern(Regions &regions);
+  void filterTeam(Regions &regions);
 
    /**
   * @brief    Identifies from which team the blob belongs to.
