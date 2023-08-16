@@ -43,7 +43,7 @@ void VisionServer::send(std::vector<Entity> &entities) {
         } else{
             if((int)entities[i].team() == Color::YELLOW){
                 SSL_DetectionRobot *robot = frame->mutable_robots_yellow()->Add();
-                robot->set_robot_id(entities[i].id()-200);
+                robot->set_robot_id(entities[i].id());
                 robot->set_x(entities[i].position().x * 10);
                 robot->set_y(entities[i].position().y * 10);
                 robot->set_orientation(entities[i].angle());
@@ -52,7 +52,7 @@ void VisionServer::send(std::vector<Entity> &entities) {
                 robot->set_pixel_y(robot->y()*100);
             }else if((int)entities[i].team() == Color::BLUE){
                 SSL_DetectionRobot *robot = frame->mutable_robots_blue()->Add();
-                robot->set_robot_id(entities[i].id()-100);
+                robot->set_robot_id(entities[i].id());
                 robot->set_x(entities[i].position().x * 10);
                 robot->set_y(entities[i].position().y * 10);
                 robot->set_orientation(entities[i].angle());
