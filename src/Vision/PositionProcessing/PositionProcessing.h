@@ -24,6 +24,7 @@
 #define CLUSTERSPERCOLOR 8
 #define MAX_ROBOTS 6
 #define BALL_INDEX 6
+#define MIN_ID 206
 
 #define POSITION_PROCESSING_FILE  "Config/PositionProcessing.xml"
 #define WHERE_ARE_THOSE_FILE  "Config/PositionProcessingWhereAre.xml"
@@ -278,6 +279,11 @@ protected:
 
   // retorna a maxima distancia entre blobs para serem um robo
   int blobMaxDist();
+
+  int newId(int oldId);
+
+  std::vector<int> idGeneratedBlue = {206, 242, 278, 248, 284, 290};
+  std::vector<int> idGeneratedYellow = {207, 243, 279, 249, 285, 291};
 
   std::mutex _frameLocker;
   std::map<std::string,int> param;
