@@ -99,8 +99,7 @@ public:
   typedef std::vector<Blob> Blobs;
 
   typedef struct NearestBlobInfo{
-    int teamIndex;
-    double distance;
+    int idColor;
   } NearestBlobInfo;
 
   typedef struct Region {
@@ -203,10 +202,10 @@ protected:
   */
   FieldRegions pairBlobs();
 
-   /**
+    /**
   * @brief    combines a color patch identifier with the closer team patch.
   */
-  std::pair<Blob, NearestBlobInfo> getNearestPrimary(Blob current);
+  Blobs getNearestSecondary(Blob current);
 
    /**
   * @brief    Identifies all robots
