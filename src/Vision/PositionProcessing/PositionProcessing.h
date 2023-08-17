@@ -303,6 +303,7 @@ protected:
   Point _ballLastPosition;
   Float _ballLastTime;
   static const bool USE_PATTERN_FOR_ENEMIES = true;
+  static const bool USE_OLD_PATTERN = false;
 
 };
 

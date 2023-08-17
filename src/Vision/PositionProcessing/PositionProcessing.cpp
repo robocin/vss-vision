@@ -52,8 +52,29 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
 
   uint teamColor = static_cast<uint>(getTeamColor());
   for (Region &region : teamRegions) {
-    if(region.blobs.size() == 3){
+    if(USE_OLD_PATTERN){
 
+      int colorIndex = region.blobs[1].color;
+      
+      if (!Utils::isRobotColor(colorIndex)) {
+        // cor invalida
+        continue;
+      }
+
+      Blobs blobs = region.blobs;
+      Blob b1 = blobs[1], b2 = blobs[0];
+      Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED); // seta o id da robo na regiao
+      robot.team(teamColor);
+      Point newPositionInPixels = (b1.position + b2.position) * 0.5;
+      Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
+      Float newAngle = Utils::angle(b1.position, b2.position);
+
+      robot.update(Point(newPosition.x,newPosition.y), newAngle);
+      players.push_back(robot);
+      cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 15, _colorCar[teamColor], 2, cv::LINE_AA);
+      cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 12, _colorCar[colorIndex], 2, cv::LINE_AA);
+    } 
+    else if(region.blobs.size() == 3) {
       int firstSecondary = region.blobs[1].color;
       int secondSecondary = region.blobs[2].color;
       int colorIndex = ((teamColor) + (firstSecondary * MAX_ROBOTS) + (secondSecondary * MAX_ROBOTS * MAX_ROBOTS));
