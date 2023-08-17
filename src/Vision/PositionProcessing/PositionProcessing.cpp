@@ -37,7 +37,7 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
 
   Players allPlayers;
   allPlayers.insert(allPlayers.end(),teamA.begin(),teamA.end());
-  //allPlayers.insert(allPlayers.end(),teamB.begin(),teamB.end());
+  allPlayers.insert(allPlayers.end(),teamB.begin(),teamB.end());
   sort(allPlayers.begin(),allPlayers.end());
 
   Entity ball;
@@ -198,62 +198,32 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
                                         static_cast<int>(newPosition.y));
 }
 
-PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) {
-  Blobs choosen;
+std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> PositionProcessing::getNearestPrimary(Blob current) {
+  int dMin = INT_MAX, distance, team = 0;
+  Blob choosen;
+  NearestBlobInfo result;
 
-  for(int idColor = Color::RED ; idColor < Color::BROWN+1; idColor++) {
+  for(int teamColor = Color::BLUE ; teamColor <= Color::YELLOW ; teamColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ;i++) {
-      if(blob[idColor][i].valid) {
-        blob[idColor][i].color = idColor;
-        blob[idColor][i].distance = static_cast<int>(Utils::euclideanDistance(blob[idColor][i].position, current.position));
-        
-        if(blob[idColor][i].distance < blobMaxDist())
-        {
-          if(choosen.size() == 2)
-          {
-            if(choosen.begin()->distance > blob[idColor][i].distance)
-            {
-              choosen[0] = blob[idColor][i];
-              std::sort(choosen.begin(), choosen.end(), [](Blob a, Blob b) {
-                return a.distance > b.distance;
-              });
-              break;
-            }
-          } else {
-            choosen.push_back(blob[idColor][i]);
-            std::sort(choosen.begin(),choosen.end(),[](Blob a, Blob b) {
-              return a.distance > b.distance;
-            });
-            break;
-          }
+      if(blob[teamColor][i].valid) {
+        distance = static_cast<int>(Utils::sumOfSquares(current.position,blob[teamColor][i].position));
+
+        if(distance < dMin) {
+          dMin = distance;
+          choosen = blob[teamColor][i];
+          team = teamColor;
         }
-      } else break;
+      }
+      else break;
     }
   }
-  return choosen;
-}
 
   result.distance = dMin;
   result.teamIndex = team;
   choosen.color = team;
 
-  Regions f_regions;
-  // Sort regions by leftmost blob
-  for (auto &r : regions) {
-    if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
-    {
-      if(r.blobs[1].position.x > r.blobs[2].position.x)
-      { 
-        std::swap(r.blobs[1], r.blobs[2]); 
-      }     
-    } 
-    else if(r.blobs[1].position.x < r.blobs[2].position.x) // Primary blob on bottom
-    {
-      std::swap(r.blobs[1], r.blobs[2]);
-    }
-    f_regions.push_back(r);
-  }
-  regions = f_regions;
+  return std::make_pair(choosen,result);
+
 }
 
 void PositionProcessing::filterTeam(Regions &regions) {
@@ -283,12 +253,12 @@ void PositionProcessing::filterTeam(Regions &regions) {
 
 PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
   FieldRegions result;
-  Blobs secondary;
+  std::pair<Blob, NearestBlobInfo> primary;
   Region current;
 
-  for(int teamColor = Color::BLUE; teamColor <= Color::YELLOW; teamColor++) {
-    for(int i = 0; i < CLUSTERSPERCOLOR; i++){
-      if(blob[teamColor][i].valid){
+  for(int idColor = Color::RED ; idColor < Color::BROWN+1; idColor++) {
+    for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
+      if(blob[idColor][i].valid) {
         current.blobs.clear();
         primary = this->getNearestPrimary(blob[idColor][i]);
         blob[idColor][i].color = idColor;
@@ -398,7 +368,6 @@ void PositionProcessing::initBlob(PositionProcessing::Blob &blob)
   blob.area = 0;
   blob.angle = 0;
   blob.valid = false;
-  blob.distance = INT_MAX;
 }
 
 void PositionProcessing::initDefault()

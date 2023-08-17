@@ -114,7 +114,7 @@ namespace Utils {
    *
    * @return   Sum of squares between the two points
    */
-  double euclideanDistance(cv::Point alfa, cv::Point beta);
+  double sumOfSquares(cv::Point alfa, cv::Point beta);
 
   /**
    * @brief    Return the ajusted angle
