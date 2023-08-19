@@ -50,6 +50,8 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
 
   players.clear();
 
+  filterPattern(teamRegions);
+
   uint teamColor = static_cast<uint>(getTeamColor());
   for (Region &region : teamRegions) {
     if(USE_OLD_PATTERN){
@@ -78,7 +80,6 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
       int firstSecondary = region.blobs[1].color;
       int secondSecondary = region.blobs[2].color;
       int colorIndex = ((teamColor) + (firstSecondary * MAX_ROBOTS) + (secondSecondary * MAX_ROBOTS * MAX_ROBOTS));
-      printf("Color ID: %d\n", colorIndex);
 
       if (!Utils::isRobotColor(firstSecondary) || !Utils::isRobotColor(secondSecondary)) {
         // cor invalida
@@ -89,13 +90,12 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
       Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
 
       Player robot(newId(colorIndex));
-      printf("Robot ID: %d\n", (newId(colorIndex)));
       robot.team(teamColor);
 
       cv::Point secondaryPosition = (b2.position + b3.position) * 0.5;
       Point newPositionInPixels = (b1.position + secondaryPosition) * 0.5;
       Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
-      Float newAngle = Utils::angle(b1.position, secondaryPosition);
+      Float newAngle = Utils::angle(secondaryPosition, b1.position);
 
       robot.update(newPosition, newAngle);
       players.push_back(robot);
@@ -224,6 +224,27 @@ std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> Positio
 
   return std::make_pair(choosen,result);
 
+}
+
+void PositionProcessing::filterPattern(Regions &regions) {
+
+  Regions f_regions;
+  // Sort regions by leftmost blob
+  for (auto &r : regions) {
+    if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
+    {
+      if(r.blobs[1].position.x > r.blobs[2].position.x)
+      { 
+        std::swap(r.blobs[1], r.blobs[2]); 
+      }     
+    } 
+    else if(r.blobs[1].position.x < r.blobs[2].position.x) // Primary blob on bottom
+    {
+      std::swap(r.blobs[1], r.blobs[2]);
+    }
+    f_regions.push_back(r);
+  }
+  regions = f_regions;
 }
 
 void PositionProcessing::filterTeam(Regions &regions) {
