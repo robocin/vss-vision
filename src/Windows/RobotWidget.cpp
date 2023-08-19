@@ -51,8 +51,10 @@ void RobotWidget::setSecondaryColor(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = this->m_robotId%100 + 1;
-  // printf("ID 1: %d\n", t_id);
+  int t_id = (ids[this->m_robotId]/6)%6;
+  if(t_id < 4){
+    t_id += 6;
+  }
 
   for (const char *str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
@@ -73,8 +75,12 @@ void RobotWidget::setSecondSecondary(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = this->m_robotId%100 + (Color::PINK - Color::RED);
-  // printf("ID 2: %d\n", t_id);
+  int t_id = (ids[this->m_robotId]/36);
+  
+  if(((ids[this->m_robotId]/6)%6) < 4){
+    t_id -= 1;
+  }
+
 
   for (const char *str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
