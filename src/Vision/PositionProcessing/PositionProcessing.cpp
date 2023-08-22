@@ -231,6 +231,9 @@ void PositionProcessing::filterPattern(Regions &regions) {
   Regions f_regions;
   // Sort regions by leftmost blob
   for (auto &r : regions) {
+    if (r.blobs.size() < 3) {
+      continue;
+    }
     if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
     {
       if(r.blobs[1].position.x > r.blobs[2].position.x)
