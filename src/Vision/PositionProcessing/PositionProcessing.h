@@ -284,8 +284,8 @@ protected:
 
   int newId(int oldId);
 
-  std::vector<int> idGeneratedBlue = {206, 242, 278, 176, 248, 284, 182, 290, 218, 188, 224, 260};
-  std::vector<int> idGeneratedYellow = {207, 243, 279, 177, 249, 285, 183, 291, 219, 189, 225, 261};
+  std::vector<int> idGeneratedBlue = {206, 242, 278, 176, 248, 284, 182, 218, 290, 188, 224, 260};
+  std::vector<int> idGeneratedYellow = {207, 243, 279, 177, 249, 285, 183, 219, 291, 189, 225, 261};
 
   std::mutex _frameLocker;
   std::map<std::string,int> param;
