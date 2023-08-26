@@ -89,6 +89,9 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
       Blobs blobs = region.blobs;
       Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
 
+      if(newId(colorIndex) > 15)
+        continue;
+      
       Player robot(newId(colorIndex));
       robot.team(teamColor);
 
@@ -234,7 +237,25 @@ void PositionProcessing::filterPattern(Regions &regions) {
     if (r.blobs.size() < 3) {
       continue;
     }
-    if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
+
+    Point b1 = r.blobs[0].position;
+    cv::Point b2 = (r.blobs[1].position + r.blobs[2].position) * 0.5;
+
+    double angleThreshold = 10.0 * M_PI / 180.0;
+    double angleDiffTo180 = std::abs(std::abs(Utils::angle(b2, b1)) - M_PI);
+
+    if(std::abs(Utils::angle(b2, b1)) < angleThreshold || angleDiffTo180 < angleThreshold) {
+      if (r.blobs[0].position.x > (r.blobs[1].position.x + r.blobs[2].position.x) / 2) {
+        if(r.blobs[1].position.y > r.blobs[2].position.y){
+          std::swap(r.blobs[1], r.blobs[2]);
+        }
+      }else{
+        if(r.blobs[1].position.y < r.blobs[2].position.y){
+          std::swap(r.blobs[1], r.blobs[2]);
+        }
+      }
+    }
+    else if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
     {
       if(r.blobs[1].position.x > r.blobs[2].position.x)
       { 
