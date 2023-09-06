@@ -1,5 +1,4 @@
 #include "RobotWidget.h"
-#include <iostream>
 #include "ui_RobotWidget.h"
 #include "Vision/Vision.h"
 
@@ -51,10 +50,7 @@ void RobotWidget::setSecondaryColor(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = (ids[this->m_robotId]/6)%6;
-  if(t_id < 4){
-    t_id += 6;
-  }
+  int t_id = ids[this->m_robotId];
 
   for (const char *str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
@@ -75,12 +71,7 @@ void RobotWidget::setSecondSecondary(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = (ids[this->m_robotId]/36);
-  
-  if(((ids[this->m_robotId]/6)%6) < 4){
-    t_id -= 1;
-  }
-
+  int t_id = idsAlt[this->m_robotId];
 
   for (const char *str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
