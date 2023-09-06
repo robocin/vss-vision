@@ -60,6 +60,20 @@
 #define secondaryColor5  "SecondaryColor5"
 #define secondaryColor6  "SecondaryColor6"
 
+#define GREEN_PINK  248
+#define GREEN_CYAN  284
+#define GREEN_RED   176
+#define CYAN_PINK   260
+#define CYAN_RED    188
+#define PINK_RED    182
+
+#define GREEN_PINK_ALT  218
+#define GREEN_CYAN_ALT  224
+#define GREEN_RED_ALT   206
+#define CYAN_PINK_ALT   290
+#define CYAN_RED_ALT    278
+#define PINK_RED_ALT    242
+
 #define DEFAULT_ROWS 660
 #define DEFAULT_COLS 880
 
@@ -284,8 +298,8 @@ protected:
 
   int newId(int oldId);
 
-  std::vector<int> idGeneratedBlue = {206, 242, 278, 176, 248, 284, 182, 218, 290, 188, 224, 260};
-  std::vector<int> idGeneratedYellow = {207, 243, 279, 177, 249, 285, 183, 219, 291, 189, 225, 261};
+  std::vector<int> idGenerated = {GREEN_CYAN, GREEN_PINK, CYAN_PINK, CYAN_RED, GREEN_RED, PINK_RED};
+  std::vector<int> idGeneratedAlt = {GREEN_CYAN_ALT, GREEN_PINK_ALT, CYAN_PINK_ALT, CYAN_RED_ALT, GREEN_RED_ALT, PINK_RED_ALT};
 
   std::mutex _frameLocker;
   std::map<std::string,int> param;
