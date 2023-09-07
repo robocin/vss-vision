@@ -1,4 +1,5 @@
 #include "PositionProcessing.h"
+#include "Utils/EnumsAndConstants.h"
 
 void PositionProcessing::saveXML()
 {
@@ -77,6 +78,7 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
       int firstSecondary = region.blobs[1].color;
       int secondSecondary = region.blobs[2].color;
       int colorIndex = ((teamColor) + (firstSecondary * MAX_ROBOTS) + (secondSecondary * MAX_ROBOTS * MAX_ROBOTS));
+      printf("Old ID: %d ",colorIndex );  
 
       if (!Utils::isRobotColor(firstSecondary) || !Utils::isRobotColor(secondSecondary)) {
         continue;
@@ -85,7 +87,8 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
       // markedColors[size_t(newId(colorIndex))] = true;
       Blobs blobs = region.blobs;
       Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
-      if(newId(colorIndex) > 5)
+      printf("ID: %d\n", newId(colorIndex));
+      if(newId(colorIndex) > 12)
         continue;
       
       Player robot(newId(colorIndex));
@@ -498,19 +501,14 @@ int PositionProcessing::newId(int oldId){
   int id = 255;
 
   auto it = std::find(idGenerated.begin(), idGenerated.end(), oldId);
-  auto itAlt = std::find(idGeneratedAlt.begin(), idGeneratedAlt.end(), oldId);
   
   if (it != idGenerated.end()){
     id = std::distance(idGenerated.begin(), it);
-  } else if (itAlt != idGeneratedAlt.end()){
-    id = std::distance(idGeneratedAlt.begin(), itAlt);
   } else {
     it = std::find(idGenerated.begin(), idGenerated.end(), oldId-1);
-    itAlt = std::find(idGeneratedAlt.begin(), idGeneratedAlt.end(), oldId-1);
-    if(it != idGenerated.end())
+    if(it != idGenerated.end()){
       id = std::distance(idGenerated.begin(), it);
-    else if (itAlt != idGeneratedAlt.end())
-      id = std::distance(idGeneratedAlt.begin(), itAlt);
+    }
   } 
   return id;
 }
