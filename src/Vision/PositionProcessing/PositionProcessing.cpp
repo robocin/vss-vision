@@ -100,7 +100,15 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
       Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
       Float newAngle = Utils::angle(secondaryPosition, b1.position);
 
-      robot.update(newPosition, newAngle);
+      auto & playerPosVel = _kalmanFilterRobots[teamColor-2][robot.id()].update(newPosition.x,newPosition.y);
+
+      Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
+      Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
+
+      auto &playerRotVel = _dirFilteRobots[teamColor-2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
+      double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
+    
+      robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
       players.push_back(robot);
 
       cv::circle(debugFrame, Utils::convertPositionCmToPixel(newPosition), 15, _colorCar[teamColor], 2, cv::LINE_AA);

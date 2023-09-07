@@ -23,6 +23,7 @@
 
 #define CLUSTERSPERCOLOR 8
 #define MAX_ROBOTS 6
+#define MAX_ROBOT_ID 12
 #define BALL_INDEX 6
 #define MIN_ID 176
 
@@ -315,8 +316,8 @@ protected:
   enum enemy{Nothing,Primary,Secundary,Both};
   int _teamColor;
   int _minSize, _maxSize, _minSizeBall, _maxSizeBall, _blobMaxDist, _teamId, _enemyTeam , _enemySearch, _showElement;
-  KalmanFilter _kalmanFilterRobots[2][MAX_ROBOTS];
-  KalmanFilter _dirFilteRobots[2][MAX_ROBOTS];
+  KalmanFilter _kalmanFilterRobots[2][MAX_ROBOT_ID];
+  KalmanFilter _dirFilteRobots[2][MAX_ROBOT_ID];
   KalmanFilter _kalmanFilterBall[1][1];
   KalmanFilter _dirFilterBall[1][1];
   Point _ballLastPosition;
