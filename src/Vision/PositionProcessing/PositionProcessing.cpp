@@ -77,8 +77,7 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
     else if(region.blobs.size() == 3) {
       int firstSecondary = region.blobs[1].color;
       int secondSecondary = region.blobs[2].color;
-      int colorIndex = ((teamColor) + (firstSecondary * MAX_ROBOTS) + (secondSecondary * MAX_ROBOTS * MAX_ROBOTS));
-      printf("Old ID: %d ",colorIndex );  
+      int colorIndex = ((teamColor) + (firstSecondary * MAX_ROBOTS) + (secondSecondary * MAX_ROBOTS * MAX_ROBOTS));  
 
       if (!Utils::isRobotColor(firstSecondary) || !Utils::isRobotColor(secondSecondary)) {
         continue;
@@ -87,7 +86,6 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
       // markedColors[size_t(newId(colorIndex))] = true;
       Blobs blobs = region.blobs;
       Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
-      printf("ID: %d\n", newId(colorIndex));
       if(newId(colorIndex) > 12)
         continue;
       
