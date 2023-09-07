@@ -48,7 +48,7 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
 void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
 
   players.clear();
-  std::bitset<100> markedColors;
+  filterPattern(teamRegions);
   uint teamColor = static_cast<uint>(getTeamColor());
   for (Region &region : teamRegions) {
     if(USE_OLD_PATTERN){
@@ -82,11 +82,7 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
         continue;
       }
 
-      if (markedColors[size_t(newId(colorIndex))]){
-        continue;
-      }
-
-      markedColors[size_t(newId(colorIndex))] = true;
+      // markedColors[size_t(newId(colorIndex))] = true;
       Blobs blobs = region.blobs;
       Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
       if(newId(colorIndex) > 5)
@@ -239,36 +235,57 @@ void PositionProcessing::filterPattern(Regions &regions) {
       continue;
     }
 
-    Point b1 = r.blobs[0].position;
-    cv::Point b2 = (r.blobs[1].position + r.blobs[2].position) * 0.5;
+    Point b0 = r.blobs[0].position;
+    Point b1 = r.blobs[1].position;
+    Point b2 = r.blobs[2].position;
 
-    double angleThreshold = 10.0 * (M_PI / 180.0);
-    double angleDiffTo180 = std::abs(std::abs(Utils::angle(b2, b1)) - M_PI);
+    // Compute robot center:
+    Point robot = 0.5 * (b0 + 0.5 * (b1 + b2));
 
-    if(std::abs(Utils::angle(b2, b1)) < angleThreshold || angleDiffTo180 < angleThreshold) {
+    // Compute robot x and y axis vectors:
+    Point vx = 0.5 * (b1 + b2) - robot;
+    Point vy(-vx.y, vx.x);
 
-      if (r.blobs[0].position.x > (r.blobs[1].position.x + r.blobs[2].position.x) / 2) {
-        if(r.blobs[1].position.y > r.blobs[2].position.y){
-          std::swap(r.blobs[1], r.blobs[2]);
-        }
-      }else{
-        if(r.blobs[1].position.y < r.blobs[2].position.y){
-          std::swap(r.blobs[1], r.blobs[2]);
-        }
-      }
-    }
-    else if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
-    {
-      if(r.blobs[1].position.x > r.blobs[2].position.x)
-      { 
-        std::swap(r.blobs[1], r.blobs[2]); 
-      }     
-    } 
-    else if(r.blobs[1].position.x < r.blobs[2].position.x) // Primary blob on bottom
-    {
+    // Compute b2 projection on vy
+    // Swap blobs if projection is positive (should be the opposite, but it worked this way!)
+    bool swap_blobs = ((b2.x-robot.x)*vy.x+(b2.y-robot.y)*vy.y>0);
+    
+    if (swap_blobs) {
       std::swap(r.blobs[1], r.blobs[2]);
     }
+
     f_regions.push_back(r);
+
+  //  cv::Point b2 = (r.blobs[1].position + r.blobs[2].position) * 0.5;
+  //
+  //
+  //  double angleThreshold = 10.0 * (M_PI / 180.0);
+  //  double angleDiffTo180 = std::abs(std::abs(Utils::angle(b2, b1)) - M_PI);
+  //
+  //  if(std::abs(Utils::angle(b2, b1)) < angleThreshold || angleDiffTo180 < angleThreshold) {
+  //
+  //    if (r.blobs[0].position.x > (r.blobs[1].position.x + r.blobs[2].position.x) / 2) {
+  //      if(r.blobs[1].position.y > r.blobs[2].position.y){
+  //        std::swap(r.blobs[1], r.blobs[2]);
+  //      }
+  //    }else{
+  //      if(r.blobs[1].position.y < r.blobs[2].position.y){
+  //        std::swap(r.blobs[1], r.blobs[2]);
+  //      }
+  //    }
+  //  }
+  //  else if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
+  //  {
+  //    if(r.blobs[1].position.x > r.blobs[2].position.x)
+  //    { 
+  //      std::swap(r.blobs[1], r.blobs[2]); 
+  //    }     
+  //  } 
+  //  else if(r.blobs[1].position.x < r.blobs[2].position.x) // Primary blob on bottom
+  //  {
+  //    std::swap(r.blobs[1], r.blobs[2]);
+  //  }
+  //  f_regions.push_back(r);
   }
   regions = f_regions;
 }
