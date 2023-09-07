@@ -32,6 +32,7 @@ class RobotWidget : public QWidget {
   QPixmap m_borderImage;
   QPixmap m_numbersImage;
   uint m_robotId;
+  std::vector<int> ids = {204, 240, 276, 174, 246, 282, 180, 216, 288, 186, 222, 258};
 };
 
 #endif  // ROBOTWIDGET_H

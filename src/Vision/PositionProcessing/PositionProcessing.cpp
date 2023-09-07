@@ -1,5 +1,5 @@
 #include "PositionProcessing.h"
-
+#include "Utils/EnumsAndConstants.h"
 
 void PositionProcessing::saveXML()
 {
@@ -26,19 +26,18 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
   static Players empty_players;
 
   vss.setPlayers(empty_players);
-  // printf("Team Color %d\n", getTeamColor());
 
   // Settting team positions
   Players teamA;
   findTeam(teamA, debugFrame, groupedBlobs.team);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
   Players teamB;
-  USE_PATTERN_FOR_ENEMIES ? findTeam(teamB, debugFrame, groupedBlobs.enemies) : findEnemys(teamB, debugFrame, groupedBlobs.enemies);
+  findTeam(teamB, debugFrame, groupedBlobs.enemies);
   setTeamColor(getTeamColor() == Color::YELLOW ? Color::BLUE : Color::YELLOW);
 
   Players allPlayers;
   allPlayers.insert(allPlayers.end(),teamA.begin(),teamA.end());
-  //allPlayers.insert(allPlayers.end(),teamB.begin(),teamB.end());
+  allPlayers.insert(allPlayers.end(),teamB.begin(),teamB.end());
   sort(allPlayers.begin(),allPlayers.end());
 
   Entity ball;
@@ -48,96 +47,79 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
 }
 
 void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
-  players.clear();
 
-  std::bitset<100> markedColors;
+  players.clear();
+  filterPattern(teamRegions);
   uint teamColor = static_cast<uint>(getTeamColor());
   for (Region &region : teamRegions) {
-    if(region.blobs.size() == 2){
-      if (region.distance < blobMaxDist()) {
-        //int colorIndex = Utils::convertOldColorToNewColor(region.color);
-        int colorIndex = region.blobs[1].color;
-        if (!Utils::isRobotColor(colorIndex)) {
-          // cor invalida
-          continue;
-        }
-        if (markedColors[size_t(colorIndex)]){
-          continue;
-        }
+    if(USE_OLD_PATTERN){
 
-        markedColors[size_t(colorIndex)] = true;
-        Blobs blobs = region.blobs;
-        Blob b1 = blobs[1], b2 = blobs[0];
-        Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED); // seta o id da robo na regiao
-        robot.team(teamColor);
-        Point newPositionInPixels = (b1.position + b2.position) * 0.5;
-        Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
-
-    int firstSecondary = b2.color;
-    int secondSecondary = b3.color;
-    int colorIndex = firstSecondary;
-
-        // auto & playerPosVel = _kalmanFilterRobots[teamColor-2][robot.id()%100].update(newPosition.x,newPosition.y);
-
-        // Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
-        // Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
-
-        // auto &playerRotVel = _dirFilteRobots[teamColor-2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
-        // double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
-        robot.update(Point(newPosition.x,newPosition.y), newAngle);
-        players.push_back(robot);
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 15, _colorCar[teamColor], 2, cv::LINE_AA);
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 12, _colorCar[colorIndex], 2, cv::LINE_AA);
+      int colorIndex = region.blobs[1].color;
+      
+      if (!Utils::isRobotColor(colorIndex)) {
+        // cor invalida
+        continue;
       }
-    } else if (region.blobs.size() == 3){
+
+      Blobs blobs = region.blobs;
+      Blob b1 = blobs[1], b2 = blobs[0];
+      Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED); // seta o id da robo na regiao
+      robot.team(teamColor);
+      Point newPositionInPixels = (b1.position + b2.position) * 0.5;
+      Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
+      Float newAngle = Utils::angle(b1.position, b2.position);
+
+      robot.update(Point(newPosition.x,newPosition.y), newAngle);
+      players.push_back(robot);
+      cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 15, _colorCar[teamColor], 2, cv::LINE_AA);
+      cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 12, _colorCar[colorIndex], 2, cv::LINE_AA);
+    } 
+    else if(region.blobs.size() == 3) {
+      int firstSecondary = region.blobs[1].color;
+      int secondSecondary = region.blobs[2].color;
+      int colorIndex = ((teamColor) + (firstSecondary * MAX_ROBOTS) + (secondSecondary * MAX_ROBOTS * MAX_ROBOTS));  
+
+      if (!Utils::isRobotColor(firstSecondary) || !Utils::isRobotColor(secondSecondary)) {
+        continue;
+      }
+
+      // markedColors[size_t(newId(colorIndex))] = true;
+      Blobs blobs = region.blobs;
+      Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
+      if(newId(colorIndex) > 12)
+        continue;
+      
+      Player robot(newId(colorIndex));
         
-        //int colorIndex = Utils::convertOldColorToNewColor(region.color);
-        int firstSecondary = region.blobs[1].color;
-        int secondSecondary = region.blobs[2].color;
-        int colorIndex = secondSecondary*10 + firstSecondary;
-        printf("Color ID: %d + %d = %d\n", firstSecondary, secondSecondary, colorIndex);
-        if (!Utils::isRobotColor(firstSecondary) || !Utils::isRobotColor(secondSecondary)) {
-          // cor invalida
-          continue;
-        }
-        if (markedColors[size_t(colorIndex)]){
-          continue;
-        }
+      robot.team(teamColor);
 
-        markedColors[size_t(colorIndex)] = true;
-        Blobs blobs = region.blobs;
-        Blob b1 = blobs[0], b2 = blobs[1], b3 = blobs[2];
-        Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED); // seta o id da robo na regiao
-        robot.team(teamColor);
-        cv::Point secondaryPosition = (b2.position + b3.position) * 0.5;
-        Point newPositionInPixels = (b1.position + b2.position) * 0.5;
-        Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
+      cv::Point secondaryPosition = (b2.position + b3.position) * 0.5;
+      Point newPositionInPixels = (b1.position + secondaryPosition) * 0.5;
+      Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
+      Float newAngle = Utils::angle(secondaryPosition, b1.position);
 
-        Float newAngle = Utils::angle(b1.position, secondaryPosition);
+      auto & playerPosVel = _kalmanFilterRobots[teamColor-2][robot.id()].update(newPosition.x,newPosition.y);
 
-        // auto & playerPosVel = _kalmanFilterRobots[teamColor-2][robot.id()%100].update(newPosition.x,newPosition.y);
+      Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
+      Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
 
-        // Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
-        // Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
+      auto &playerRotVel = _dirFilteRobots[teamColor-2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
+      double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
+    
+      robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
+      players.push_back(robot);
 
-        // auto &playerRotVel = _dirFilteRobots[teamColor-2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
-        // double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
-        robot.update(Point(newPosition.x,newPosition.y), newAngle);
-        players.push_back(robot);
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 15, _colorCar[teamColor], 2, cv::LINE_AA);
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 12, _colorCar[colorIndex], 2, cv::LINE_AA);
+      cv::circle(debugFrame, Utils::convertPositionCmToPixel(newPosition), 15, _colorCar[teamColor], 2, cv::LINE_AA);
+      cv::circle(debugFrame, Utils::convertPositionCmToPixel(newPosition), 12, _colorCar[teamColor], 2, cv::LINE_AA);
     }
   }
-
 }
 
 void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std::vector<Region> &enemyRegions) {
 
     players.clear();
 
-    //std::bitset<MAX_PLAYERS> markedColors;
     uint teamColor = this->_teamId == Color::YELLOW ? Color::BLUE : Color::YELLOW;
-
 
     for (Region &region : enemyRegions) {
       if (region.distance < blobMaxDist()) {
@@ -152,7 +134,7 @@ void PositionProcessing::findEnemys(Entities &players, cv::Mat& debugFrame, std:
         // Debug
         cv::circle(debugFrame, newPositionInPixels, 12, _colorCar[colorIndex], 2, cv::LINE_AA);
 
-        Float newAngle = Utils::angle(b2.position, b2.position);
+        Float newAngle = Utils::angle(b2.position, b1.position);
         robot.update(newPosition, newAngle);
         players.push_back(robot);
       }
@@ -225,60 +207,94 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
                                         static_cast<int>(newPosition.y));
 }
 
-PositionProcessing::Blobs PositionProcessing::getNearestSecondary(Blob current) {
-  Blobs choosen;
+std::pair<PositionProcessing::Blob, PositionProcessing::NearestBlobInfo> PositionProcessing::getNearestPrimary(Blob current) {
+  int dMin = INT_MAX, distance, team = 0;
+  Blob choosen;
+  NearestBlobInfo result;
 
-  for(int idColor = Color::RED ; idColor < Color::BROWN+1; idColor++) {
+  for(int teamColor = Color::BLUE ; teamColor <= Color::YELLOW ; teamColor++) {
     for(int i = 0 ; i < CLUSTERSPERCOLOR ;i++) {
-      if(blob[idColor][i].valid) {
-        blob[idColor][i].color = idColor;
-        blob[idColor][i].distance = static_cast<int>(Utils::euclideanDistance(blob[idColor][i].position, current.position));
-        
-        if(blob[idColor][i].distance < blobMaxDist())
-        {
-          if(choosen.size() == 2)
-          {
-            if(choosen.begin()->distance > blob[idColor][i].distance)
-            {
-              choosen[0] = blob[idColor][i];
-              std::sort(choosen.begin(), choosen.end(), [](Blob a, Blob b) {
-                return a.distance > b.distance;
-              });
-              break;
-            }
-          } else {
-            choosen.push_back(blob[idColor][i]);
-            std::sort(choosen.begin(),choosen.end(),[](Blob a, Blob b) {
-              return a.distance > b.distance;
-            });
-            break;
-          }
+      if(blob[teamColor][i].valid) {
+        distance = static_cast<int>(Utils::sumOfSquares(current.position,blob[teamColor][i].position));
+
+        if(distance < dMin) {
+          dMin = distance;
+          choosen = blob[teamColor][i];
+          team = teamColor;
         }
-      } else break;
+      }
+      else break;
     }
   }
-  return choosen;
-}
 
   result.distance = dMin;
   result.teamIndex = team;
   choosen.color = team;
 
+  return std::make_pair(choosen,result);
+
+}
+
+void PositionProcessing::filterPattern(Regions &regions) {
+
   Regions f_regions;
   // Sort regions by leftmost blob
   for (auto &r : regions) {
-    if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
-    {
-      if(r.blobs[1].position.x > r.blobs[2].position.x)
-      { 
-        std::swap(r.blobs[1], r.blobs[2]); 
-      }     
-    } 
-    else if(r.blobs[1].position.x < r.blobs[2].position.x) // Primary blob on bottom
-    {
+    if (r.blobs.size() < 3) {
+      continue;
+    }
+
+    Point b0 = r.blobs[0].position;
+    Point b1 = r.blobs[1].position;
+    Point b2 = r.blobs[2].position;
+
+    // Compute robot center:
+    Point robot = 0.5 * (b0 + 0.5 * (b1 + b2));
+
+    // Compute robot x and y axis vectors:
+    Point vx = 0.5 * (b1 + b2) - robot;
+    Point vy(-vx.y, vx.x);
+
+    // Compute b2 projection on vy
+    // Swap blobs if projection is positive (should be the opposite, but it worked this way!)
+    bool swap_blobs = ((b2.x-robot.x)*vy.x+(b2.y-robot.y)*vy.y>0);
+    
+    if (swap_blobs) {
       std::swap(r.blobs[1], r.blobs[2]);
     }
+
     f_regions.push_back(r);
+
+  //  cv::Point b2 = (r.blobs[1].position + r.blobs[2].position) * 0.5;
+  //
+  //
+  //  double angleThreshold = 10.0 * (M_PI / 180.0);
+  //  double angleDiffTo180 = std::abs(std::abs(Utils::angle(b2, b1)) - M_PI);
+  //
+  //  if(std::abs(Utils::angle(b2, b1)) < angleThreshold || angleDiffTo180 < angleThreshold) {
+  //
+  //    if (r.blobs[0].position.x > (r.blobs[1].position.x + r.blobs[2].position.x) / 2) {
+  //      if(r.blobs[1].position.y > r.blobs[2].position.y){
+  //        std::swap(r.blobs[1], r.blobs[2]);
+  //      }
+  //    }else{
+  //      if(r.blobs[1].position.y < r.blobs[2].position.y){
+  //        std::swap(r.blobs[1], r.blobs[2]);
+  //      }
+  //    }
+  //  }
+  //  else if(r.blobs[0].position.y < (r.blobs[1].position.y + r.blobs[2].position.y)/2) // Primary blob on top
+  //  {
+  //    if(r.blobs[1].position.x > r.blobs[2].position.x)
+  //    { 
+  //      std::swap(r.blobs[1], r.blobs[2]); 
+  //    }     
+  //  } 
+  //  else if(r.blobs[1].position.x < r.blobs[2].position.x) // Primary blob on bottom
+  //  {
+  //    std::swap(r.blobs[1], r.blobs[2]);
+  //  }
+  //  f_regions.push_back(r);
   }
   regions = f_regions;
 }
@@ -310,12 +326,12 @@ void PositionProcessing::filterTeam(Regions &regions) {
 
 PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
   FieldRegions result;
-  Blobs secondary;
+  std::pair<Blob, NearestBlobInfo> primary;
   Region current;
 
-  for(int teamColor = Color::BLUE; teamColor <= Color::YELLOW; teamColor++) {
-    for(int i = 0; i < CLUSTERSPERCOLOR; i++){
-      if(blob[teamColor][i].valid){
+  for(int idColor = Color::RED ; idColor < Color::BROWN+1; idColor++) {
+    for(int i = 0 ; i < CLUSTERSPERCOLOR ; i++) {
+      if(blob[idColor][i].valid) {
         current.blobs.clear();
         primary = this->getNearestPrimary(blob[idColor][i]);
         blob[idColor][i].color = idColor;
@@ -349,6 +365,7 @@ PositionProcessing::FieldRegions PositionProcessing::pairBlobs() {
     }
   }
   filterTeam(result.team);
+  filterTeam(result.enemies);
 
   return result;
 }
@@ -424,7 +441,6 @@ void PositionProcessing::initBlob(PositionProcessing::Blob &blob)
   blob.area = 0;
   blob.angle = 0;
   blob.valid = false;
-  blob.distance = INT_MAX;
 }
 
 void PositionProcessing::initDefault()
@@ -485,6 +501,22 @@ void PositionProcessing::setTeamColor(int teamColor)
 
 int PositionProcessing::blobMaxDist() {
   return _blobMaxDist;
+}
+
+int PositionProcessing::newId(int oldId){
+  int id = 255;
+
+  auto it = std::find(idGenerated.begin(), idGenerated.end(), oldId);
+  
+  if (it != idGenerated.end()){
+    id = std::distance(idGenerated.begin(), it);
+  } else {
+    it = std::find(idGenerated.begin(), idGenerated.end(), oldId-1);
+    if(it != idGenerated.end()){
+      id = std::distance(idGenerated.begin(), it);
+    }
+  } 
+  return id;
 }
 
 

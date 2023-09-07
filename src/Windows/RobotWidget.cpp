@@ -1,5 +1,4 @@
 #include "RobotWidget.h"
-#include <iostream>
 #include "ui_RobotWidget.h"
 #include "Vision/Vision.h"
 
@@ -51,11 +50,13 @@ void RobotWidget::setSecondaryColor(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = (this->m_robotId % 100) / 10;
+  int t_id = (ids[this->m_robotId]/6)%6;
+  if(t_id < 4){
+    t_id += 6;
+  }
 
   for (const char *str : Color::_names()) {
-    printf("ID: %d\n", t_id);
-    if (t_id/10 == Color::_from_string(str)) {
+    if (t_id == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
         color = QColor(correctColor);
@@ -73,11 +74,14 @@ void RobotWidget::setSecondSecondary(QPixmap &t_robotId) {
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = this->m_robotId%100 + Color::RED;
+  int t_id = (ids[this->m_robotId]/36);
+  
+  if(((ids[this->m_robotId]/6)%6) < 4){
+    t_id -= 1;
+  }
 
   for (const char *str : Color::_names()) {
-    printf("ID: %d\n", t_id%10);
-    if (t_id%10 == Color::_from_string(str)) {
+    if (t_id == Color::_from_string(str)) {
       QString correctColor(str);
       if (QColor::isValidColor(correctColor)) {
         color = QColor(correctColor);
@@ -93,7 +97,7 @@ void RobotWidget::update() {
   int offset_x = static_cast<int>(m_index) * 50;
   int offset_y = 0;
   int teamColor = Vision::singleton().getTeamColor();
-
+  
   Players players = vss.players(
               static_cast<uint>(teamColor)
               );
