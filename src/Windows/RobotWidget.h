@@ -19,7 +19,8 @@ class RobotWidget : public QWidget {
 
   QPixmap getRobotId();
   void setPrimaryColor(QPixmap &t_robotId);
-  void setSecodaryColor(QPixmap &t_robotId);
+  void setSecondaryColor(QPixmap &t_robotId);
+  void setSecondSecondary(QPixmap &t_robotId);
   void update();
 
  private slots:
@@ -31,6 +32,7 @@ class RobotWidget : public QWidget {
   QPixmap m_borderImage;
   QPixmap m_numbersImage;
   uint m_robotId;
+  std::vector<int> ids = {204, 240, 276, 174, 246, 282, 180, 216, 288, 186, 222, 258};
 };
 
 #endif  // ROBOTWIDGET_H

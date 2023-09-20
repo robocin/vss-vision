@@ -1,5 +1,4 @@
 #include "RobotWidget.h"
-#include <iostream>
 #include "ui_RobotWidget.h"
 #include "Vision/Vision.h"
 
@@ -26,7 +25,8 @@ RobotWidget::~RobotWidget() {
 QPixmap RobotWidget::getRobotId() {
   QPixmap colorArea(200, 200);
   setPrimaryColor(colorArea);
-  setSecodaryColor(colorArea);
+  setSecondaryColor(colorArea);
+  setSecondSecondary(colorArea);
   QPainter paint(&colorArea);
   paint.drawPixmap(0, 0, m_borderImage);
   paint.end();
@@ -44,13 +44,16 @@ void RobotWidget::setPrimaryColor(QPixmap &t_robotId) {
   paint.drawRect(0, 0, 200, 100);
 }
 
-void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
+void RobotWidget::setSecondaryColor(QPixmap &t_robotId) {
   QPainter paint(&t_robotId);
 
   // AJUSTAR
   QColor color(Qt::black);
   QVector<QString> names;
-  int t_id = this->m_robotId%100 + Color::RED;
+  int t_id = (ids[this->m_robotId]/6)%6;
+  if(t_id < 4){
+    t_id += 6;
+  }
 
   for (const char *str : Color::_names()) {
     if (t_id == Color::_from_string(str)) {
@@ -65,11 +68,36 @@ void RobotWidget::setSecodaryColor(QPixmap &t_robotId) {
   paint.drawRect(0, 100, 200, 100);
 }
 
+void RobotWidget::setSecondSecondary(QPixmap &t_robotId) {
+  QPainter paint(&t_robotId);
+
+  // AJUSTAR
+  QColor color(Qt::black);
+  QVector<QString> names;
+  int t_id = (ids[this->m_robotId]/36);
+  
+  if(((ids[this->m_robotId]/6)%6) < 4){
+    t_id -= 1;
+  }
+
+  for (const char *str : Color::_names()) {
+    if (t_id == Color::_from_string(str)) {
+      QString correctColor(str);
+      if (QColor::isValidColor(correctColor)) {
+        color = QColor(correctColor);
+      }
+    }
+  }
+
+  paint.setBrush(QBrush(color));
+  paint.drawRect(100, 100, 100, 100);
+}
+
 void RobotWidget::update() {
   int offset_x = static_cast<int>(m_index) * 50;
   int offset_y = 0;
   int teamColor = Vision::singleton().getTeamColor();
-  // printf("Team Color %d\n", teamColor);
+  
   Players players = vss.players(
               static_cast<uint>(teamColor)
               );

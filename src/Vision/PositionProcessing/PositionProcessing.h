@@ -23,7 +23,9 @@
 
 #define CLUSTERSPERCOLOR 8
 #define MAX_ROBOTS 6
+#define MAX_ROBOT_ID 12
 #define BALL_INDEX 6
+#define MIN_ID 176
 
 #define POSITION_PROCESSING_FILE  "Config/PositionProcessing.xml"
 #define WHERE_ARE_THOSE_FILE  "Config/PositionProcessingWhereAre.xml"
@@ -59,6 +61,20 @@
 #define secondaryColor5  "SecondaryColor5"
 #define secondaryColor6  "SecondaryColor6"
 
+
+#define RED_GREEN   206
+#define RED_PINK    242
+#define RED_CYAN    278
+#define GREEN_RED   176
+#define GREEN_PINK  248
+#define GREEN_CYAN  284
+#define PINK_RED    182
+#define PINK_GREEN  218
+#define PINK_CYAN   290
+#define CYAN_RED    188
+#define CYAN_GREEN  224
+#define CYAN_PINK   260
+
 #define DEFAULT_ROWS 660
 #define DEFAULT_COLS 880
 
@@ -82,12 +98,20 @@ public:
    */
 
   typedef struct Blob {
+    int     id;
     cv::Point position;
     double  angle;
     bool    valid;
     int     area;
+    int     color;
     Blob():angle(0),valid(false),area(0) {}
+    // This is used to sort the blobs by its
+    bool operator<(Blob &b) {
+        return color < b.color;
+    }
   } Blob;
+
+  typedef std::vector<Blob> Blobs;
 
   typedef struct NearestBlobInfo{
     int teamIndex;
@@ -95,15 +119,21 @@ public:
   } NearestBlobInfo;
 
   typedef struct Region {
-    std::pair <Blob,Blob> blobs;
+    Blobs blobs;
     int team;
     double distance;
-    int color;
+
+    bool operator<(Region &b) {
+        if (blobs.size() == 0 || b.blobs.size() == 0) return false;
+        return blobs[0].id < b.blobs[0].id;
+    }
   } Region;
 
+  typedef std::vector<Region> Regions;
+
   typedef struct FieldRegions {
-    std::vector<Region> team;
-    std::vector<Region> enemys;
+    Regions team;
+    Regions enemies;
   } FieldRegions;
 
   /**
@@ -175,6 +205,15 @@ protected:
    * @param    ball  The entity to be returned
    */
   void findBall(Entity &ball, cv::Mat &debugFrame);
+
+  /**
+   * @brief    Filter blobs to merge valid blos in new tag format.
+   *
+   * @param    regions The regions to filter the blobs into new regions
+   */
+  void filterTeam(Regions &regions);
+
+  void filterPattern(Regions &regions);
 
    /**
   * @brief    Identifies from which team the blob belongs to.
@@ -258,6 +297,14 @@ protected:
   // retorna a maxima distancia entre blobs para serem um robo
   int blobMaxDist();
 
+  int newId(int oldId);
+  
+
+  std::vector<int> idGenerated = {RED_GREEN, RED_PINK, RED_CYAN,
+                                  GREEN_RED, GREEN_PINK, GREEN_CYAN,
+                                  PINK_RED, PINK_GREEN, PINK_CYAN,
+                                  CYAN_RED, CYAN_GREEN, CYAN_PINK};
+
   std::mutex _frameLocker;
   std::map<std::string,int> param;
   cv::Scalar _colorCar[ColorStrange+1];
@@ -269,13 +316,14 @@ protected:
   enum enemy{Nothing,Primary,Secundary,Both};
   int _teamColor;
   int _minSize, _maxSize, _minSizeBall, _maxSizeBall, _blobMaxDist, _teamId, _enemyTeam , _enemySearch, _showElement;
-  KalmanFilter _kalmanFilterRobots[2][MAX_ROBOTS];
-  KalmanFilter _dirFilteRobots[2][MAX_ROBOTS];
+  KalmanFilter _kalmanFilterRobots[2][MAX_ROBOT_ID];
+  KalmanFilter _dirFilteRobots[2][MAX_ROBOT_ID];
   KalmanFilter _kalmanFilterBall[1][1];
   KalmanFilter _dirFilterBall[1][1];
   Point _ballLastPosition;
   Float _ballLastTime;
   static const bool USE_PATTERN_FOR_ENEMIES = true;
+  static const bool USE_OLD_PATTERN = false;
 
 };
 

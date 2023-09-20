@@ -22,13 +22,11 @@ class FiraClient:
         self.vision_ip = vision_ip
         self.vision_port = vision_port
 
-        self.vision_sock = socket.socket(
-            socket.AF_INET, socket.SOCK_DGRAM)
+        self.vision_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.vision_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.vision_sock.setsockopt(socket.IPPROTO_IP, 
-                        socket.IP_MULTICAST_TTL, 128)
-        self.vision_sock.setsockopt(socket.IPPROTO_IP, 
-                        socket.IP_MULTICAST_LOOP, 1)
+        self.vision_sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 128)
+        self.vision_sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+        self.vision_sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, struct.pack("=4sl", socket.inet_aton(self.vision_ip), socket.INADDR_ANY))
         self.vision_sock.bind((self.vision_ip, self.vision_port))
 
         # self.vision_sock.setblocking(True)

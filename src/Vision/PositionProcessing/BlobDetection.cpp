@@ -108,6 +108,7 @@ void BlobDetection::findBlobs(cv::Mat& debugFrame) {
             blob[cor][_clusterCount[cor]].position.y = r.sumX / this->_runs[i][j].areaBlob;
             blob[cor][_clusterCount[cor]].area = r.areaBlob;
             blob[cor][_clusterCount[cor]].valid = true;
+            blob[cor][_clusterCount[cor]].id = _clusterCount[cor];
             blob[cor][_clusterCount[cor] + 1].valid = false;
             _clusterCount[cor]++;
 
