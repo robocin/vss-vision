@@ -25,13 +25,17 @@ VisionServer::~VisionServer(){
 
 void VisionServer::send(std::vector<Entity> &entities) {
     SSL_WrapperPacket packet;
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    std::chrono::duration<double> seconds_since_epoch = now.time_since_epoch();
+    double seconds = seconds_since_epoch.count();
 
+    // auto millisec = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     SSL_DetectionFrame *frame = packet.mutable_detection();
     frame->set_camera_id(0);
-    frame->set_frame_number(0);
-    frame->set_t_capture(0);
-    frame->set_t_sent(0);
-
+    frame->set_frame_number(this->count);
+    frame->set_t_capture(seconds);
+    frame->set_t_sent(seconds);
+    this->count++;
     for(int i=0;i<entities.size();i++){
         if(i == 0){
             SSL_DetectionBall *ball = frame->mutable_balls()->Add();
@@ -73,7 +77,8 @@ void VisionServer::send(std::vector<Entity> &entities) {
     field->set_boundary_width(100);
     field->set_penalty_area_depth(150);
     field->set_penalty_area_width(700);
-
+    field->set_ball_radius(21);
+    field->set_max_robot_radius(40);
     // serialize packet to send
     QByteArray datagram(static_cast<int>(packet.ByteSizeLong()), static_cast<char>(0));
     packet.SerializeToArray(datagram.data(), datagram.size());

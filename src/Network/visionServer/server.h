@@ -21,7 +21,7 @@ public:
     VisionServer(QString address, int port);
     ~VisionServer();
     void send(std::vector<Entity> &entities);
-
+    int count = 0;
     QHostAddress _addr;
     quint16 _port;
 
