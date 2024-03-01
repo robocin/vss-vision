@@ -49,7 +49,9 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
 void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::vector<Region> &teamRegions) {
 
   players.clear();
-  filterPattern(teamRegions);
+  
+  if(!USE_OLD_PATTERN) filterPattern(teamRegions);
+
   uint teamColor = static_cast<uint>(getTeamColor());
   for (Region &region : teamRegions) {
     if(USE_OLD_PATTERN){
