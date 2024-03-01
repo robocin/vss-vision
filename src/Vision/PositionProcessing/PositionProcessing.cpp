@@ -53,26 +53,35 @@ void PositionProcessing::findTeam(Players &players, cv::Mat& debugFrame, std::ve
   uint teamColor = static_cast<uint>(getTeamColor());
   for (Region &region : teamRegions) {
     if(USE_OLD_PATTERN){
+     if (region.distance < blobMaxDist()) {
+        Blobs blobs = region.blobs;
+        Blob b1 = blobs[0], b2 = blobs[1];
+        int colorIndex = blobs[1].color;
 
-      int colorIndex = region.blobs[1].color;
-      
-      if (!Utils::isRobotColor(colorIndex)) {
-        // cor invalida
-        continue;
+        if (!Utils::isRobotColor(colorIndex)) {
+          continue;
+        }
+
+
+        Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED);
+        robot.team(teamColor);
+        Point newPositionInPixels = (b1.position + b2.position) * 0.5;
+        Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
+
+        Float newAngle = Utils::angle(b1.position, b2.position);
+
+        auto & playerPosVel = _kalmanFilterRobots[teamColor-2][robot.id()%100].update(newPosition.x,newPosition.y);
+
+        Geometry::PT filtPoint (playerPosVel(0, 0), playerPosVel(1, 0));
+        Geometry::PT PlayVel(playerPosVel(2, 0), playerPosVel(3, 0));
+
+        auto &playerRotVel = _dirFilteRobots[teamColor-2][robot.id()%100].update(std::cos(newAngle), std::sin(newAngle));
+        double filterDir = std::atan2(playerRotVel(1, 0), playerRotVel(0, 0));
+        robot.update(Point(filtPoint.x,filtPoint.y), filterDir);
+        players.push_back(robot);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 15, _colorCar[teamColor], 2, cv::LINE_AA);
+        cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(filtPoint.x,filtPoint.y)), 12, _colorCar[colorIndex], 2, cv::LINE_AA);
       }
-
-      Blobs blobs = region.blobs;
-      Blob b1 = blobs[1], b2 = blobs[0];
-      Player robot((teamColor-1)*100 + static_cast<uint>(colorIndex) - Color::RED); // seta o id da robo na regiao
-      robot.team(teamColor);
-      Point newPositionInPixels = (b1.position + b2.position) * 0.5;
-      Point newPosition = Utils::convertPositionPixelToCm(newPositionInPixels);
-      Float newAngle = Utils::angle(b1.position, b2.position);
-
-      robot.update(Point(newPosition.x,newPosition.y), newAngle);
-      players.push_back(robot);
-      cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 15, _colorCar[teamColor], 2, cv::LINE_AA);
-      cv::circle(debugFrame, Utils::convertPositionCmToPixel(Point(newPosition.x,newPosition.y)), 12, _colorCar[colorIndex], 2, cv::LINE_AA);
     } 
     else if(region.blobs.size() == 3) {
       int firstSecondary = region.blobs[1].color;
