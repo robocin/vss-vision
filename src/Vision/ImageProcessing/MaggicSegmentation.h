@@ -197,6 +197,8 @@ public:
   void setLUTCacheEnable(bool enabled = true);
   bool getLUTCacheEnable();
 
+  void setSaturationValue(double newSaturation);
+  void setContrastValue(double newContrast);
 
 private:
   int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40,
@@ -217,6 +219,8 @@ private:
 
   int greatestSumOfAreas = 0;
   int filterGrayThreshold = 30;
+  double saturationPercent = 1.2;
+  double contrastPercent = 0.8;
   MaggicVisionDebugSelection _debugSelection;
 
   typedef std::vector<float> ColorDescriptor;
@@ -263,7 +267,8 @@ private:
   void doDetails();
 
   void removeTopRectangle(Rectangles &rects, cv::Point &p);
-  void removeTopRectangle(Rectangles& rects, cv::Point& p);
+
+  cv::Mat lowContrast(cv::Mat &img);
 
   /**
    * @brief    Init the Look Up Table with the already loaded parameters

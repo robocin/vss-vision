@@ -6,19 +6,17 @@
 #include <Timer/Timer.h>
 #include <stdio.h>
 
-#include <Vision/Vision.h>
 #include <CameraManager/CameraManager.h>
 #include <Vision/ImageProcessing/MaggicSegmentation.h>
+#include <Vision/Vision.h>
 #include <sstream>
 
 namespace Ui {
-  class MaggicSegmentationDialog;
-  class FieldPointsCalibrateDialog;
-}
+class MaggicSegmentationDialog;
+class FieldPointsCalibrateDialog;
+} // namespace Ui
 
-
-class MaggicSegmentationDialog : public QDialog
-{
+class MaggicSegmentationDialog : public QDialog {
   typedef std::map<uint, uint> Statistics;
   Q_OBJECT
 
@@ -27,59 +25,64 @@ public:
   ~MaggicSegmentationDialog();
 private slots:
 
-void updateFrame();
-void setFrameOnScreen();
-#define entitiesButtonClicked( elbo ) void on_entitiesButton_ ## elbo ## _clicked()
-entitiesButtonClicked(1);
-entitiesButtonClicked(2);
-entitiesButtonClicked(3);
-entitiesButtonClicked(4);
-entitiesButtonClicked(5);
-entitiesButtonClicked(6);
-entitiesButtonClicked(7);
+  void updateFrame();
+  void setFrameOnScreen();
+#define entitiesButtonClicked(elbo) void on_entitiesButton_##elbo##_clicked()
+  entitiesButtonClicked(1);
+  entitiesButtonClicked(2);
+  entitiesButtonClicked(3);
+  entitiesButtonClicked(4);
+  entitiesButtonClicked(5);
+  entitiesButtonClicked(6);
+  entitiesButtonClicked(7);
 #undef entitiesButtonClicked
 
-void on_tabWidget_currentChanged(int index);
-void on_minimumVerticalSlider_valueChanged();
-void on_maximumVerticalSlider_valueChanged();
-void on_threshGrayHorizontalSlider_valueChanged();
-void on_resetButton_clicked();
-void clearEntitiesCheck();
+  void on_tabWidget_currentChanged(int index);
+  void on_minimumVerticalSlider_valueChanged();
+  void on_maximumVerticalSlider_valueChanged();
+  void on_threshGrayHorizontalSlider_valueChanged();
+  void on_resetButton_clicked();
+  void clearEntitiesCheck();
 
-void on_playpauseButton_clicked(bool checked);
+  void on_playpauseButton_clicked(bool checked);
 
-void applyLUT();
+  void applyLUT();
 
-void on_applyLUTButton_clicked();
+  void on_applyLUTButton_clicked();
 
-void processImage(cv::Mat &ground_truth, cv::Mat &segmented, Statistics *gstats, Statistics *sstats);
+  void processImage(cv::Mat &ground_truth, cv::Mat &segmented,
+                    Statistics *gstats, Statistics *sstats);
 
-void processBatch();
+  void processBatch();
 
-void processAndSave();
+  void processAndSave();
 
-void autoResizeInputFrame(cv::Mat &frame);
+  void autoResizeInputFrame(cv::Mat &frame);
 
-void useNextImage();
+  void useNextImage();
 
-void on_fixCameraButton_clicked();
+  void on_fixCameraButton_clicked();
 
-void on_buttonBox_accepted();
+  void on_buttonBox_accepted();
 
-void on_loadButton_clicked();
+  void on_loadButton_clicked();
 
-void on_vectorscopeCheckBox_toggled(bool checked);
+  void on_vectorscopeCheckBox_toggled(bool checked);
 
-void on_FilterCheckBox_toggled(bool checked);
+  void on_FilterCheckBox_toggled(bool checked);
 
-void saveStats(Statistics &gstats, Statistics &sstats);
+  void saveStats(Statistics &gstats, Statistics &sstats);
 
-void on_NormalizationComboBox_currentIndexChanged(int index);
+  void on_NormalizationComboBox_currentIndexChanged(int index);
+
+  void on_saturation_valueChanged();
+
+  void on_contrast_valueChanged();
 
 private:
   Ui::MaggicSegmentationDialog *ui;
-  Vision* _vision;
-  CameraManager* _cameraMan;
+  Vision *_vision;
+  CameraManager *_cameraMan;
   cv::Mat _actualFrame, _segmentedFrame, _groundTruthFrame;
   cv::Mat _inputFrame;
   static String _inputFolderName, _outputFolderName, _groundTruthFolderName;

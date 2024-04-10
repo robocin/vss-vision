@@ -373,8 +373,7 @@ void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
   if (d.empty())
     d = cv::Mat::zeros(o.size(), o.type());
 
-  if (d.empty()) d = cv::Mat::zeros(o.size(), o.type());
-  tbb::parallel_for(tbb::blocked_range2d<int>(0, o.rows, 238, 0, o.cols, 161),
+  d = lowContrast(d);
   tbb::parallel_for(
       tbb::blocked_range2d<int>(0, o.rows, 238, 0, o.cols, 161),
       [&](const tbb::blocked_range2d<int> &r) {
@@ -1112,6 +1111,16 @@ void MaggicSegmentation::setFilterGrayThresholdValue(
   this->updateColors = true;
 }
 
+void MaggicSegmentation::setSaturationValue(double newSaturation) {
+  this->saturationPercent = newSaturation;
+  this->updateColors = true;
+}
+
+void MaggicSegmentation::setContrastValue(double newContrast) {
+  this->contrastPercent = newContrast;
+  this->updateColors = true;
+}
+
 int MaggicSegmentation::getFilterGrayThresholdValue() {
   return this->filterGrayThreshold;
 }
@@ -1787,4 +1796,26 @@ void MaggicSegmentation::setLUTCacheEnable(bool enable) {
 
 void MaggicSegmentation::applyLUT(cv::Mat &input, cv::Mat &output, uchar *LUT) {
 
+}
+
+cv::Mat MaggicSegmentation::lowContrast(cv::Mat &img) {
+  double min_val, max_val;
+  cv::minMaxLoc(img, &min_val, &max_val);
+
+  double alpha = 255 / (max_val - min_val);
+  double beta = -alpha * min_val;
+
+  cv::Mat img_contrast;
+  cv::convertScaleAbs(img, img_contrast, alpha * contrastPercent, beta);
+
+  // increase saturation
+  cv::cvtColor(img_contrast, img_contrast, cv::COLOR_BGR2HSV);
+  std::vector<cv::Mat> channels;
+  cv::split(img_contrast, channels);
+  // channels[0] = channels[1] * 1.2; //hue
+  channels[1] = channels[1] * saturationPercent;
+  cv::merge(channels, img_contrast);
+  cv::cvtColor(img_contrast, img_contrast, cv::COLOR_HSV2BGR);
+
+  return img_contrast;
 }
