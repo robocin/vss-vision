@@ -4,16 +4,16 @@
 #include "ImageProcessing.h"
 #include "Vision/ColorSpace.h"
 #include <QPushButton>
-#include <vector>
+#include <fstream>
+#include <map>
 #include <set>
 #include <string>
-#include <map>
-#include <fstream>
+#include <vector>
 typedef unsigned char uchar;
 
 #define LUTSIZE 16777216
 
-#define LUT_SIZE 16777216*3
+#define LUT_SIZE 16777216 * 3
 
 #define YMAXLABEL "YMAX"
 #define UMAXLABEL "UMAX"
@@ -35,15 +35,13 @@ typedef unsigned char uchar;
 #define BROWNLABEL "Brown"
 #define COLORSTRANGELABEL "ColorStrange"
 
-template<typename T>
-T max_element_of(T* data, size_t size) {
+template <typename T> T max_element_of(T *data, size_t size) {
   T r = data[0];
   for (size_t i = 1; i < size; ++i) {
     r = (data[i] > r ? data[i] : r);
   }
   return r;
 }
-
 
 enum MaggicVisionDebugSelection {
   MaggicVisionDebugSelection_Undefined = 0,
@@ -54,33 +52,30 @@ enum MaggicVisionDebugSelection {
   MaggicVisionDebugSelection_DetailsFrame
 };
 
-
-
 typedef std::vector<cv::Rect> Rectangles;
 
 /**
  * @brief    Class for segmentation using a Look Up Table (LUT).
  */
-class MaggicSegmentation : public ImageProcessing
-{
+class MaggicSegmentation : public ImageProcessing {
 
-// #define min(a,b) (a<b?a:b)
-// #define max(a,b) (a>b?a:b)
+  // #define min(a,b) (a<b?a:b)
+  // #define max(a,b) (a>b?a:b)
 
 public:
-    enum NormalizationMethod {
-        NO_NORMALIZATION= 0,
-        CHROMATIC_NORMALIZATION,
-        VECTOR_NORMALIZATION,
-        WEIGHTED_NORMALIZATION,
-        NORMALIZATION_METHODS_LENGTH
-    };
+  enum NormalizationMethod {
+    NO_NORMALIZATION = 0,
+    CHROMATIC_NORMALIZATION,
+    VECTOR_NORMALIZATION,
+    WEIGHTED_NORMALIZATION,
+    NORMALIZATION_METHODS_LENGTH
+  };
 
   bool paused, enableEstimateRobots;
   bool useLoadedValues = false;
   bool m_updateDetails = true;
   bool m_updateFrame = true;
-  
+
   /**
    * @brief    Default Constructor
    */
@@ -98,22 +93,22 @@ public:
    *
    * @return   A one channel's Mat with the labels on the pixels' value
    */
-  cv::Mat run(cv::Mat& frame) final;
+  cv::Mat run(cv::Mat &frame) final;
 
   /**
    * @brief    Gets the debug frame, a Mat in BGR channel
    *
    * @return   The debug frame.
    */
-  void getDebugFrame(cv::Mat& frame) final;
+  void getDebugFrame(cv::Mat &frame) final;
 
   /**
    * @brief    Gets the segmentation frame from lut. Frame for debug).
    *
-   * @return   The segmentation frame from lut, it's use in Vision to pass for other class.
+   * @return   The segmentation frame from lut, it's use in Vision to pass for
+   * other class.
    */
-  void getSegmentationFrameFromLUT(cv::Mat& frame);
-
+  void getSegmentationFrameFromLUT(cv::Mat &frame);
 
   static uint BGR2RGBHash(cv::Vec3b &v);
 
@@ -161,7 +156,7 @@ public:
 
   void generateLUTFromHUE();
 
-  uchar* getLUT();
+  uchar *getLUT();
 
   void openLastSession();
 
@@ -202,10 +197,12 @@ public:
   void setLUTCacheEnable(bool enabled = true);
   bool getLUTCacheEnable();
 
+
 private:
-  int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40, _intervalGrayThreshold = 30;
+  int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40,
+      _intervalGrayThreshold = 30;
   static constexpr float div255 = 1.0f / 255.0f;
-  static constexpr float div3255 = 1.0f/(255.0f+ 255.0f+ 255.0f);
+  static constexpr float div3255 = 1.0f / (255.0f + 255.0f + 255.0f);
   bool normalized_color;
   NormalizationMethod normalization_method, selected_normalization_method;
   static const NormalizationMethod default_normalization_method;
@@ -235,7 +232,7 @@ private:
 
   RobotDescriptor robotsDescriptors[8];
 
-  int* _HUETable;
+  int *_HUETable;
   bool isLUTReady;
 
   int _manyTimes, _entitiesCount;
@@ -246,7 +243,7 @@ private:
 
   void filterGray(cv::Mat &d, cv::Mat &o);
 
-  void applyLUT(cv::Mat &input, cv::Mat &output, uchar* LUT);
+  void applyLUT(cv::Mat &input, cv::Mat &output, uchar *LUT);
 
   inline void filterGray(cv::Vec3b &color, cv::Vec3b &coloro);
 
@@ -260,10 +257,12 @@ private:
 
   void _layeredAdd(cv::Mat &out, cv::Mat imgA, cv::Mat imgB);
 
-  bool estimateRobots(cv::Mat img, int manyTimes, int n_components_reference = 7);
+  bool estimateRobots(cv::Mat img, int manyTimes,
+                      int n_components_reference = 7);
 
   void doDetails();
 
+  void removeTopRectangle(Rectangles &rects, cv::Point &p);
   void removeTopRectangle(Rectangles& rects, cv::Point& p);
 
   /**
@@ -275,21 +274,18 @@ private:
   std::vector<std::pair<float, int>> hueList;
   std::vector<std::pair<float, int>> defaultHueList;
 
+  cv::Mat colorPalette, colorPaletteYUV, colorPaletteHSV, histo;
 
-  cv::Mat colorPalette,
-      colorPaletteYUV,
-      colorPaletteHSV,
-      histo;
-
-  uchar* _LUT;
-  uchar** _LUT_CACHE;
-  ColorInterval* _calibrationParameters;
+  uchar *_LUT;
+  uchar **_LUT_CACHE;
+  ColorInterval *_calibrationParameters;
   cv::Mat _imageBuffer;
   cv::Mat _imageBufferFiltered;
   cv::Mat _imageBufferHSV;
   cv::Mat _debugFrame;
   cv::Mat _segmentationFrame;
-  cv::Mat _extremeSaturation, _multipliedResults, _firstThreshold, _secondThreshold;
+  cv::Mat _extremeSaturation, _multipliedResults, _firstThreshold,
+      _secondThreshold;
   cv::Mat _detailsFrame, _colorDetailsFrame;
   cv::Mat _filterMask;
   cv::Point2i cursorPos;
@@ -305,18 +301,10 @@ private:
   bool colorDistribution = false;
   bool enableFilter = false;
 
-  std::string _colorLabels[NUMBEROFCOLOR] = { NOCOLLABEL,
-                        ORANGELABEL,
-                        BLUELABEL,
-                        YELLOWLABEL,
-                        REDLABEL,
-                        GREENLABEL,
-                        PINKLABEL,
-                        LIGHTBLUELABEL,
-                        PURPLELABEL,
-                        BROWNLABEL,
-                        COLORSTRANGELABEL };
-
+  std::string _colorLabels[NUMBEROFCOLOR] = {
+      NOCOLLABEL,  ORANGELABEL, BLUELABEL,        YELLOWLABEL,
+      REDLABEL,    GREENLABEL,  PINKLABEL,        LIGHTBLUELABEL,
+      PURPLELABEL, BROWNLABEL,  COLORSTRANGELABEL};
 };
 
 #endif
