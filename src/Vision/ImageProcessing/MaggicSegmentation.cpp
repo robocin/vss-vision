@@ -287,7 +287,6 @@ void MaggicSegmentation::calibrate(cv::Mat &frame) {
 
   cv::Mat &image = this->_imageBuffer;
   // imwrite("robocin.png",image);
-
   /*if (this->_calibrationFrames > this->_learningThresholdFrames) {
     this->setLearningThresholdValue(false);
     updateFilterGrayThresholdValue();
@@ -301,7 +300,6 @@ void MaggicSegmentation::calibrate(cv::Mat &frame) {
   if (this->m_updateFrame) {
     this->m_updateFrame = false;
     cv::Mat d, t, extremeSaturation;
-
     if (this->_debugSelection == MaggicVisionDebugSelection_SegmentationFrame) {
       this->run(this->_imageBuffer);
 
@@ -309,9 +307,7 @@ void MaggicSegmentation::calibrate(cv::Mat &frame) {
                MaggicVisionDebugSelection_Thresholded) {
       image.copyTo(d);
       filterGray(d, d);
-      // cv::cvtColor(d, t, cv::COLOR_BGR2GRAY);
-      // t = t > 0;
-      // cv::cvtColor(t,this->_firstThreshold,cv::COLOR_GRAY2BGR);
+      d = lowContrast(d);
       d.copyTo(this->_firstThreshold);
 
     } else if (this->_debugSelection ==
@@ -372,8 +368,6 @@ int MaggicSegmentation::getEntitiesCount() { return this->_entitiesCount; }
 void MaggicSegmentation::filterGray(cv::Mat &d, cv::Mat &o) {
   if (d.empty())
     d = cv::Mat::zeros(o.size(), o.type());
-
-  d = lowContrast(d);
   tbb::parallel_for(
       tbb::blocked_range2d<int>(0, o.rows, 238, 0, o.cols, 161),
       [&](const tbb::blocked_range2d<int> &r) {
@@ -436,10 +430,6 @@ inline void MaggicSegmentation::filterGray(cv::Vec3b &color,
   } else {
     color = coloro;
   }
-
-  // if (x <= 80 && y <= 80 && z <= 80) {
-  //   color = cv::Vec3b(0, 0, 0); // black
-  // }
 }
 
 void MaggicSegmentation::filterBinarizeColored(cv::Mat &d, cv::Mat &o) {
@@ -1118,6 +1108,11 @@ void MaggicSegmentation::setSaturationValue(double newSaturation) {
 
 void MaggicSegmentation::setContrastValue(double newContrast) {
   this->contrastPercent = newContrast;
+  this->updateColors = true;
+}
+
+void MaggicSegmentation::setBrightnessValue(double newBrightness) {
+  this->brightnessPercent = newBrightness;
   this->updateColors = true;
 }
 
