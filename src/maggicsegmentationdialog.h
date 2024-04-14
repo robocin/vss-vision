@@ -79,6 +79,8 @@ private slots:
 
   void on_contrast_valueChanged();
 
+  void on_brightness_valueChanged();
+
 private:
   Ui::MaggicSegmentationDialog *ui;
   Vision *_vision;

@@ -17,8 +17,9 @@
 #include <QDir>
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM 17
 #define FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM 45
-#define SATURATION_DEFAULT 1.2
-#define CONTRAST_DEFAULT 0.8
+#define SATURATION_DEFAULT 10
+#define CONTRAST_DEFAULT 0.7
+#define BRIGHNESS_DEFAULT 0.5
 
 String MaggicSegmentationDialog::_inputFolderName = "Input";
 String MaggicSegmentationDialog::_outputFolderName = "Output";
@@ -81,6 +82,11 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent)
 
   this->maggicSegmentation->setSaturationValue(SATURATION_DEFAULT);
   this->maggicSegmentation->setContrastValue(CONTRAST_DEFAULT);
+  this->maggicSegmentation->setBrightnessValue(BRIGHNESS_DEFAULT);
+
+  this->ui->saturation->setValue(SATURATION_DEFAULT);
+  this->ui->contrast->setValue(CONTRAST_DEFAULT);
+  this->ui->brightness->setValue(BRIGHNESS_DEFAULT);
 
   int m, M;
   this->maggicSegmentation->getFilterGrayThresholdValues(m, M);
@@ -283,15 +289,22 @@ void MaggicSegmentationDialog::on_threshGrayHorizontalSlider_valueChanged() {
 
 void MaggicSegmentationDialog::on_saturation_valueChanged() {
   this->maggicSegmentation->lock();
-  int val = ui->saturation->value();
+  double val = ui->saturation->value();
   this->maggicSegmentation->setSaturationValue(val);
   this->maggicSegmentation->unlock();
 }
 
 void MaggicSegmentationDialog::on_contrast_valueChanged() {
   this->maggicSegmentation->lock();
-  int val = ui->contrast->value();
+  double val = ui->contrast->value();
   this->maggicSegmentation->setContrastValue(val);
+  this->maggicSegmentation->unlock();
+}
+
+void MaggicSegmentationDialog::on_brightness_valueChanged() {
+  this->maggicSegmentation->lock();
+  double val = ui->brightness->value();
+  this->maggicSegmentation->setBrightnessValue(val);
   this->maggicSegmentation->unlock();
 }
 

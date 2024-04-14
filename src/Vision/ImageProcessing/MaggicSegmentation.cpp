@@ -1793,24 +1793,24 @@ void MaggicSegmentation::applyLUT(cv::Mat &input, cv::Mat &output, uchar *LUT) {
 
 }
 
-cv::Mat MaggicSegmentation::lowContrast(cv::Mat &img) {
+cv::Mat MaggicSegmentation::lowContrast(cv::Mat img) {
   double min_val, max_val;
   cv::minMaxLoc(img, &min_val, &max_val);
 
   double alpha = 255 / (max_val - min_val);
   double beta = -alpha * min_val;
 
-  cv::Mat img_contrast;
-  cv::convertScaleAbs(img, img_contrast, alpha * contrastPercent, beta);
+  cv::convertScaleAbs(img, img, alpha * contrastPercent, beta);
+  cv::addWeighted(img, alpha * brightnessPercent, img, alpha * contrastPercent, 0, img);
 
   // increase saturation
-  cv::cvtColor(img_contrast, img_contrast, cv::COLOR_BGR2HSV);
+  cv::cvtColor(img, img, cv::COLOR_BGR2HSV);
   std::vector<cv::Mat> channels;
-  cv::split(img_contrast, channels);
+  cv::split(img, channels);
   // channels[0] = channels[1] * 1.2; //hue
   channels[1] = channels[1] * saturationPercent;
-  cv::merge(channels, img_contrast);
-  cv::cvtColor(img_contrast, img_contrast, cv::COLOR_HSV2BGR);
+  cv::merge(channels, img);
+  cv::cvtColor(img, img, cv::COLOR_HSV2BGR);
 
-  return img_contrast;
+  return img;
 }

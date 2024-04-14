@@ -63,6 +63,8 @@ class MaggicSegmentation : public ImageProcessing {
   // #define max(a,b) (a>b?a:b)
 
 public:
+  static MaggicSegmentation& singleton();
+
   enum NormalizationMethod {
     NO_NORMALIZATION = 0,
     CHROMATIC_NORMALIZATION,
@@ -199,6 +201,10 @@ public:
 
   void setSaturationValue(double newSaturation);
   void setContrastValue(double newContrast);
+  void setBrightnessValue(double newBrightness);
+
+  cv::Mat lowContrast(cv::Mat img);
+
 
 private:
   int _minimumGrayThreshold = 10, _maximumGrayThreshold = 40,
@@ -219,8 +225,9 @@ private:
 
   int greatestSumOfAreas = 0;
   int filterGrayThreshold = 30;
-  double saturationPercent = 1.2;
+  double saturationPercent = 8;
   double contrastPercent = 0.8;
+  double brightnessPercent = 1.0;
   MaggicVisionDebugSelection _debugSelection;
 
   typedef std::vector<float> ColorDescriptor;
@@ -267,8 +274,6 @@ private:
   void doDetails();
 
   void removeTopRectangle(Rectangles &rects, cv::Point &p);
-
-  cv::Mat lowContrast(cv::Mat &img);
 
   /**
    * @brief    Init the Look Up Table with the already loaded parameters
