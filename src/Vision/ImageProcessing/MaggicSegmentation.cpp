@@ -301,6 +301,9 @@ void MaggicSegmentation::calibrate(cv::Mat &frame) {
     this->m_updateFrame = false;
     cv::Mat d, t, extremeSaturation;
     if (this->_debugSelection == MaggicVisionDebugSelection_SegmentationFrame) {
+      image.copyTo(d);
+      d = lowContrast(d);
+      d.copyTo(this->_imageBuffer);
       this->run(this->_imageBuffer);
 
     } else if (this->_debugSelection ==
@@ -321,7 +324,9 @@ void MaggicSegmentation::calibrate(cv::Mat &frame) {
 
     } else if (this->_debugSelection ==
                MaggicVisionDebugSelection_MultipliedResults) {
-      image.copyTo(this->_multipliedResults);
+      image.copyTo(d);
+      d = lowContrast(d);
+      d.copyTo(this->_multipliedResults);
 
     } else if (this->_debugSelection ==
                MaggicVisionDebugSelection_DetailsFrame) {
