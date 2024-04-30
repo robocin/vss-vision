@@ -137,6 +137,13 @@ void MainVSSWindow::selectCorrectFrame() {
     this->m_currentFrameLocker.lock();
     this->m_currentFrame = frameAux + frameAux2 + aux;
     this->m_currentFrameLocker.unlock();
+  }  else if (frameType == "Aruco") {
+    cv::Mat frameAux, arucoFrame;
+    Vision::singleton().getCurrentFrame(frameAux);
+    arucoFrame = Vision::singleton().getArucoFrame(frameAux);
+    this->m_currentFrameLocker.lock();
+    this->m_currentFrame = arucoFrame;
+    this->m_currentFrameLocker.unlock();
   } else {
     throw std::runtime_error("Invalid visualization option");
   }
@@ -331,6 +338,7 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
     m_ui->visualizationComboBox->addItem("Original");
     m_ui->visualizationComboBox->addItem("Segmented");
     m_ui->visualizationComboBox->addItem("Tracked");
+    m_ui->visualizationComboBox->addItem("Aruco");
     m_ui->visualizationComboBox->setCurrentIndex(2);
     }
 

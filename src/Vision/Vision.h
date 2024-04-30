@@ -20,6 +20,7 @@
 
 #include <opencv2/opencv.hpp>
 #include "Entity/Entity.h"
+#include "ImageProcessing/ImageProcessing.h"
 #include "Vision/ColorSpace.h"
 #include "Vision/PositionProcessing/PositionProcessing.h"
 #include "Vision/ImageProcessing/ImageProcessing.h"
@@ -90,6 +91,11 @@ private:
    * { object responsible for segment a frame }
    */
   ImageProcessing* _segmentation;
+
+  /**
+   * { object responsible for aruco detection }
+   */
+  ArucoDetection* _aruco;
 
   /**
    * { atribute of the frame that is being processed or will be processed by vision module }
@@ -288,6 +294,13 @@ public:
    * @param[in]   The detection frame.
    */
   void getDetectionFrame(cv::Mat& frame);
+
+    /**
+   * @brief    Gets the aruco detection frame.
+   *
+   * @param[in]   The aruco detection frame.
+   */
+  cv::Mat getArucoFrame(cv::Mat& frame);
 
   /**
    * @brief getConvert convert (_wConvert, _hConvert) convertion px to cm

@@ -11,6 +11,7 @@ Vision::Vision()
     this->_segmentation = new LUTSegmentation();
     this->_correction = new WarpCorrection();
     this->_compression = new RunLengthEncoding();
+    this->_aruco = new ArucoDetection();
     static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH,&this->_convert);
     static_cast<LUTSegmentation*>(this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
     this->_isCorrectionEnabled = false;
@@ -330,6 +331,15 @@ void Vision::getDetectionFrame(cv::Mat& frame)
 
     this->_visionStatusLocker.unlock();
 }
+
+cv::Mat Vision::getArucoFrame(cv::Mat& frame)
+{
+    if (this->_aruco)
+        this->_aruco->detection(frame);
+    
+    return frame;
+}
+
 
 bool Vision::isCorrectionEnabled()
 {
