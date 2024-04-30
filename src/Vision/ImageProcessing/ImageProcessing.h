@@ -5,6 +5,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/opencv.hpp"
+#include "opencv2/aruco.hpp"
 #include <mutex>
 
 /**
@@ -30,6 +31,19 @@ public:
 
   virtual ~ImageProcessing() = default;
 	
+};
+
+
+class ArucoDetection {
+  public:
+	ArucoDetection();
+	void detection(cv::Mat& frame);
+	~ArucoDetection() = default;
+
+  private:
+    std::mutex mut;
+	cv::Ptr<cv::aruco::DetectorParameters> parameters;
+	cv::Ptr<cv::aruco::Dictionary> dictionary;
 };
 
 #endif
