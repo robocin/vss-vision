@@ -1,6 +1,7 @@
 #include "Vision.h"
 #include "Network/Network.h"
 #include <algorithm>
+#include <vector>
 
 Vision::Vision()
 {
@@ -14,7 +15,7 @@ Vision::Vision()
     static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH,&this->_convert);
     static_cast<LUTSegmentation*>(this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
     this->_isCorrectionEnabled = false;
-    this->_isProcessingEnabled = false;
+    this->_isProcessingEnabled = true;
     std::vector<Entity> currentPositions (7, Entity());
     this->_robotPositions = currentPositions;
     this->_currentFrame = cv::Mat::zeros(640,480,CV_8UC3);
@@ -32,13 +33,11 @@ Vision::Vision()
 
 Vision::~Vision()
 {
-    this->_visionStatusLocker.lock();
     if (this->_detection)
         delete this->_detection;
 
     if (this->_segmentation)
         delete(this->_segmentation);
-    this->_visionStatusLocker.unlock();
 }
 
 Vision& Vision::singleton()
@@ -61,9 +60,7 @@ void Vision::saveFrameDimensions(cv::Mat &frame){
 }
 
 Point Vision::getFrameDimensions(){
-    this->_visionStatusLocker.lock();
     Point ret = _frameDimensions;
-    this->_visionStatusLocker.unlock();
     return ret;
 }
 
@@ -73,20 +70,30 @@ void Vision::update()
     
     this->_processingFrame = this->_currentFrame.clone();
 
+
     if (this->_isProcessingEnabled) {
 
         this->_processingFrame = this->_segmentation->run(this->_processingFrame);
-        std::vector< std::vector <Run> > runs = this->_compression->run(this->_processingFrame);
+        auto _runs = this->_compression->run(this->_processingFrame);
         saveFrameDimensions(this->_processingFrame);
-        this->_detection->run(runs, this->_processingFrame.rows, this->_processingFrame.cols);
+        this->_detection->run(_runs, this->_processingFrame.rows, this->_processingFrame.cols);
+
+        cv::Mat frameAux, frameAux2;
+        getCurrentFrame(frameAux);
+        getDetectionFrame(frameAux2);
+        cv::resize(frameAux2, frameAux2, frameAux.size());
+        cv::Mat aux = vss.frameCopy();
+        vss.clearFrame();
+        cv::resize(aux, aux, frameAux2.size());
+
+        this->segmented_frame = frameAux + frameAux2 + aux;
     }
 }
 
 
 
-void Vision::update(cv::Mat &frame, QTime timeStamp)
+cv::Mat Vision::update(cv::Mat &frame, QTime timeStamp)
 {
-  this->_visionStatusLocker.lock();
   this->_visionFrameTimer.start();
   this->setFrame(frame);
   this->update();
@@ -102,7 +109,7 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
     if (this->_isProcessingEnabled) {
         //spdlog::get("Vision")->info("update:: Seding frame.\n");
         // Network::sendFrame(entities, actualTime);
-        this->server->send(entities);
+        // this->server->send(entities);
 
         //spdlog::get("Vision")->info("update:: Frame sent.\n");
     } else {
@@ -134,9 +141,9 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
         this->_firstFrameDeepLog = false;
         this->_deepLogInitialTime = ini;
 
-        fprintf(this->_deepLogFile,"ID_VIDEO;TIMESTAMP_INITIAL;ID_ROBO1;ID_ROBO2;ID_ROBO3\n");
-        fprintf(this->_deepLogFile,"%s;%d;%d;%d;%d\n",this->_deepLogFileName.c_str(),this->_deepLogInitialTime, entities[ROBOT1].id(), entities[ROBOT2].id(), entities[ROBOT3].id());
-        fprintf(this->_deepLogFile,"R1X;R1Y;R1T;R2X;R2Y;R2T;R3X;R3Y;R3T;A1X;A1Y;A1T;A2X;A2Y;A2T;A3X;A3Y;A3T;BX;BY;TIMESTAMP_FRAME\n");
+        // fprintf(this->_deepLogFile,"ID_VIDEO;TIMESTAMP_INITIAL;ID_ROBO1;ID_ROBO2;ID_ROBO3\n");
+        // fprintf(this->_deepLogFile,"%s;%d;%d;%d;%d\n",this->_deepLogFileName.c_str(),this->_deepLogInitialTime, entities[ROBOT1].id(), entities[ROBOT2].id(), entities[ROBOT3].id());
+        // fprintf(this->_deepLogFile,"R1X;R1Y;R1T;R2X;R2Y;R2T;R3X;R3Y;R3T;A1X;A1Y;A1T;A2X;A2Y;A2T;A3X;A3Y;A3T;BX;BY;TIMESTAMP_FRAME\n");
 
       }
 
@@ -144,52 +151,45 @@ void Vision::update(cv::Mat &frame, QTime timeStamp)
 
     if (this->_deepLogFile) {
       // any other frame
-      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT1].position().x, entities[ROBOT1].position().y, entities[ROBOT1].angle());
-      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT2].position().x, entities[ROBOT2].position().y, entities[ROBOT2].angle());
-      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT3].position().x, entities[ROBOT3].position().y, entities[ROBOT3].angle());
+      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT1].position().x, entities[ROBOT1].position().y, entities[ROBOT1].angle());
+      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT2].position().x, entities[ROBOT2].position().y, entities[ROBOT2].angle());
+      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT3].position().x, entities[ROBOT3].position().y, entities[ROBOT3].angle());
 
-      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV1].position().x, entities[ADV1].position().y, entities[ADV1].angle());
-      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV2].position().x, entities[ADV2].position().y, entities[ADV2].angle());
-      fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV3].position().x, entities[ADV3].position().y, entities[ADV3].angle());
+      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV1].position().x, entities[ADV1].position().y, entities[ADV1].angle());
+      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV2].position().x, entities[ADV2].position().y, entities[ADV2].angle());
+      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV3].position().x, entities[ADV3].position().y, entities[ADV3].angle());
 
-      fprintf(this->_deepLogFile,"%lf;%lf;%lf", entities[BALL].position().x, entities[BALL].position().y, entities[BALL].angle());
-      fprintf(this->_deepLogFile,"%u\n", actualTime - this->_deepLogInitialTime);
+      // fprintf(this->_deepLogFile,"%lf;%lf;%lf", entities[BALL].position().x, entities[BALL].position().y, entities[BALL].angle());
+      // fprintf(this->_deepLogFile,"%u\n", actualTime - this->_deepLogInitialTime);
     }
 
    }
    this->_visionFrameTimer.stop();
    this->_visionRunTime = static_cast<double> (this->_visionFrameTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
-  this->_visionStatusLocker.unlock();
+
+   return this->segmented_frame;
 }
 
 void Vision::getSegmentationDebugFrame(cv::Mat& frame)
 {
-    this->_visionStatusLocker.lock();
     if (this->_segmentation)
         this->_segmentation->getDebugFrame(frame);
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getDetectionDebugFrame(cv::Mat& frame)
 {
-    this->_visionStatusLocker.lock();
     if (this->_detection)
         this->_detection->getDebugFrame(frame);
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getTrackingDebugFrame(cv::Mat& frame)
 {
-    this->_visionStatusLocker.lock();
     if (this->_tracking)
         this->_tracking->getDebugFrame(frame);
-    this->_visionStatusLocker.unlock();
 }
 
 ImageProcessing* Vision::getSegmentationObject() {
-    this->_visionStatusLocker.lock();
     ImageProcessing* ret = this->_segmentation;
-    this->_visionStatusLocker.unlock();
     return ret;
 }
 
@@ -197,7 +197,6 @@ bool Vision::setTrackingAlgorithm(std::string algorithmLabel)
 {
     bool ret = false;
 
-    this->_visionStatusLocker.lock();
 
     if (this->_tracking)
         delete this->_tracking;
@@ -207,7 +206,6 @@ bool Vision::setTrackingAlgorithm(std::string algorithmLabel)
         ret = true;
     }
 
-    this->_visionStatusLocker.unlock();
 
     return ret;
 }
@@ -216,7 +214,6 @@ bool Vision::setDetectionAlgorithm(std::string algorithmLabel)
 {
     bool ret = false;
 
-    this->_visionStatusLocker.lock();
 
     if (this->_detection)
         delete this->_detection;
@@ -227,62 +224,49 @@ bool Vision::setDetectionAlgorithm(std::string algorithmLabel)
         ret = true;
     }
 
-    this->_visionStatusLocker.unlock();
     return ret;
 }
 
 void Vision::setDetectionParam(std::string var, int value)
 {
-    this->_visionStatusLocker.lock();
-
     if (this->_detection)
         this->_detection->setUp(var,value);
 
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::setTrackParam(std::string var, int value)
 {
-    this->_visionStatusLocker.lock();
 
     if (this->_tracking)
         this->_tracking->setUp(var,value);
 
-    this->_visionStatusLocker.unlock();
 }
 void Vision::setDetectionParamFromXml()
 {
-    this->_visionStatusLocker.lock();
 
     if (this->_detection)
         this->_detection->init();
 
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::setTrackParamFromXml()
 {
-    this->_visionStatusLocker.lock();
 
     if (this->_tracking)
         this->_tracking->init();
 
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getCorrectedDebugFrame(cv::Mat &frame)
 {
-    this->_visionStatusLocker.lock();
 
     if (this->_correction)
         this->_correction->getDebugFrame(frame);
 
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::savePositionParam()
 {
-    this->_visionStatusLocker.lock();
 
     if (this->_detection)
         this->_detection->saveParam();
@@ -290,129 +274,100 @@ void Vision::savePositionParam()
     if (this->_tracking)
         this->_tracking->saveParam();
 
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::resetCorrection()
 {
-    this->_visionStatusLocker.lock();
     if (this->_correction)
         static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH, &this->_convert);
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::resetSegmentation()
 {
-    this->_visionStatusLocker.lock();
 
     if (this->_segmentation)
         static_cast<LUTSegmentation*>(this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
 
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getSegmentationFrame(cv::Mat& frame)
 {
-    this->_visionStatusLocker.lock();
 
     if (this->_segmentation)
         this->_segmentation->getDebugFrame(frame);
 
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::getDetectionFrame(cv::Mat& frame)
 {
-    this->_visionStatusLocker.lock();
 
     if (this->_detection)
         this->_detection->getDebugFrame(frame);
 
-    this->_visionStatusLocker.unlock();
 }
 
 bool Vision::isCorrectionEnabled()
 {
-    this->_visionStatusLocker.lock();
 
     bool ret = this->_isCorrectionEnabled;
 
-    this->_visionStatusLocker.unlock();
 
     return ret;
 }
 
 void Vision::setCorrection(bool enabled)
 {
-    this->_visionStatusLocker.lock();
     this->_isCorrectionEnabled = enabled;
-    this->_visionStatusLocker.unlock();
 }
 
 bool Vision::isProcessingEnabled()
 {
-    this->_visionStatusLocker.lock();
     bool ret = this->_isProcessingEnabled;
-    this->_visionStatusLocker.unlock();
     return ret;
 }
 
 void Vision::setProcessing(bool enabled)
 {
-    this->_visionStatusLocker.lock();
     this->_isProcessingEnabled = enabled;
-    this->_visionStatusLocker.unlock();
 }
 
 int Vision::setColorIndex(int color, int index)
 {
-    this->_visionStatusLocker.lock();
     int ret = 0;
     if (this->_detection)
         ret = this->_detection->setColorIndex(color, index);
-    this->_visionStatusLocker.unlock();
     return ret;
 }
 
 void Vision::setQuantizationBool(bool quantization)
 {
-    this->_visionStatusLocker.lock();
     if (this->_segmentation)
         static_cast<LUTSegmentation*>(this->_segmentation)->setQuantizationBool(quantization);
-    this->_visionStatusLocker.unlock();
 }
 
 bool Vision::getQuantizationBool()
 {
-    this->_visionStatusLocker.lock();
     bool ret = false;
     if (this->_segmentation)
         ret = static_cast<LUTSegmentation*>(this->_segmentation)->getQuantizationBool();
-    this->_visionStatusLocker.unlock();
     return ret;
 }
 
 std::vector<Entity> Vision::getRobotPositions()
 {
-    this->_visionStatusLocker.lock();
     std::vector<Entity> ret = this->_robotPositions;
-    this->_visionStatusLocker.unlock();
     return ret;
 }
 
 void Vision::setTeamColor(int color)
 {
-    this->_visionStatusLocker.lock();
     this->_teamColor = color;
     this->_detection->setTeamColor(this->_teamColor);
-    this->_visionStatusLocker.unlock();
 }
 
 int Vision::getTeamColor()
 {
-    this->_visionStatusLocker.lock();
     int ret = this->_teamColor;
-    this->_visionStatusLocker.unlock();
     return ret;
 }
 
@@ -423,37 +378,27 @@ void Vision::getCurrentFrame(cv::Mat& frame) {
 }
 
 void Vision::setDeepLogFileName(std::string fileName) {
-    this->_visionStatusLocker.lock();
     this->_deepLogFilePath = fileName;
 
     this->_deepLogFileName = fileName.substr(
         std::max(static_cast<uint>(0),static_cast<uint>(fileName.rfind('/')+1)));
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::setRecordingVideo(bool value) {
-    this->_visionStatusLocker.lock();
     this->_deepLogRecordingVideo = value;
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::closeDeepLog() {
-    this->_visionStatusLocker.lock();
     if(this->_deepLogFile) fclose(this->_deepLogFile);
     this->_deepLogRecord = false;
-    this->_visionStatusLocker.unlock();
 }
 
 void Vision::recordDeepLog() {
-    this->_visionStatusLocker.lock();
     this->_deepLogRecord = true;
     this->_firstFrameDeepLog = true;
-    this->_visionStatusLocker.unlock();
 }
 
 double Vision::getVisionRunTime() {
-  this->_visionStatusLocker.lock();
   double ret = this->_visionRunTime;
-  this->_visionStatusLocker.unlock();
   return ret;
 }

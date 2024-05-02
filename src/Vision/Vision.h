@@ -161,6 +161,7 @@ private:
    */
   void update();
 
+  cv::Mat segmented_frame;
 public:
   /**
    * @brief    Singleton method to acess Vision module
@@ -178,7 +179,7 @@ public:
    * @param[in]   timeStamp
    * @param[in]   vss everything
    */
-  void update(cv::Mat& frame, QTime timeStamp);
+  cv::Mat update(cv::Mat& frame, QTime timeStamp);
 
   /**
    * @brief    Gets the debug segmentation frame with all segmented regions colorized with your tag color.

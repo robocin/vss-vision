@@ -1,31 +1,33 @@
 #include <CameraManager/CameraThread.h>
 #include <TBBThreadManager.h>
+#include <opencv2/core/persistence.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <qelapsedtimer.h>
 #include <visionthread.h>
 #include <QApplication>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include "CameraManager/CameraManager.h"
 #include "Entity/Entity.h"
 #include "Field/Field.h"
+#include "Vision/PositionProcessing/runlengthencoding.h"
+#include "Vision/Vision.h"
 #include "Windows/MainVSSWindow.h"
 #include "maggicsegmentationdialog.h"
 
 int main(int argc, char *argv[]) {
-  TBBThreadManager Graph;
-
   cv::useOptimized();
   Logging::init();
-  QApplication app(argc, argv);
-  MainVSSWindow vsswindow;
 
-  QObject::connect(&vsswindow, SIGNAL(startCameraUpdate()), &Graph,
-                   SLOT(cameraStart()));
-  QObject::connect(&vsswindow, SIGNAL(pauseCameraUpdate()), &Graph,
-                   SLOT(cameraPause()));
-  QObject::connect(&vsswindow, SIGNAL(enableVisionThread(bool)), &Graph,
-                   SLOT(visionStart()));
-  QObject::connect(&vsswindow, SIGNAL(finishVisionThread()), &Graph,
-                   SLOT(visionPause()));
+  Vision& vis = Vision::singleton();
 
-  vsswindow.showMaximized();
-  return app.exec();
+  // cv::Mat frame = cv::Mat::zeros(FRAME_HEIGHT_DEFAULT, FRAME_WIDTH_DEFAULT, CV_8UC3) * 255;
+  cv::Mat frame = cv::imread("../image.png");
+
+  cv::Mat res = vis.update(frame, QTime::currentTime());
+
+  std::cout << "Processing done" << std::endl;
+  cv::imwrite("../segmented.png", res);
+
+  return 0;
 }
