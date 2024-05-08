@@ -159,9 +159,9 @@ private:
   /**
    * @brief    Process the frame , generating as output to (VSS) GameInfo entity's vector with velocity and position of all detected robots .
    */
-  void update();
+  void update(Utils::FrameType frametype = Utils::FrameType::Tracked);
 
-  cv::Mat segmented_frame;
+  cv::Mat output_frame;
 public:
   /**
    * @brief    Singleton method to acess Vision module
@@ -179,7 +179,7 @@ public:
    * @param[in]   timeStamp
    * @param[in]   vss everything
    */
-  cv::Mat update(cv::Mat& frame, QTime timeStamp);
+  cv::Mat update(cv::Mat& frame, QTime timeStamp, Utils::FrameType frametype = Utils::FrameType::Tracked);
 
   /**
    * @brief    Gets the debug segmentation frame with all segmented regions colorized with your tag color.

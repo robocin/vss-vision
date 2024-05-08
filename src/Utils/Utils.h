@@ -253,6 +253,8 @@ namespace Utils {
 
   int convertOldColorToNewColor(int t_oldColor);
 
+  enum FrameType { Segmented, Tracked };
+
 };
 
 #endif /* UTILS_H */

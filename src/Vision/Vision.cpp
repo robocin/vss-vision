@@ -64,7 +64,7 @@ Point Vision::getFrameDimensions(){
     return ret;
 }
 
-void Vision::update()
+void Vision::update(Utils::FrameType frametype)
 {
     Global::setConvertRatio(_convert);
     
@@ -74,29 +74,36 @@ void Vision::update()
     if (this->_isProcessingEnabled) {
 
         this->_processingFrame = this->_segmentation->run(this->_processingFrame);
-        auto _runs = this->_compression->run(this->_processingFrame);
-        saveFrameDimensions(this->_processingFrame);
-        this->_detection->run(_runs, this->_processingFrame.rows, this->_processingFrame.cols);
 
-        cv::Mat frameAux, frameAux2;
-        getCurrentFrame(frameAux);
-        getDetectionFrame(frameAux2);
-        cv::resize(frameAux2, frameAux2, frameAux.size());
-        cv::Mat aux = vss.frameCopy();
-        vss.clearFrame();
-        cv::resize(aux, aux, frameAux2.size());
-
-        this->segmented_frame = frameAux + frameAux2 + aux;
+        if(frametype == Utils::FrameType::Tracked){
+            auto _runs = this->_compression->run(this->_processingFrame);
+            saveFrameDimensions(this->_processingFrame);
+            this->_detection->run(_runs, this->_processingFrame.rows, this->_processingFrame.cols);
+            
+            cv::Mat frameAux, frameAux2;
+            getCurrentFrame(frameAux);
+            getDetectionFrame(frameAux2);
+            cv::resize(frameAux2, frameAux2, frameAux.size());
+            cv::Mat aux = vss.frameCopy();
+            vss.clearFrame();
+            cv::resize(aux, aux, frameAux2.size());
+            this->output_frame = frameAux + frameAux2 + aux;
+            
+        }else if(frametype == Utils::FrameType::Segmented){
+            cv::Mat frameAux2;
+            getSegmentationFrame(frameAux2);
+            this->output_frame = frameAux2;
+        }
     }
 }
 
 
 
-cv::Mat Vision::update(cv::Mat &frame, QTime timeStamp)
+cv::Mat Vision::update(cv::Mat &frame, QTime timeStamp, Utils::FrameType frametype)
 {
   this->_visionFrameTimer.start();
   this->setFrame(frame);
-  this->update();
+  this->update(frametype);
   uint32_t actualTime = static_cast<uint32_t>(this->firstTime.msecsTo(timeStamp));
   //printf("%u\n", actualTime);
   std::vector<Entity> entities;
@@ -167,7 +174,7 @@ cv::Mat Vision::update(cv::Mat &frame, QTime timeStamp)
    this->_visionFrameTimer.stop();
    this->_visionRunTime = static_cast<double> (this->_visionFrameTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
 
-   return this->segmented_frame;
+   return this->output_frame;
 }
 
 void Vision::getSegmentationDebugFrame(cv::Mat& frame)
