@@ -23,9 +23,7 @@ set(SOURCES
     src/Vision/ImageProcessing/MaggicSegmentation.cpp
     src/Vision/ImageProcessing/WarpCorrection.cpp
     src/Vision/ImageProcessing/OpenCV/connectedcomponents.cpp
-    src/Logging/logging.cpp
     src/Vision/ColorSpace.cpp
-    src/Timer/Timer.cpp
     src/Vision/PositionProcessing/runlengthencoding.cpp
     src/Vision/PositionProcessing/BlobDetection.cpp
     src/Field/Field.cpp
@@ -34,8 +32,6 @@ set(SOURCES
     src/Utils/Geometry.cpp
     src/Utils/Draw.cpp
     src/Utils/EnumsAndConstants.cpp
-    src/Network/Network.cpp
-    src/Network/visionServer/server.cpp
 )
 
 set(HEADERS
@@ -51,8 +47,6 @@ set(HEADERS
     src/Vision/ImageProcessing/WarpCorrection.h
     src/Vision/ColorSpace.h
     src/Vision/ImageProcessing/OpenCV/connectedcomponents.hpp
-    src/Logging/logging.h
-    src/Timer/Timer.h
     src/Vision/PositionProcessing/runlengthencoding.h
     src/Vision/PositionProcessing/BlobDetection.h
     src/Utils/Types.h
@@ -64,8 +58,6 @@ set(HEADERS
     src/Utils/Geometry.h
     src/Utils/Draw.h
     src/Utils/BetterEnum.h
-    src/Network/Network.h
-    src/Network/visionServer/server.h
 )
 
 set(RESOURCES
@@ -73,14 +65,6 @@ set(RESOURCES
     src/iconTools/icontools.qrc
 )
 
-set(PROTOS
-    src/Network/protobuf/proto/messages_robocup_ssl_detection.proto
-    src/Network/protobuf/proto/messages_robocup_ssl_geometry.proto
-    src/Network/protobuf/proto/wrapper.proto
-)
-
-find_package(Protobuf REQUIRED)
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTOS})
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${RESOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
 
@@ -88,16 +72,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/src")
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Network)
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::Gui Qt5::Network)
-
 find_package(OpenCV REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
 
 find_package(TBB REQUIRED)
 target_link_libraries(${PROJECT_NAME} TBB::tbb)
-
-find_package(SFML REQUIRED COMPONENTS network system)
-target_link_libraries(${PROJECT_NAME} sfml-network sfml-system)
-
-target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES})
