@@ -7,11 +7,10 @@ Vision::Vision()
     this->_detection = new BlobDetection();
     this->_detection->init();
     this->_detection->setTeamColor(getTeamColor());
-    this->_segmentation = new LUTSegmentation();
+    this->_segmentation = new MaggicSegmentation();
     this->_correction = new WarpCorrection();
     this->_compression = new RunLengthEncoding();
     static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH,&this->_convert);
-    static_cast<LUTSegmentation*>(this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
     this->_isCorrectionEnabled = false;
     this->_isProcessingEnabled = true;
     std::vector<Entity> currentPositions (7, Entity());

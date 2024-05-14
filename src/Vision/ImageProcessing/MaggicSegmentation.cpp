@@ -51,7 +51,7 @@ MaggicSegmentation::default_normalization_method =
         MaggicSegmentation::WEIGHTED_NORMALIZATION;
 
 MaggicSegmentation::MaggicSegmentation()
-{
+{  
   this->isLUTReady = false;
   this->_LUT = new uchar[LUT_SIZE/3];
   memset(this->_LUT,0,LUT_SIZE/3  *sizeof(uchar)); // clear _LUT
@@ -86,20 +86,7 @@ MaggicSegmentation::MaggicSegmentation()
   this->loadDefaultHue();
   this->setHUETable();
   this->generateLUTFromHUE();
-  /*puts("COLOR PALETTE\nHUE(f) TAG");
-  defaultHueList.clear();
-  for(int i=1;i<8;i++) {
-    int h = static_cast<int>(colorPaletteHSV.at<cv::Vec3b>(0,i)[0]);
-    float hf = static_cast<float>(h/255.f);
-    defaultHueList.push_back(std::make_pair(hf,i));
-    printf("%d(%.2f) %d\n", h, hf, i);
-  }
-  puts("\n\n");*/
-  //colorPaletteHSV.at<cv::Vec3b>(0, 0)[0] += 10;
-  //colorPaletteHSV.at<cv::Vec3b>(0, 4)[0] = (colorPaletteHSV.at<cv::Vec3b>(0, 4)[0])%256;
-
-
-
+  
   // constructing color palette
 
   cv::Mat cores = cv::Mat::zeros(cv::Size(32+32,32*10), CV_8UC3);
@@ -125,15 +112,9 @@ MaggicSegmentation::MaggicSegmentation()
   cv::cvtColor(cores, cores, cv::COLOR_HSV2BGR_FULL);
   cv::cvtColor(compara, compara, cv::COLOR_HSV2BGR_FULL);
   cv::cvtColor(colorPlane, colorPlane, cv::COLOR_HSV2BGR_FULL);
-  //cv::imshow("colorPalette", cores);
+  // cv::imshow("colorPalette", cores);
   //cv::imshow("compara", compara);
   //cv::imshow("colorPlane", colorPlane);
-
-
-
-
-
-//  SetColorPalette(colorPaletteHSV);
 
   this->histo = cv::Mat::zeros(cv::Size(256, 1), CV_32F);
 
@@ -142,7 +123,7 @@ MaggicSegmentation::MaggicSegmentation()
   this->normalized_color = true;
   this->_manyTimes = 6;
   this->_entitiesCount = 7;
-  this->_debugSelection = MaggicVisionDebugSelection_Thresholded;
+  this->_debugSelection = MaggicVisionDebugSelection_SegmentationFrame;
   memset(this->_thresholdFrequency,0,256*sizeof(uint));
   this->_learningThresholdValue = false;
   this->_calibrationFrames = 0;
@@ -156,11 +137,7 @@ MaggicSegmentation::MaggicSegmentation()
 
   this->_maggicSegmentationSessionFileName = "Config/Segmentation/MaggicSegmentation.txt";
 
-  //std::cout << "THRESHOLD FROM MAGGIC SEGMENTATION ON CONSTRUCTING" << this->getFilterGrayThresholdValue() << std::endl;
-
   this->openLastSession();
-
-  //std::cout << "THRESHOLD FROM MAGGIC SEGMENTATION ON CONSTRUCTING AFTER " << this->getFilterGrayThresholdValue() << std::endl;
 
 }
 
@@ -215,7 +192,6 @@ String MaggicSegmentation::RGBHash2String(uint h) {
 }
 
 void MaggicSegmentation::openLastSession() {
-  mut.lock();
   //std::cout << "Opening last session on MaggicSegmentation" << std::endl;
   std::string str;
   std::ifstream fin;
@@ -241,14 +217,15 @@ void MaggicSegmentation::openLastSession() {
     this->setHUETable(true);
     this->generateLUTFromHUE();
     this->useLoadedValues = true;
-    spdlog::get("Vision")->info("MaggicSegmentation:: openLastSession: Loaded session from '{}'.",this->_maggicSegmentationSessionFileName);
+    std::cout << "MaggicSegmentation:: openLastSession: Loaded session from " 
+      << this->_maggicSegmentationSessionFileName << "\n";
   } else {
     this->useLoadedValues = false;
-    spdlog::get("Vision")->warn("MaggicSegmentation:: openLastSession: File access denied '{}'.",this->_maggicSegmentationSessionFileName);
+    std::cout << "MaggicSegmentation:: openLastSession: File access denied " 
+      << this->_maggicSegmentationSessionFileName << "\n";
   }
 
   fin.close();
-  mut.unlock();
 }
 
 void MaggicSegmentation::saveSession() {
@@ -646,7 +623,7 @@ void MaggicSegmentation::generateLUTFromHUE() {
     }
 
   }});
-  //std::cout << "Done generating LUT from Hue.\n";
+  std::cout << "Done generating LUT from Hue.\n";
   //spdlog::get("Vision")->info("MaggicSegmentation::Done generating LUT from Hue.\n");
   this->isLUTReady = true;
 }
@@ -1159,7 +1136,6 @@ void MaggicSegmentation::initLUT()
 
 void MaggicSegmentation::getDebugFrame(cv::Mat& frame)
 {
-  mut.lock();
   switch(this->_debugSelection) {
     case MaggicVisionDebugSelection_Thresholded:
       this->_firstThreshold.copyTo(frame);
@@ -1179,7 +1155,6 @@ void MaggicSegmentation::getDebugFrame(cv::Mat& frame)
     default:
       break;
   }
-  mut.unlock();
 }
 
 void MaggicSegmentation::getSegmentationFrameFromLUT(cv::Mat& frame)

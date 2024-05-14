@@ -27,6 +27,7 @@
 #include "Vision/PositionProcessing/runlengthencoding.h"
 #include "Vision/ImageProcessing/ImageProcessing.h"
 #include "Vision/ImageProcessing/LUTSegmentation.h"
+#include "Vision/ImageProcessing/MaggicSegmentation.h"
 #include "Vision/ImageProcessing/WarpCorrection.h"
 
 //#include "Utils/Entity.h"
