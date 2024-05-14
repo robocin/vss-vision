@@ -32,11 +32,7 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
   rebuildRobotsScrollArea();
   connect(m_mainWindowFrameTimer, SIGNAL(timeout()), this, SLOT(update()));
   m_mainWindowFrameTimer->start(30);
-  this->m_cameraCapture = true;
   this->m_videoCapture = false;
-  this->m_firstTimeOpeningCamera = false;
-  this->m_isRecording = false;
-  this->m_cameraDialog = nullptr;
   this->m_visionDialog = nullptr;
   // this->m_maggicSegmentationDialog = nullptr;
   this->m_fieldDialog = nullptr;
@@ -49,18 +45,6 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
   } else {
     m_ui->halfPushButton->setChecked(false);
   }
-
-  this->m_ui->cameraIndexComboBox->installEventFilter(this);
-  this->m_ui->cameraIndexComboBox->clear();
-  std::vector<int> cameraListAux =
-    CameraManager::singleton().returnCameraList();
-
-  for (size_t i = 0; i < cameraListAux.size(); i++) {
-    this->m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
-  }
-
-  this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
-  CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
 
   this->m_maggicSegmentationDialog = new MaggicSegmentationDialog();
   initColors();
@@ -113,15 +97,9 @@ void MainVSSWindow::selectCorrectFrame() {
   std::string frameType = m_ui->visualizationComboBox->currentText().toLocal8Bit().constData();
 
   if (frameType == "Original") {
-    if (m_ui->cutFieldPushButton->isChecked()) {
         this->m_currentFrameLocker.lock();
       Vision::singleton().getCurrentFrame(m_currentFrame);
       this->m_currentFrameLocker.unlock();
-    } else {
-        this->m_currentFrameLocker.lock();
-      CameraManager::singleton().getCurrentFrame(m_currentFrame);
-      this->m_currentFrameLocker.unlock();
-    }
   } else if (frameType == "Segmented") {
       this->m_currentFrameLocker.lock();
     Vision::singleton().getSegmentationFrame(m_currentFrame);
@@ -142,33 +120,9 @@ void MainVSSWindow::selectCorrectFrame() {
   }
 }
 
-void MainVSSWindow::setCameraFrame() {
-  resizeFrames();
-  cv::Mat cameraFrame;
-    this->m_currentFrameLocker.lock();
-  if (this->m_currentFrame.empty()) {
-    this->m_currentFrame = cv::Mat::zeros(480, 640, CV_8UC3);
-  }
-
-  this->m_currentFrame.copyTo(cameraFrame);
-  this->m_currentFrameLocker.unlock();
-
-  if (!cameraFrame.empty()) {
-    cv::Mat tempFrame = cameraFrame.clone();
-    cv::Size newSize(this->m_ui->cameraLabel->width(),
-                     this->m_ui->cameraLabel->height());
-    cv::resize(tempFrame, tempFrame, newSize);
-    cv::cvtColor(tempFrame, tempFrame, cv::COLOR_BGR2RGB);
-    QImage qimg2(reinterpret_cast<uchar *>(tempFrame.data), tempFrame.cols, tempFrame.rows,
-                 static_cast<int>(tempFrame.step), QImage::Format_RGB888);
-    this->m_ui->cameraLabel->setPixmap(QPixmap::fromImage(qimg2));
-  }
-}
-
 void MainVSSWindow::update() {
   if (m_isCaptureOpen) {
     selectCorrectFrame();
-    setCameraFrame();
   }
 
   double visionTime = Vision::singleton().getVisionRunTime();
@@ -179,20 +133,12 @@ void MainVSSWindow::update() {
   for (auto &widget : m_robotWidgets) {
     widget->update();
   }
-  double fps = CameraManager::singleton().getCurrentFPS();
-  m_ui->fpsLabel->setText(QString("FPS: ") + QString::number(fps,'f',2));
-
-}
-
-void MainVSSWindow::setFrame(QImage image) {
-  m_ui->cameraLabel->setPixmap(QPixmap::fromImage(image));
 }
 
 void MainVSSWindow::setFrame() {
   resizeFrames();
   QImage tmp(m_currentFrame.data, m_currentFrame.cols, m_currentFrame.rows,
              static_cast<int>(m_currentFrame.step), QImage::Format_RGB888);
-  m_ui->cameraLabel->setPixmap(QPixmap::fromImage(tmp));
 }
 
 void MainVSSWindow::clearFrame() {
@@ -200,86 +146,22 @@ void MainVSSWindow::clearFrame() {
   this->setFrame();
 }
 
-void MainVSSWindow::resizeCameraFrame() {
-  int height = m_ui->cameraFrame->height();
-  int width = m_ui->cameraFrame->width();
-
-  if ((width > height && width != height * 4 / 3) ||
-      (height > width && height != width * 3 / 4)) {
-    if (width > height) {
-      m_ui->cameraLabel->setGeometry((width - height * 4 / 3) / 2, 0,
-                                         height * 4 / 3, height);
-    } else {
-      m_ui->cameraLabel->setGeometry(0, (height - width * 3 / 4) / 2, width,
-                                         width * 3 / 4);
-    }
-  }
-}
-
 void MainVSSWindow::resizeSimulationFrame() {
   // fazer para simulacao
 }
 
 void MainVSSWindow::resizeFrames() {
-  resizeCameraFrame();
   resizeSimulationFrame();
 }
 
 void MainVSSWindow::on_capturePushButton_clicked() {
-  if (m_ui->capturePushButton->isChecked()) {
-    bool openSucceeded = false;
 
-    if (this->m_cameraCapture) {
-      openSucceeded = CameraManager::singleton().init(
-                        this->m_ui->cameraIndexComboBox->currentText().toStdString()[0] -
-                        '0');
-    } else if (this->m_videoCapture) {
-      openSucceeded = CameraManager::singleton().init(
-                        this->m_videoFileName.toLocal8Bit().constData());
-    }
-
-    if (openSucceeded) {
-      this->m_firstTimeOpeningCamera = true;
-      this->m_isRecording = false;
-      m_ui->calibrateFieldPointspushButton->setEnabled(true);
-      m_ui->cameraConfigPushButton->setEnabled(true);
-      m_ui->visionInitPushButton->setEnabled(true);
-      m_ui->visionConfigurePushButton->setEnabled(true);
-      Vision::singleton().resetCorrection();
-      if (m_ui->cutFieldPushButton->isChecked()) {
-        this->on_cutFieldPushButton_clicked();
-      }
-
-      if (m_ui->recordPushButton->isChecked()) {
-        this->startVideoRecording();
-      }
-
-      m_isCaptureOpen = true;
-
-      if (this->m_videoCapture) {
-        this->m_mainWindowFrameTimer->start(30);
-      } else if (this->m_cameraCapture) {
-        this->m_mainWindowFrameTimer->start(30);
-      }
-
-      emit startCameraUpdate();
-      emit enableVisionThread(true);
-    } else {
-      this->m_ui->capturePushButton->setChecked(false);
-      QMessageBox cameraAlert;
-      cameraAlert.setText("Problem trying to open the camera!");
-      cameraAlert.setInformativeText(
-        "Certify that your camera is attached to the computer.");
-      cameraAlert.exec();
-    }
-  } else {
     this->m_mainWindowFrameTimer->stop();
     this->m_isCaptureOpen = false;
     this->clearFrame();
     m_ui->visionInitPushButton->setEnabled(false);
     m_ui->visionConfigurePushButton->setEnabled(false);
     m_ui->calibrateFieldPointspushButton->setEnabled(false);
-    m_ui->cameraConfigPushButton->setEnabled(false);
     m_ui->halfPushButton->setEnabled(false);
     m_ui->startAllPushButton->setChecked(false);
 
@@ -289,9 +171,6 @@ void MainVSSWindow::on_capturePushButton_clicked() {
       m_ui->visualizationComboBox->addItem("Original");
       m_ui->visualizationComboBox->setCurrentIndex(0);
     }
-    emit enableVisionThread(false);
-    emit pauseCameraUpdate();
-  }
 }
 
 void MainVSSWindow::on_cutFieldPushButton_clicked() {
@@ -338,17 +217,6 @@ void MainVSSWindow::on_visionInitPushButton_clicked() {
 }
 
 
-void MainVSSWindow::on_DistortionComboBox_currentIndexChanged(
-  const QString &arg1) {
-  if (arg1 == "NULL") {
-    CameraManager::singleton().setDistortionOption(NULO);
-  }
-
-  if (arg1 == "ELP-USB") {
-    CameraManager::singleton().setDistortionOption(ELP);
-  }
-}
-
 void MainVSSWindow::
 on_calibrateFieldPointspushButton_clicked()  // Deveria ser apagado para
 // evitar memory leak
@@ -382,12 +250,6 @@ void MainVSSWindow::on_visionConfigurePushButton_clicked() {
   delete this->m_visionDialog;
 }
 
-void MainVSSWindow::on_cameraConfigPushButton_clicked() {
-  this->m_cameraDialog = new CameraConfigurationDialog();
-  this->m_cameraDialog->exec();
-  delete this->m_cameraDialog;
-}
-
 void MainVSSWindow::toggleMaggicSegmentationDialog() {
   if (!m_ui->maggicSegmentationButton->isChecked()) {
     m_ui->maggicSegmentationButton->setChecked(true);
@@ -400,26 +262,6 @@ void MainVSSWindow::toggleMaggicSegmentationDialog() {
 
 void MainVSSWindow::on_maggicSegmentationButton_clicked() {
   this->toggleMaggicSegmentationDialog();
-}
-
-void MainVSSWindow::record() {
-  if (!this->m_savedVideofileName.isEmpty()) {
-    this->m_videoRecordManager.open(
-      this->m_savedVideofileName.toStdString() + ".avi",
-      cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
-      cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
-    Vision::singleton().recordDeepLog();
-  }
-}
-
-void MainVSSWindow::startVideoRecording() {
-  if (this->m_firstTimeOpeningCamera) {
-    this->m_savedVideofileName = QFileDialog::getSaveFileName(
-                                   this, tr("Save File"), "/", tr("Videos (*.avi)"));
-    Vision::singleton().setDeepLogFileName(
-      this->m_savedVideofileName.toStdString());
-    this->m_firstTimeOpeningCamera = false;
-  }
 }
 
 void MainVSSWindow::on_primaryColor_clicked(bool checked) {
@@ -453,64 +295,17 @@ void MainVSSWindow::saveColorFile() {
   file.write(saveDoc.toJson());
 }
 
-bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
-  if (f_event->type() == QEvent::MouseButtonPress && f_object != nullptr) {
-    static size_t listSize = 0;
-    std::vector<int> cameraListAux =
-      CameraManager::singleton().returnCameraList();
-
-    if (listSize != cameraListAux.size()) {
-      m_ui->cameraIndexComboBox->clear();
-
-      for (size_t i = 0; i < cameraListAux.size(); i++) {
-        m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
-      }
-
-      this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
-      CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
-
-
-      listSize = cameraListAux.size();
-    }
-  }
-
-  return false;
-}
-
 void MainVSSWindow::on_videoPathBrowsePushButton_clicked() {
   this->m_videoFileName =
     QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(),
                                  tr("Videos (*.mp4 *.avi *.mpeg)"));
 
-  if (!this->m_videoFileName.isEmpty() || this->m_cameraCapture == false) {
+  if (!this->m_videoFileName.isEmpty()) {
     this->m_ui->videoPathBrowsePushButton->setEnabled(true);
-    this->m_ui->cameraConfigPushButton->setEnabled(false);
     this->m_ui->videoFileNameLabel->setText(
       QFileInfo(this->m_videoFileName).fileName());
   } else {
     this->m_ui->sourceTab->setCurrentIndex(1);
-  }
-}
-
-void MainVSSWindow::on_sourceTab_currentChanged(int index) {
-  if (index == 0) {
-    std::vector<int> cameraListAux =
-      CameraManager::singleton().returnCameraList();
-    this->m_ui->cameraIndexComboBox->clear();
-
-    for (size_t i = 0; i < cameraListAux.size(); i++)
-      this->m_ui->cameraIndexComboBox->addItem(
-        QString::number(cameraListAux[i]));
-
-    CameraManager::singleton().setCameraIndex(
-      this->m_ui->cameraIndexComboBox->currentText().toInt());
-    this->m_videoCapture = false;
-    this->m_cameraCapture = true;
-    this->m_ui->cameraIndexComboBox->setEnabled(true);
-  } else {
-    this->m_videoCapture = true;
-    this->m_cameraCapture = false;
-    this->m_ui->cameraIndexComboBox->setEnabled(false);
   }
 }
 
@@ -719,7 +514,6 @@ void MainVSSWindow::saveMainWindowConfig()
      std::cout << "Couldn't open save file." << std::endl;
      return ;
     }
-    this->_mainWindowConfig["camIdx"] = this->m_ui->cameraIndexComboBox->currentText();
     QJsonDocument saveDoc(this->_mainWindowConfig);
     saveFile.write(saveDoc.toJson());
 }

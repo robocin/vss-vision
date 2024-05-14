@@ -26,17 +26,12 @@ set(SOURCES
     src/visionconfigdialog.cpp
     src/fieldpointscalibratedialog.cpp
     src/segmentationconfigdialog.cpp
-    src/cameraconfigurationdialog.cpp
     src/Logging/logging.cpp
     src/Vision/ColorSpace.cpp
     src/maggicsegmentationdialog.cpp
     src/Timer/Timer.cpp
-    src/visionthread.cpp
-    src/CameraManager/CameraManager.cpp
-    src/CameraManager/CameraThread.cpp
     src/Vision/PositionProcessing/runlengthencoding.cpp
     src/Vision/PositionProcessing/BlobDetection.cpp
-    src/TBBThreadManager.cpp
     src/Field/Field.cpp
     src/GameInfo/GameInfo.cpp
     src/Utils/Global.cpp
@@ -66,16 +61,11 @@ set(HEADERS
     src/visionconfigdialog.h
     src/fieldpointscalibratedialog.h
     src/segmentationconfigdialog.h
-    src/cameraconfigurationdialog.h
     src/Logging/logging.h
     src/maggicsegmentationdialog.h
     src/Timer/Timer.h
-    src/visionthread.h
-    src/CameraManager/CameraManager.h
-    src/CameraManager/CameraThread.h
     src/Vision/PositionProcessing/runlengthencoding.h
     src/Vision/PositionProcessing/BlobDetection.h
-    src/TBBThreadManager.h
     src/Utils/Types.h
     src/Field/Field.h
     src/Utils/EnumsAndConstants.h

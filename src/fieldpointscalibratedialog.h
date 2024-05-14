@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <QKeyEvent>
 
-#include <CameraManager/CameraManager.h>
 #include <Vision/ImageProcessing/WarpCorrection.h>
 #include <QDir>
 #include <QJsonArray>

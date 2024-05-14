@@ -55,10 +55,6 @@ cd src
 ├── include
 │   └── spdlog
 └── src
-    ├── cameraconfigurationdialog.cpp
-    ├── CameraManager
-    │   ├── CameraManager.cpp
-    │   └── CameraThread.cpp
     ├── Config
     │   └── Segmentation
     ├── Entity
@@ -103,7 +99,6 @@ cd src
     │   │   └── WhereAreThose.cpp
     │   └── Vision.cpp
     ├── visionconfigdialog.cpp
-    └── visionthread.cpp
 ```
 - - - 
 

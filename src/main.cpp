@@ -1,13 +1,9 @@
-#include <CameraManager/CameraThread.h>
-#include <TBBThreadManager.h>
 #include <opencv2/core/persistence.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <qelapsedtimer.h>
-#include <visionthread.h>
 #include <QApplication>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#include "CameraManager/CameraManager.h"
 #include "Entity/Entity.h"
 #include "Field/Field.h"
 #include "Vision/PositionProcessing/runlengthencoding.h"

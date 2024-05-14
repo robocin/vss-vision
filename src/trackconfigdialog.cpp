@@ -149,7 +149,6 @@ void TrackConfigDialog::showFrame()
 
 void TrackConfigDialog::updateFrame()
 {
-//  CameraManager::singleton().getCurrentFrame(this->_PositionFrame);
   Vision::singleton().getDetectionFrame(this->_PositionFrame);
   this->showFrame();
 }

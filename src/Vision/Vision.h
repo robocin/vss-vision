@@ -132,7 +132,7 @@ private:
 
   std::vector < std::queue < std::pair<cv::Point2d, QTime> > > _lastPositions;
 
-  bool _firstFrameDeepLog, _deepLogRecord, _deepLogRecordingVideo;
+  bool _firstFrameDeepLog;
 
   std::string _deepLogFileName, _deepLogFilePath, _deepLogFileFolder;
   FILE* _deepLogFile;
@@ -344,9 +344,7 @@ public:
   void getCurrentFrame(cv::Mat& frame);
 
   void setDeepLogFileName(std::string fileName);
-  void setRecordingVideo(bool value);
   void closeDeepLog();
-  void recordDeepLog();
 
 
   /**

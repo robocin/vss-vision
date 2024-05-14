@@ -15,7 +15,6 @@
 #include "QVBoxLayout"
 #include "RobotWidget.h"
 #include "Vision/Vision.h"
-#include "cameraconfigurationdialog.h"
 #include "maggicsegmentationdialog.h"
 #include "visionconfigdialog.h"
 #include "Network/Network.h"
@@ -44,13 +43,9 @@ class MainVSSWindow : public QMainWindow {
 
   void on_visionInitPushButton_clicked();
 
-  void on_DistortionComboBox_currentIndexChanged(const QString& arg1);
-
   void on_calibrateFieldPointspushButton_clicked();
 
   void on_visionConfigurePushButton_clicked();
-
-  void on_cameraConfigPushButton_clicked();
 
   void on_maggicSegmentationButton_clicked();
 
@@ -59,8 +54,6 @@ class MainVSSWindow : public QMainWindow {
   void on_primaryColor_clicked(bool checked);
 
   void on_videoPathBrowsePushButton_clicked();
-
-  void on_sourceTab_currentChanged(int index);
 
   void on_numberOfPlayersSpinBox_valueChanged(int arg1);
 
@@ -82,20 +75,13 @@ class MainVSSWindow : public QMainWindow {
 private:
   Ui::MainVSSWindow* m_ui;
   QTimer* m_mainWindowFrameTimer;
-  cv::VideoWriter m_videoRecordManager;
-
   // Redimensiona os frames para o preenchimento certo
-  void resizeCameraFrame();
   void resizeSimulationFrame();
   void resizeFrames();
   void setFrame(QImage image);
   void setFrame();
   void clearFrame();
-  void setCameraFrame();
-  void record();
-  void startVideoRecording();
   void saveColorFile();
-  bool eventFilter(QObject *f_object, QEvent *f_event);
   void initColors();
   void rebuildRobotsScrollArea();
   void getPointsFromFile();
@@ -107,10 +93,7 @@ private:
 
 
   bool m_isCaptureOpen;
-  bool m_cameraCapture;
   bool m_videoCapture;
-  bool m_firstTimeOpeningCamera;
-  bool m_isRecording;
 
   int m_half;
 
@@ -125,7 +108,6 @@ private:
 
   FieldPointsCalibrateDialog* m_fieldDialog;  // crop window
   VisionConfigDialog* m_visionDialog;
-  CameraConfigurationDialog* m_cameraDialog;
   MaggicSegmentationDialog* m_maggicSegmentationDialog;
 
   QJsonObject m_secondaryColorJson;
@@ -137,11 +119,6 @@ private:
 
 protected:
   void keyPressEvent(QKeyEvent *e);
- signals:
-  void startCameraUpdate();
-  void pauseCameraUpdate();
-  void enableVisionThread(bool);
-  void finishVisionThread();
 };
 
 #endif  // MAINVSSWINDOW_H

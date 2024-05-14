@@ -6,7 +6,6 @@
 #include <Vision/ColorSpace.h>
 #include <Vision/ImageProcessing/LUTSegmentation.h>
 #include <QTimer>
-#include <CameraManager/CameraManager.h>
 #include <Vision/Vision.h>
 #include <QFileDialog>
 #include <dirent.h>

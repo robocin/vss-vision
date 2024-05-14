@@ -5,7 +5,6 @@
 #include <iostream>
 #include <Vision/Vision.h>
 #include <QTimer>
-#include <CameraManager/CameraManager.h>
 
 namespace Ui {
 class TrackConfigDialog;

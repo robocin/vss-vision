@@ -99,7 +99,6 @@ void FieldPointsCalibrateDialog::mousePressEvent(QMouseEvent *event) {
 }
 
 void FieldPointsCalibrateDialog::updateFrame() {
-  CameraManager::singleton().getCurrentFrame(this->_cameraFrame);
 
   this->_frameCols = this->_cameraFrame.cols;
   this->_frameRows = this->_cameraFrame.rows;

@@ -194,11 +194,7 @@ void SegmentationConfigDialog::on_VMaxHorizontalSlider_valueChanged(int value) {
 }
 
 void SegmentationConfigDialog::updateFrame() {
-  if (Vision::singleton().isCorrectionEnabled()) {
     Vision::singleton().getCurrentFrame(this->_actualFrame);
-  } else {
-    CameraManager::singleton().getCurrentFrame(this->_actualFrame);
-  }
 
   if (!this->_actualFrame.empty()) {
     this->setOriginalFrameOnScreen();

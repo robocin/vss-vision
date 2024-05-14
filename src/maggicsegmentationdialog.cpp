@@ -58,8 +58,6 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   QDialog(parent),
   ui(new Ui::MaggicSegmentationDialog)
 {
-  this->_cameraMan = &this->_cameraMan->singleton();
-  ui->setupUi(this);
 
   this->maggicSegmentation = new MaggicSegmentation();
 
@@ -146,17 +144,6 @@ MaggicSegmentationDialog::~MaggicSegmentationDialog()
 
 void MaggicSegmentationDialog::updateFrame()
 {
-  if (this->isHidden()) return;
-  if (this->_updateFrameTimer->isActive() == false) return;
-
-  if (Vision::singleton().isCorrectionEnabled()) {
-      if (!this->paused)
-        Vision::singleton().getCorrectedDebugFrame(this->_actualFrame);
-  } else {
-      if (!this->paused)
-        CameraManager::singleton().getCurrentFrame(this->_actualFrame);
-  }
-
   if (!this->_actualFrame.empty()) {
     cv::resize(this->_actualFrame,this->_actualFrame,cv::Size(640,480),0,0);
 
@@ -552,16 +539,6 @@ void MaggicSegmentationDialog::autoResizeInputFrame(cv::Mat &frame) {
         cv::resize(frame, frame,
                    cv::Size(1280, 720), 0, 0);
     }
-//    if (frame.rows == 720 && frame.cols == 1280) {
-//      cv::Rect cropRectangle(213, 0, 854, 720);
-
-//      // Crop the full image to that image contained by the rectangle
-//      // cropRectangle
-//      cv::Mat croppedRef(frame, cropRectangle);
-//      croppedRef.copyTo(frame);
-//      cv::resize(frame, frame,
-//                 cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
-//    }
 }
 
 void MaggicSegmentationDialog::useNextImage() { // Circular function
@@ -585,17 +562,6 @@ void MaggicSegmentationDialog::useNextImage() { // Circular function
     this->_groundTruthFrame = cv::imread(ground_truth_impath);
     std::cout << "Loaded image(" << this->_selectedFileIndex << "): "
               << ground_truth_impath << std::endl;
-}
-
-void MaggicSegmentationDialog::on_fixCameraButton_clicked()
-{
-  std::stringstream strs;
-  strs << "./Config/camera_config_magic.sh ";
-  strs << "/dev/video" << CameraManager::singleton().getCameraIndex();
-  char tmp[2000];
-  strcpy(tmp,strs.str().c_str());
-  FILE* f = popen(tmp,"r");
-  pclose(f);
 }
 
 void MaggicSegmentationDialog::on_buttonBox_accepted()

@@ -7,7 +7,6 @@
 #include <stdio.h>
 
 #include <Vision/Vision.h>
-#include <CameraManager/CameraManager.h>
 #include <Vision/ImageProcessing/MaggicSegmentation.h>
 #include <sstream>
 
@@ -62,8 +61,6 @@ void autoResizeInputFrame(cv::Mat &frame);
 
 void useNextImage();
 
-void on_fixCameraButton_clicked();
-
 void on_buttonBox_accepted();
 
 void on_loadButton_clicked();
@@ -79,7 +76,6 @@ void on_NormalizationComboBox_currentIndexChanged(int index);
 private:
   Ui::MaggicSegmentationDialog *ui;
   Vision* _vision;
-  CameraManager* _cameraMan;
   cv::Mat _actualFrame, _segmentedFrame, _groundTruthFrame;
   cv::Mat _inputFrame;
   static String _inputFolderName, _outputFolderName, _groundTruthFolderName;

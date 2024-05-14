@@ -24,7 +24,6 @@ Vision::Vision()
     this->_deepLogFile = nullptr;
     this->_deepLogFileName = "log"; // default file name
     this->_deepLogFileFolder = "Log/deep/"; // default file folder
-    this->_deepLogRecordingVideo = false;
     this->_visionRunTime = 0;
     this->firstTime = QTime::currentTime();
     this->server = new VisionServer("224.5.23.2", 10015);
@@ -124,53 +123,6 @@ cv::Mat Vision::update(cv::Mat &frame, QTime timeStamp, Utils::FrameType framety
         this->firstTime = timeStamp.currentTime();
     }
 
-
-  if (this->_deepLogRecord) {
-    // put to deep log
-    if (this->_firstFrameDeepLog) {
-      if (!this->_deepLogRecordingVideo) {
-        QDate date = QDate::currentDate();
-        this->_deepLogFileFolder = "Log/deep/" + date.toString("yyyy-MM-dd/").toStdString();
-        this->_deepLogFileName = "log";
-        this->_deepLogFilePath = this->_deepLogFileFolder + this->_deepLogFileName;
-      }
-      std::cout << "Creating Log folder " << this->_deepLogFileFolder << std::endl;
-      std::string command = "mkdir -p " + this->_deepLogFileFolder;
-      FILE*f = popen(command.c_str(),"r");
-      pclose(f);
-
-      std::stringstream ss;
-      uint ini = actualTime;
-      ss << this->_deepLogFilePath << "_" << timeStamp.hour() << "." << timeStamp.minute() << "." << timeStamp.second() << ".csv";
-      std::cout << "Creating file " << ss.str() << std::endl;
-      this->_deepLogFile = fopen(ss.str().c_str(),"w");
-      if (this->_deepLogFile) {
-        this->_firstFrameDeepLog = false;
-        this->_deepLogInitialTime = ini;
-
-        // fprintf(this->_deepLogFile,"ID_VIDEO;TIMESTAMP_INITIAL;ID_ROBO1;ID_ROBO2;ID_ROBO3\n");
-        // fprintf(this->_deepLogFile,"%s;%d;%d;%d;%d\n",this->_deepLogFileName.c_str(),this->_deepLogInitialTime, entities[ROBOT1].id(), entities[ROBOT2].id(), entities[ROBOT3].id());
-        // fprintf(this->_deepLogFile,"R1X;R1Y;R1T;R2X;R2Y;R2T;R3X;R3Y;R3T;A1X;A1Y;A1T;A2X;A2Y;A2T;A3X;A3Y;A3T;BX;BY;TIMESTAMP_FRAME\n");
-
-      }
-
-    }
-
-    if (this->_deepLogFile) {
-      // any other frame
-      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT1].position().x, entities[ROBOT1].position().y, entities[ROBOT1].angle());
-      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT2].position().x, entities[ROBOT2].position().y, entities[ROBOT2].angle());
-      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ROBOT3].position().x, entities[ROBOT3].position().y, entities[ROBOT3].angle());
-
-      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV1].position().x, entities[ADV1].position().y, entities[ADV1].angle());
-      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV2].position().x, entities[ADV2].position().y, entities[ADV2].angle());
-      // fprintf(this->_deepLogFile,"%lf;%lf;%lf;", entities[ADV3].position().x, entities[ADV3].position().y, entities[ADV3].angle());
-
-      // fprintf(this->_deepLogFile,"%lf;%lf;%lf", entities[BALL].position().x, entities[BALL].position().y, entities[BALL].angle());
-      // fprintf(this->_deepLogFile,"%u\n", actualTime - this->_deepLogInitialTime);
-    }
-
-   }
    this->_visionFrameTimer.stop();
    this->_visionRunTime = static_cast<double> (this->_visionFrameTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
 
@@ -389,20 +341,6 @@ void Vision::setDeepLogFileName(std::string fileName) {
 
     this->_deepLogFileName = fileName.substr(
         std::max(static_cast<uint>(0),static_cast<uint>(fileName.rfind('/')+1)));
-}
-
-void Vision::setRecordingVideo(bool value) {
-    this->_deepLogRecordingVideo = value;
-}
-
-void Vision::closeDeepLog() {
-    if(this->_deepLogFile) fclose(this->_deepLogFile);
-    this->_deepLogRecord = false;
-}
-
-void Vision::recordDeepLog() {
-    this->_deepLogRecord = true;
-    this->_firstFrameDeepLog = true;
 }
 
 double Vision::getVisionRunTime() {
