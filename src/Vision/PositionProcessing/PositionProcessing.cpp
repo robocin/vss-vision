@@ -157,33 +157,6 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
       }
     }
 
-    if (!blobBall.valid) {
-        int fps = 30;
-        auto & ballPosVel = _kalmanFilterBall[0][0].update(this->_ballLastPosition.x,this->_ballLastPosition.y);
-        Geometry::PT filtPoint (ballPosVel(0, 0), ballPosVel(1, 0));
-        Geometry::PT ballVel(ballPosVel(2, 0)*fps, ballPosVel(3, 0)*fps);
-
-        Float actualTime = vss.time().getMilliseconds();
-        Float dt = (actualTime-this->_ballLastTime)/1000; // dt in seconds
-        this->_ballLastTime = actualTime;
-
-        Float lostFrames = dt*fps;
-        ballVel = ballVel/lostFrames;
-        filtPoint.x = filtPoint.x + ballVel.x*dt;
-        filtPoint.y = filtPoint.y + ballVel.y*dt;
-
-        filtPoint.x = Utils::bound(filtPoint.x, -85, 85);
-        filtPoint.y = Utils::bound(filtPoint.y, -65, 65);
-
-        cv::circle(debugFrame, Utils::convertPositionCmToPixel(cv::Point(static_cast<int>(filtPoint.x),static_cast<int>(filtPoint.y))), 9, _colorCar[OrangeCOL], 2, cv::LINE_AA);
-        //cv::line(debugFrame, Utils::convertPositionCmToPixel(cv::Point(filtPoint.x,filtPoint.y)),Utils::convertPositionCmToPixel(cv::Point(filtPoint.x+ballVel.x,filtPoint.y+ballVel.y)),_colorCar[OrangeCOL], 2);
-
-        ball.id(0);
-        ball.update(Point(filtPoint.x,filtPoint.y),atan2(ballVel.y,ballVel.x));
-        this->_ballLastPosition.x = filtPoint.x;
-        this->_ballLastPosition.y = filtPoint.y;
-    }
-
     // Debug
     //cv::circle(debugFrame, blobBall.position, 9, _colorCar[OrangeCOL], 2, cv::LINE_AA);
     Point newPosition = Utils::convertPositionPixelToCm(blobBall.position);
@@ -195,7 +168,6 @@ void PositionProcessing::findBall(Entity &ball, cv::Mat& debugFrame) {
     int fps = 100;
     Geometry::PT ballVel(ballPosVel(2, 0)*fps, ballPosVel(3, 0)*fps);
     ball.update(Point(newPosition.x,newPosition.y),atan2(ballVel.y,ballVel.x));
-    this->_ballLastTime = vss.time().getMilliseconds();
     ball.id(0);
 
     newPosition.x = Utils::bound(newPosition.x, -85, 85);

@@ -28,10 +28,6 @@
 #include "Vision/ImageProcessing/ImageProcessing.h"
 #include "Vision/ImageProcessing/LUTSegmentation.h"
 #include "Vision/ImageProcessing/WarpCorrection.h"
-#include <QTime>
-#include <QElapsedTimer>
-#include <Timer/Timer.h>
-#include "Network/visionServer/server.h"
 
 //#include "Utils/Entity.h"
 #include "Utils/Utils.h"
@@ -128,24 +124,14 @@ private:
    */
   std::vector<Entity> _robotPositions;
 
-  void setObjectsSpeed(QTime timeStamp, std::vector<Entity> &currentPositions);
-
-  std::vector < std::queue < std::pair<cv::Point2d, QTime> > > _lastPositions;
-
   bool _firstFrameDeepLog;
 
   std::string _deepLogFileName, _deepLogFilePath, _deepLogFileFolder;
   FILE* _deepLogFile;
   unsigned int _deepLogInitialTime;
-  Timer _visionTimer, _visionFrameTimer;
   double _visionRunTime;
-  std::mutex _currentFrameLocker, _visionStatusLocker;
-
-  QTime firstTime;
 
   Point _frameDimensions;
-
-  VisionServer *server;
 
   void saveFrameDimensions(cv::Mat &frame);
 
@@ -179,7 +165,7 @@ public:
    * @param[in]   timeStamp
    * @param[in]   vss everything
    */
-  cv::Mat update(cv::Mat& frame, QTime timeStamp, Utils::FrameType frametype = Utils::FrameType::Tracked);
+  cv::Mat update(cv::Mat& frame, Utils::FrameType frametype = Utils::FrameType::Tracked);
 
   /**
    * @brief    Gets the debug segmentation frame with all segmented regions colorized with your tag color.

@@ -14,9 +14,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/opencv.hpp"
 
-// TALVEZ APAGAR!
-#include "Logging/logging.h"
-
 // C++ Libs
 #include <bits/stdc++.h>
 
@@ -28,10 +25,6 @@
 
 // Variaveis globais, e modificaveis
 #include "Global.h"
-
-// Timer
-#include "Timer/Timer.h"
-
 // Types
 #include "Types.h"
 

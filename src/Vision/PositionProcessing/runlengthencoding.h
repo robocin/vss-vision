@@ -17,7 +17,6 @@
     #include <tbb/blocked_range.h>
 #endif // defined(emit)
 #endif // Q_MOC_RUN
-#include <Timer/Timer.h>
 
 typedef struct{
    int start;

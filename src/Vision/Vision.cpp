@@ -1,11 +1,9 @@
 #include "Vision.h"
-#include "Network/Network.h"
 #include <algorithm>
 #include <vector>
 
 Vision::Vision()
 {
-//    this->_visionStatusLocker.lock();
     this->_detection = new BlobDetection();
     this->_detection->init();
     this->_detection->setTeamColor(getTeamColor());
@@ -19,15 +17,11 @@ Vision::Vision()
     std::vector<Entity> currentPositions (7, Entity());
     this->_robotPositions = currentPositions;
     this->_currentFrame = cv::Mat::zeros(640,480,CV_8UC3);
-    this->_lastPositions = std::vector<std::queue<std::pair<cv::Point2d,QTime>>>(7);
     this->_firstFrameDeepLog = true;
     this->_deepLogFile = nullptr;
     this->_deepLogFileName = "log"; // default file name
     this->_deepLogFileFolder = "Log/deep/"; // default file folder
     this->_visionRunTime = 0;
-    this->firstTime = QTime::currentTime();
-    this->server = new VisionServer("224.5.23.2", 10015);
-//    this->_visionStatusLocker.unlock();
 }
 
 Vision::~Vision()
@@ -98,34 +92,15 @@ void Vision::update(Utils::FrameType frametype)
 
 
 
-cv::Mat Vision::update(cv::Mat &frame, QTime timeStamp, Utils::FrameType frametype)
+cv::Mat Vision::update(cv::Mat &frame, Utils::FrameType frametype)
 {
-  this->_visionFrameTimer.start();
   this->setFrame(frame);
   this->update(frametype);
-  uint32_t actualTime = static_cast<uint32_t>(this->firstTime.msecsTo(timeStamp));
-  //printf("%u\n", actualTime);
   std::vector<Entity> entities;
   entities.resize(1);
   entities[0] = vss.ball();
   Players players = vss.players();
   entities.insert(entities.end(),players.begin(),players.end());
-  
-    // NETWORK
-    if (this->_isProcessingEnabled) {
-        //spdlog::get("Vision")->info("update:: Seding frame.\n");
-        // Network::sendFrame(entities, actualTime);
-        // this->server->send(entities);
-
-        //spdlog::get("Vision")->info("update:: Frame sent.\n");
-    } else {
-        Network::frameId = 0;
-        this->firstTime = timeStamp.currentTime();
-    }
-
-   this->_visionFrameTimer.stop();
-   this->_visionRunTime = static_cast<double> (this->_visionFrameTimer.getMilliseconds()*0.2 + this->_visionRunTime*0.8);
-
    return this->output_frame;
 }
 
@@ -235,20 +210,6 @@ void Vision::savePositionParam()
 
 }
 
-void Vision::resetCorrection()
-{
-    if (this->_correction)
-        static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH, &this->_convert);
-}
-
-void Vision::resetSegmentation()
-{
-
-    if (this->_segmentation)
-        static_cast<LUTSegmentation*>(this->_segmentation)->initFromFile(SEGMENTATION_DEFAULT_FILE);
-
-}
-
 void Vision::getSegmentationFrame(cv::Mat& frame)
 {
 
@@ -331,9 +292,7 @@ int Vision::getTeamColor()
 }
 
 void Vision::getCurrentFrame(cv::Mat& frame) {
-  this->_currentFrameLocker.lock();
   this->_currentFrame.copyTo(frame);
-  this->_currentFrameLocker.unlock();
 }
 
 void Vision::setDeepLogFileName(std::string fileName) {

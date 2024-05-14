@@ -3,6 +3,10 @@
 
 #include "ImageProcessing.h"
 #include "Vision/ColorSpace.h"
+
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/dist_sink.h"
+
 #include <vector>
 #include <set>
 #include <string>

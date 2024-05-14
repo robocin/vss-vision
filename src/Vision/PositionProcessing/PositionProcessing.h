@@ -16,10 +16,13 @@
 #include <map>
 #include <string>
 #include "Entity/Entity.h"
-#include <QReadWriteLock>
 #include "runlengthencoding.h"
 #include "GameInfo/GameInfo.h"
 #include <Utils/kalmanfilter.h>
+
+
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/dist_sink.h"
 
 #define CLUSTERSPERCOLOR 8
 #define MAX_ROBOTS 6
@@ -305,7 +308,6 @@ protected:
                                   PINK_RED, PINK_GREEN, PINK_CYAN,
                                   CYAN_RED, CYAN_GREEN, CYAN_PINK};
 
-  std::mutex _frameLocker;
   std::map<std::string,int> param;
   cv::Scalar _colorCar[ColorStrange+1];
   cv::Vec3b segColor[ColorStrange+1];

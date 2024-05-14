@@ -7,35 +7,26 @@ WarpCorrection::~WarpCorrection() {}
 void WarpCorrection::init(std::map<std::string, int>) {}
 
 void WarpCorrection::initFromFile(std::string path, cv::Point2d* convert) {
-  QFile file(QString::fromStdString(path));
-
-  if (!file.open(QIODevice::ReadOnly)) {
-    std::cout << "Couldn't open file : " << path << std::endl;
-    exit(1);
-  }
-
-  QByteArray data = file.readAll();
-
-  QJsonDocument loadDoc(QJsonDocument::fromJson(data));
-
-  QJsonObject pointsJson = loadDoc.object();
-
   std::string pointString = "point";
 
-  QJsonObject value;
+  using namespace std;
 
-  this->_pointsLocker.lock();
+  map<string, pair<int, int>> points = {
+      {"point1", {65, 37}}, 
+      {"point2", {54, 443}}, 
+      {"point3", {576, 448}},
+      {"point4", {575, 52}}
+    };
+
 
   for (int i = 1; i <= 4; i++) {
-    std::string tempKey = pointString + std::to_string(i);
-    value = pointsJson[tempKey.c_str()].toObject();
-    this->_correctionPoints[i - 1].x = value["x"].toInt();
-    this->_correctionPoints[i - 1].y = value["y"].toInt();
+    string tempKey = pointString + to_string(i);
+    pair<int, int> value = points[tempKey.c_str()];
+    this->_correctionPoints[i - 1].x = value.first;
+    this->_correctionPoints[i - 1].y = value.second;
   }
 
-  file.close();
-
-  std::vector<cv::Point> boxPoints;
+  vector<cv::Point> boxPoints;
 
   for (int i = 0; i < 4; i++) {
     boxPoints.push_back(_correctionPoints[i]);
@@ -54,8 +45,6 @@ void WarpCorrection::initFromFile(std::string path, cv::Point2d* convert) {
       cv::Point(box.boundingRect().width - 1, box.boundingRect().height - 1);
   dstPoints[3] = cv::Point(box.boundingRect().width - 1, 0);
 
-  this->_mapsLocker.lock();
-
   this->_warpPespectiveMatrix =
       cv::getPerspectiveTransform(_correctionPoints, dstPoints);
 
@@ -64,8 +53,6 @@ void WarpCorrection::initFromFile(std::string path, cv::Point2d* convert) {
 
   this->defineMaps();
 
-  this->_mapsLocker.unlock();
-  this->_pointsLocker.unlock();
 }
 
 void WarpCorrection::defineMaps() {
@@ -141,20 +128,16 @@ cv::Mat WarpCorrection::run(cv::Mat& frame) {
       cv::Rect(this->_matrixSize.width - w, this->_matrixSize.height - h, w, h),
       cv::Scalar(0, 0, 0), -1);
 
-  this->_frameLocker.lock();
   tmp.copyTo(this->_warpPespectiveFrame);
-  this->_frameLocker.unlock();
 
   return tmp;
 }
 
 void WarpCorrection::getDebugFrame(cv::Mat& frame) {
-    this->_frameLocker.lock();
 
     if (this->_warpPespectiveFrame.empty()) {
         this->_warpPespectiveFrame = cv::Mat::zeros(640, 480, CV_8UC3);
     }
     this->_warpPespectiveFrame.copyTo(frame);
 
-    this->_frameLocker.unlock();
 }

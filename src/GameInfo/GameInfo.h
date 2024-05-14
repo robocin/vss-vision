@@ -3,15 +3,11 @@
 
 #include "Utils/EnumsAndConstants.h"
 #include "opencv2/opencv.hpp"
-#include "Timer/Timer.h"
 #include <vector>
 #include <array>
 #include "Entity/Entity.h"
-#include <QMutex>
 
 class GameInfo {
-  Timer m_time;
-  QMutex m_frameLocker;
   cv::Mat m_frame;
   Entity m_ball;
   Players m_players;
@@ -47,9 +43,6 @@ public:
 
   void setEntities(Entity &t_ball, Players &t_players);
 
-  Timer time();
-
-  void setTime(Timer& t_timer);
 };
 
 // Singleton
