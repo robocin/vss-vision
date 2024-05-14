@@ -8,8 +8,6 @@
 #include "Field/Field.h"
 #include "Vision/PositionProcessing/runlengthencoding.h"
 #include "Vision/Vision.h"
-#include "Windows/MainVSSWindow.h"
-#include "maggicsegmentationdialog.h"
 #include "Utils/Utils.h"
 
 int main(int argc, char *argv[]) {

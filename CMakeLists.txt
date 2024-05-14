@@ -23,24 +23,17 @@ set(SOURCES
     src/Vision/ImageProcessing/MaggicSegmentation.cpp
     src/Vision/ImageProcessing/WarpCorrection.cpp
     src/Vision/ImageProcessing/OpenCV/connectedcomponents.cpp
-    src/visionconfigdialog.cpp
-    src/fieldpointscalibratedialog.cpp
-    src/segmentationconfigdialog.cpp
     src/Logging/logging.cpp
     src/Vision/ColorSpace.cpp
-    src/maggicsegmentationdialog.cpp
     src/Timer/Timer.cpp
     src/Vision/PositionProcessing/runlengthencoding.cpp
     src/Vision/PositionProcessing/BlobDetection.cpp
     src/Field/Field.cpp
     src/GameInfo/GameInfo.cpp
     src/Utils/Global.cpp
-    src/Windows/MainVSSWindow.cpp
     src/Utils/Geometry.cpp
     src/Utils/Draw.cpp
     src/Utils/EnumsAndConstants.cpp
-    src/Windows/RobotWidget.cpp
-    src/trackconfigdialog.cpp
     src/Network/Network.cpp
     src/Network/visionServer/server.cpp
 )
@@ -58,11 +51,7 @@ set(HEADERS
     src/Vision/ImageProcessing/WarpCorrection.h
     src/Vision/ColorSpace.h
     src/Vision/ImageProcessing/OpenCV/connectedcomponents.hpp
-    src/visionconfigdialog.h
-    src/fieldpointscalibratedialog.h
-    src/segmentationconfigdialog.h
     src/Logging/logging.h
-    src/maggicsegmentationdialog.h
     src/Timer/Timer.h
     src/Vision/PositionProcessing/runlengthencoding.h
     src/Vision/PositionProcessing/BlobDetection.h
@@ -72,13 +61,9 @@ set(HEADERS
     src/GameInfo/GameInfo.h
     src/Utils/Defines.h
     src/Utils/Global.h
-    src/Windows/MainVSSWindow.h
     src/Utils/Geometry.h
     src/Utils/Draw.h
-    src/Windows/RobotWidget.h
     src/Utils/BetterEnum.h
-    src/trackconfigdialog.h
-    src/Windows/FileConstants.h
     src/Network/Network.h
     src/Network/visionServer/server.h
 )

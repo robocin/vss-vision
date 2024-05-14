@@ -25,12 +25,6 @@ public:
 	*	@param[in]  entities  The entities to be sent for a frame.
 	*/
     static void sendFrame(std::vector<Entity> &entities, uint32_t timestamp_in_msec = 0);
-
-    static void buttonsMessageTeamColor(bool teamColor);
-
-    static void buttonsMessagePlayNN(bool playNN);
-
-    static void buttonsMessageStop();
 };
 
 #endif /**		NETWORK_H*/

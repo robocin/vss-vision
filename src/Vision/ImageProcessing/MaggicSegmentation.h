@@ -3,7 +3,6 @@
 
 #include "ImageProcessing.h"
 #include "Vision/ColorSpace.h"
-#include <QPushButton>
 #include <vector>
 #include <set>
 #include <string>
@@ -169,12 +168,6 @@ public:
 
   void loadDefaultHue();
 
-  void setMousePosition(cv::Point2f mpos);
-
-  void setMouseButtonPress(int btnId);
-
-  void setMouseButtonRelease(int btnId);
-
   void setVectorscopeEnabled(bool enabled);
 
   void setFilterEnabled(bool enabled);
@@ -298,10 +291,8 @@ private:
   std::mutex mut;
   int pressedId = 0, releasedId = 0;
   int dragpivotId = -1;
-  bool pressedMouse = false, releasedMouse = false;
   bool pressedLeft = false, pressedRight = false;
   bool releasedLeft = false, releasedRight = false;
-  bool mouseDrag = false;
   bool colorDistribution = false;
   bool enableFilter = false;
 

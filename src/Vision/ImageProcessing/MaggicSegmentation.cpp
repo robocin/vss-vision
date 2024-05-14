@@ -1212,54 +1212,6 @@ void MaggicSegmentation::loadDefaultHue() {
   }
 }
 
-
-void MaggicSegmentation::setMousePosition(cv::Point2f mpos) {
-  mut.lock();
-  //this->m_updateFrame = this->m_updateDetails = true;
-  if (!this->_detailsFrame.empty()) {
-    this->lastCursorPos.push_back(this->cursorPos);
-    this->cursorPos = cv::Point2i (static_cast<int>(mpos.x*this->_detailsFrame.cols), static_cast<int>(mpos.y*this->_detailsFrame.rows));
-    this->mouseDrag = true;
-  }
-  mut.unlock();
-}
-
-void MaggicSegmentation::setMouseButtonPress(int btnId) {
-  mut.lock();
-  //this->m_updateFrame = this->m_updateDetails = true;
-  if (!this->_detailsFrame.empty()) {
-    if (cv::Rect(0,0,this->_detailsFrame.cols,this->_detailsFrame.rows).contains(this->cursorPos)) {
-        this->pressedId = btnId;
-        this->releasedId = 0;
-        this->pressedLeft = btnId == 1;
-        this->pressedRight = btnId == 2;
-        this->pressedMouse = this->pressedLeft || this->pressedRight;
-        this->releasedLeft = false;
-        this->releasedRight = false;
-        this->mouseDrag = true;
-        }
-  }
-  mut.unlock();
-}
-void MaggicSegmentation::setMouseButtonRelease(int btnId) {
-  mut.lock();
-  //this->m_updateFrame = this->m_updateDetails = true;
-  if (!this->_detailsFrame.empty()) {
-      if (cv::Rect(0,0,this->_detailsFrame.cols,this->_detailsFrame.rows).contains(this->cursorPos)) {
-        this->releasedId = btnId;
-        this->pressedId = 0;
-        this->releasedLeft = btnId == 1;
-        this->releasedRight = btnId == 2;
-        this->releasedMouse = this->releasedLeft || this->releasedRight;
-        this->pressedLeft = false;
-        this->pressedRight = false;
-        this->mouseDrag = false;
-        //std::cout << (btnId == 1 ? "Left" : "Right") << " Clicked" << std::endl;
-      }
-  }
-  mut.unlock();
-}
-
 void MaggicSegmentation::doDetails() {
   if (!this->m_updateDetails) return;
   this->m_updateDetails = false;
@@ -1401,37 +1353,7 @@ void MaggicSegmentation::doDetails() {
             firstPress = this->cursorPos;
         }
     }
-    if (this->mouseDrag) {
-        if (dragpivotId != -1) {
-          //std::cout << "dragging " << dragpivotId << std::endl;
-          int theX = std::max(colorFrame.x+1,std::min(colorFrame.x + colorFrame.width-2, this->cursorPos.x));
-          cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,0),2);
-        }
-        if (this->enableFilter && firstPress.x > -1) {
-            static int mx = colorFrame.x,
-                       mX = colorFrame.x + colorFrame.width,
-                       my = colorFrame.y,
-                       mY = colorFrame.y + colorFrame.height;
-
-            int x, X, y, Y;
-            x = std::min(this->cursorPos.x,firstPress.x);
-            X = std::max(this->cursorPos.x,firstPress.x);
-            y = std::min(this->cursorPos.y,firstPress.y);
-            Y = std::max(this->cursorPos.y,firstPress.y);
-
-            x = std::max(std::min(mX,x),mx);
-            X = std::max(std::min(mX,X),mx);
-            y = std::max(std::min(mY,y),my);
-            Y = std::max(std::min(mY,Y),my);
-
-            tmpFilterRect = cv::Rect2i(x, y, X-x, Y-y);
-
-            cv::rectangle(this->_detailsFrame,tmpFilterRect,cv::Scalar(0,0,0),-1,cv::LINE_4);
-            cv::rectangle(this->_detailsFrame,tmpFilterRect,cv::Scalar(255,255,0),1,cv::LINE_4);
-        }
-    }
-
-
+  
     //std::cout << "pressedId " << this->pressedId << std::endl;
     if(this->releasedRight) {
       //std::cout << "Right Clicked" << std::endl;
@@ -1521,7 +1443,6 @@ void MaggicSegmentation::doDetails() {
     cv::circle(this->_detailsFrame,this->cursorPos,selectionCircleRadius-1,cv::Scalar(0,0,0),1);
 
     this->releasedId = 0;
-    this->releasedMouse = this->pressedMouse = false;
     mut.unlock();
   }
 }
