@@ -157,7 +157,7 @@ And in you .cpp file you will need at least this:
 To set your algorithm as one of the steps, you just need to place one instance of your class to the correct atribute in vision. For example:
 
 ```c++
-	Vision::Vision(){
+	Vision::Vision(HUE hueList){
 		//some code here
 
 		this->imageCorrection = new WarpCorrection();

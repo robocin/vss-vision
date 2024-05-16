@@ -47,7 +47,7 @@ private:
   /**
    * @brief    Private Construtor
    */
-  Vision();
+  Vision(Utils::HUE hueList);
 
   /**
    * @brief    Private Copy Constructor
@@ -155,7 +155,7 @@ public:
    *
    * @return   return a Vision reference, unique and common to all class in the program
    */
-  static Vision& singleton();
+  static Vision& singleton(Utils::HUE hueList);
 
   Point getFrameDimensions();
 

@@ -18,7 +18,17 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  Vision& vis = Vision::singleton();
+  Utils::HUE hueList = {
+    {10, Color::RED}, 
+    {15.0, Color::ORANGE}, 
+    {40.0, Color::YELLOW}, 
+    {97.0, Color::GREEN}, 
+    {150.0, Color::CYAN}, 
+    {200.0, Color::BLUE}, 
+    {220.0, Color::PINK}
+  };
+
+  Vision& vis = Vision::singleton(hueList);
 
   // cv::Mat frame = cv::Mat::zeros(FRAME_HEIGHT_DEFAULT, FRAME_WIDTH_DEFAULT, CV_8UC3) * 255;
   cv::Mat frame = cv::imread("../image.png");

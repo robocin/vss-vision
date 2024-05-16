@@ -2,12 +2,12 @@
 #include <algorithm>
 #include <vector>
 
-Vision::Vision()
+Vision::Vision(Utils::HUE hueList)
 {
     this->_detection = new BlobDetection();
     this->_detection->init();
     this->_detection->setTeamColor(getTeamColor());
-    this->_segmentation = new MaggicSegmentation();
+    this->_segmentation = new MaggicSegmentation(hueList);
     this->_correction = new WarpCorrection();
     this->_compression = new RunLengthEncoding();
     static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH,&this->_convert);
@@ -32,9 +32,9 @@ Vision::~Vision()
         delete(this->_segmentation);
 }
 
-Vision& Vision::singleton()
+Vision& Vision::singleton(Utils::HUE hueList)
 {
-  static Vision instance;
+  static Vision instance(hueList);
 
   return instance;
 }

@@ -87,7 +87,7 @@ public:
   /**
    * @brief    Default Constructor
    */
-  MaggicSegmentation();
+  MaggicSegmentation(Utils::HUE list);
 
   /**
    * @brief    Destroys the object.
@@ -166,7 +166,7 @@ public:
 
   uchar* getLUT();
 
-  void openLastSession();
+  void loadHueList(Utils::HUE list);
 
   void saveSession();
 
@@ -269,8 +269,8 @@ private:
   void initLUT();
 
   // vector of pair: <float hueValue, uchar colorLabel>
-  std::vector<std::pair<float, int>> hueList;
-  std::vector<std::pair<float, int>> defaultHueList;
+  Utils::HUE hueList;
+  Utils::HUE defaultHueList;
 
 
   cv::Mat colorPalette,

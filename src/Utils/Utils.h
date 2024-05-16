@@ -248,6 +248,8 @@ namespace Utils {
 
   enum FrameType { Segmented, Tracked };
 
+  using HUE = std::vector<std::pair<float,int>>;
+
 };
 
 #endif /* UTILS_H */

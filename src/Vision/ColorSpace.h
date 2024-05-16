@@ -48,6 +48,4 @@ namespace ColorSpace {
   extern String colorNames[NUMBEROFCOLOR];
 }
 
-
-
 #endif // COLORSPACE_H

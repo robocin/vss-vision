@@ -50,7 +50,7 @@ const MaggicSegmentation::NormalizationMethod
 MaggicSegmentation::default_normalization_method =
         MaggicSegmentation::WEIGHTED_NORMALIZATION;
 
-MaggicSegmentation::MaggicSegmentation()
+MaggicSegmentation::MaggicSegmentation(Utils::HUE list)
 {  
   this->isLUTReady = false;
   this->_LUT = new uchar[LUT_SIZE/3];
@@ -137,7 +137,7 @@ MaggicSegmentation::MaggicSegmentation()
 
   this->_maggicSegmentationSessionFileName = "Config/Segmentation/MaggicSegmentation.txt";
 
-  this->openLastSession();
+  this->loadHueList(list);
 
 }
 
@@ -191,41 +191,17 @@ String MaggicSegmentation::RGBHash2String(uint h) {
     return colorNames[h];
 }
 
-void MaggicSegmentation::openLastSession() {
-  //std::cout << "Opening last session on MaggicSegmentation" << std::endl;
-  std::string str;
-  std::ifstream fin;
+void MaggicSegmentation::loadHueList(Utils::HUE list) {
   int numa, numb;
-  fin.open(this->_maggicSegmentationSessionFileName);
+  this->hueList.clear();
 
-  if (fin.is_open()) {
-    fin >> str;
-    //std::cout << "STR : '" << str << "'" << std::endl;
-    if (str.compare("Maggic") == 0) {// Test if the files has any valid content, then read it all
-      fin >> this->_minimumGrayThreshold >>  this->_maximumGrayThreshold;
-      fin >> this->filterGrayThreshold;
-      //std::cout << "THRESHOLD FROM MAGGIC SEGMENTATION FROM OPEN" << this->filterGrayThreshold << std::endl;
-      this->hueList.clear();
-      // read all the number's pairs
-      while(true) {
-        fin >> numa >> numb;
-        //std::cout << "numa numb " << numa << " " << numb << std::endl;
-        if (fin.eof()) break;
-        this->hueList.push_back(std::make_pair(static_cast<float>(numa),static_cast<int>(numb)));
-      }
-    }
-    this->setHUETable(true);
-    this->generateLUTFromHUE();
-    this->useLoadedValues = true;
-    std::cout << "MaggicSegmentation:: openLastSession: Loaded session from " 
-      << this->_maggicSegmentationSessionFileName << "\n";
-  } else {
-    this->useLoadedValues = false;
-    std::cout << "MaggicSegmentation:: openLastSession: File access denied " 
-      << this->_maggicSegmentationSessionFileName << "\n";
-  }
+  for(auto hue : list){
+    this->hueList.push_back(std::make_pair(hue.first,hue.second));
+  } 
 
-  fin.close();
+  this->setHUETable(true);
+  this->generateLUTFromHUE();
+  this->useLoadedValues = true;
 }
 
 void MaggicSegmentation::saveSession() {
@@ -1369,7 +1345,7 @@ void MaggicSegmentation::doDetails() {
         }
         if (changed) {
             this->generateLUTFromHUE();
-            uchar* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton().getSegmentationObject())->getLUT();
+            uchar* dst_LUT = reinterpret_cast<LUTSegmentation*>(Vision::singleton(this->hueList).getSegmentationObject())->getLUT();
             uchar* src_LUT = this->getLUT();
             memcpy(dst_LUT,src_LUT,LUTSIZE*sizeof(uchar));
         }
