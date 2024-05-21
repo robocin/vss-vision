@@ -10,6 +10,21 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/src")
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+include(GNUInstallDirs)
+include(FindPackageHandleStandardArgs)
+include(FetchContent)
+
+FetchContent_Declare(
+  pybind11
+  URL https://github.com/pybind/pybind11/archive/refs/tags/v2.6.2.tar.gz
+  URL_HASH SHA256=8ff2fff22df038f5cd02cea8af56622bc67f5b64534f1b83b9f133b8366acff2
+)
+FetchContent_MakeAvailable(pybind11)
+
+set(python_module_name _vss_vision)
+
 set(SOURCES
     src/main.cpp
     src/Utils/Utils.cpp
@@ -65,15 +80,22 @@ set(RESOURCES
     src/iconTools/icontools.qrc
 )
 
+pybind11_add_module(${python_module_name} MODULE
+  ${SOURCES}
+  ${HEADERS}
+)
 
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${RESOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
 
-target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/src")
-target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+# add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${RESOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
+
+target_include_directories(${python_module_name} PUBLIC "${PROJECT_SOURCE_DIR}/src")
+target_include_directories(${python_module_name} PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(${python_module_name} PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
 find_package(OpenCV REQUIRED)
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+target_link_libraries(${python_module_name} PUBLIC ${OpenCV_LIBS})
 
 find_package(TBB REQUIRED)
-target_link_libraries(${PROJECT_NAME} TBB::tbb)
+target_link_libraries(${python_module_name} PUBLIC TBB::tbb)
+
+
