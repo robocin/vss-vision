@@ -195,7 +195,10 @@ void MaggicSegmentation::loadHueList(Utils::HUE list) {
   int numa, numb;
   this->hueList.clear();
 
+  this->filterGrayThreshold = list[0].first;
+
   for(auto hue : list){
+    if(hue.second == 0) continue;
     this->hueList.push_back(std::make_pair(hue.first,hue.second));
   } 
 

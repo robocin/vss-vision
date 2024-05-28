@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Default>
+  <next_step>30.</next_step>
+  <sigma_at_ball_x>71.</sigma_at_ball_x>
+  <sigma_at_ball_y>71.</sigma_at_ball_y>
+  <gauss_at_ball>1000.</gauss_at_ball>
+  <sigma_rep_ball_x>10.</sigma_rep_ball_x>
+  <sigma_rep_ball_y>10.</sigma_rep_ball_y>
+  <gauss_rep_ball>100.</gauss_rep_ball>
+  <sigma_rep_adv_x>17.</sigma_rep_adv_x>
+  <sigma_rep_adv_y>17.</sigma_rep_adv_y>
+  <gauss_rep_adv>500.</gauss_rep_adv>
+  <sigma_rep_team_x>100.</sigma_rep_team_x>
+  <sigma_rep_team_y>50.</sigma_rep_team_y>
+  <inc_x_ballproj>15.</inc_x_ballproj>
+  <range_get_lower_potential>10.</range_get_lower_potential>
+  <range_forward_to_ball>10.</range_forward_to_ball>
+  <accuracy>5.</accuracy>
+  <distance_to_accuracy>7.</distance_to_accuracy>
+  <x_axis_curve>1.</x_axis_curve>
+  <y_axis_curve>30.</y_axis_curve></Default>
+</opencv_storage>
