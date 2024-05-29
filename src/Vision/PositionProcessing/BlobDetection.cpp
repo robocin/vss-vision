@@ -19,19 +19,9 @@ void BlobDetection::run(std::vector< std::vector<Run> > runs, int rows, int cols
   currentFrame.copyTo(this->debugSrc);
 }
 
-void BlobDetection::init()
-{
-  initDefault();
-}
-
 void BlobDetection::getDebugFrame(cv::Mat& frame)
 {
   this->debugSrc.copyTo(frame);
-}
-
-void BlobDetection::saveParam()
-{
-  this->saveXML();
 }
 
 void BlobDetection::findBlobs(cv::Mat& debugFrame) {

@@ -1,25 +1,6 @@
 #include "PositionProcessing.h"
 #include "Utils/EnumsAndConstants.h"
 
-void PositionProcessing::saveXML()
-{
-  cv::FileStorage file(POSITION_PROCESSING_FILE,cv::FileStorage::WRITE);
-  file<<"Default";
-  file<<"{";
-  file<<MINSIZE<<param[MINSIZE];
-  file<<MAXSIZE<<param[MAXSIZE];
-  file<<MINSIZEBALL<<param[MINSIZEBALL];
-  file<<MAXSIZEBALL<<param[MAXSIZEBALL];
-  file<<BLOBMAXDIST<<param[BLOBMAXDIST ];
-  file<<MYTEAM<<param[MYTEAM];
-  file<<ENEMYTEAM<<param[ENEMYTEAM];
-  file<<ENEMYSEARCH<<param[ENEMYSEARCH];
-  file<<SHOWELEMENT<<param[SHOWELEMENT];
-  file<<"}";
-  file.release();
-
-}
-
 void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
 
   FieldRegions groupedBlobs = pairBlobs();
@@ -413,52 +394,6 @@ void PositionProcessing::initBlob(PositionProcessing::Blob &blob)
   blob.area = 0;
   blob.angle = 0;
   blob.valid = false;
-}
-
-void PositionProcessing::initDefault()
-{
-  this->_colorCar[NoCOL] = cv::Scalar(255,255,255);
-  this->_colorCar[OrangeCOL] = cv::Scalar(0,165,255);
-  this->_colorCar[BlueCOL] = cv::Scalar(255,0,0);
-  this->_colorCar[YellowCOL] = cv::Scalar(0,255,255);
-  this->_colorCar[RedCOL] = cv::Scalar(0,0,255);
-  this->_colorCar[GreenCOL] = cv::Scalar(0,255,0);
-  this->_colorCar[PinkCOL] = cv::Scalar(255,0,255);
-  this->_colorCar[LightBlueCOL] = cv::Scalar(210,252,4);
-  this->_colorCar[PurpleCOL] = cv::Scalar(200,055,055);
-  this->_colorCar[BrownCOL] = cv::Scalar(38,66,107);
-  this->_colorCar[ColorStrange] = cv::Scalar(255,255,255);
-
-  this->segColor[NoCOL] = cv::Vec3b(0,0,0);
-  this->segColor[OrangeCOL] = cv::Vec3b(20,147,255);
-  this->segColor[BlueCOL] = cv::Vec3b(255,0,0);
-  this->segColor[YellowCOL] = cv::Vec3b(0,255,255);
-  this->segColor[RedCOL] = cv::Vec3b(0,0,255);
-  this->segColor[GreenCOL] = cv::Vec3b(0,255,0);
-  this->segColor[PinkCOL] = cv::Vec3b(164,0,255);
-  this->segColor[LightBlueCOL] = cv::Vec3b(206,250,135);
-  this->segColor[PurpleCOL] = cv::Vec3b(250,230,230);
-  this->segColor[BrownCOL] = cv::Vec3b(25,0,51);
-  this->segColor[ColorStrange] = cv::Vec3b(0,0,0);
-
-  cv::FileStorage fs(POSITION_PROCESSING_FILE,cv::FileStorage::READ);
-
-  if(!fs.isOpened())
-  {
-    spdlog::get("Vision")->error("Position Processing Xml: Error diretorio, {}", POSITION_PROCESSING_FILE);
-    return;
-  }
-  cv::FileNode node = fs[DEFAULT];
-  this->setUp(MINSIZE,node[MINSIZE]);
-  this->setUp(MAXSIZE,node[MAXSIZE]);
-  this->setUp(MINSIZEBALL,node[MINSIZEBALL]);
-  this->setUp(MAXSIZEBALL,node[MAXSIZEBALL]);
-  this->setUp(BLOBMAXDIST,node[BLOBMAXDIST]);
-  this->setUp(MYTEAM,node[MYTEAM]);
-  this->setUp(ENEMYTEAM,node[ENEMYTEAM]);
-  this->setUp(ENEMYSEARCH,node[ENEMYSEARCH]);
-  this->setUp(SHOWELEMENT,node[SHOWELEMENT]);
-  fs.release();
 }
 
 int PositionProcessing::getTeamColor()

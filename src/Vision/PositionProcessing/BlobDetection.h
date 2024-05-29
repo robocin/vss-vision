@@ -29,12 +29,6 @@ public:
    */
 
   void run(std::vector<std::vector<Run> > runs, int rows = DEFAULT_ROWS, int cols = DEFAULT_COLS);
-
-	/**
-   * @brief    Initialize the algorithm
-	 *
-	 */	
-  void init();
   
   /**
    * @brief    Get a frame that helps to debug a function
@@ -42,12 +36,6 @@ public:
    * @param[in]  frame  frame
    */
   void getDebugFrame(cv::Mat& frame);
-
-  /**
-   * @brief    Save all param used in this class.
-   */
-  void saveParam();
-
 
 private:
 

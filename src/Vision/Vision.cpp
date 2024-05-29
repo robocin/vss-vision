@@ -5,12 +5,10 @@
 Vision::Vision(Utils::HUE hueList)
 {
     this->_detection = new BlobDetection();
-    this->_detection->init();
     this->_detection->setTeamColor(getTeamColor());
     this->_segmentation = new MaggicSegmentation(hueList);
     this->_correction = new WarpCorrection();
     this->_compression = new RunLengthEncoding();
-    static_cast<WarpCorrection*>(this->_correction)->initFromFile(FIELDLIMITSPATH,&this->_convert);
     this->_isCorrectionEnabled = false;
     this->_isProcessingEnabled = true;
     std::vector<Entity> currentPositions (7, Entity());
@@ -153,7 +151,6 @@ bool Vision::setDetectionAlgorithm(std::string algorithmLabel)
 
     if (algorithmLabel == WHEREARE_LABEL) {
         this->_detection = new BlobDetection();
-        this->_detection->init();
         ret = true;
     }
 
@@ -174,38 +171,11 @@ void Vision::setTrackParam(std::string var, int value)
         this->_tracking->setUp(var,value);
 
 }
-void Vision::setDetectionParamFromXml()
-{
-
-    if (this->_detection)
-        this->_detection->init();
-
-}
-
-void Vision::setTrackParamFromXml()
-{
-
-    if (this->_tracking)
-        this->_tracking->init();
-
-}
-
 void Vision::getCorrectedDebugFrame(cv::Mat &frame)
 {
 
     if (this->_correction)
         this->_correction->getDebugFrame(frame);
-
-}
-
-void Vision::savePositionParam()
-{
-
-    if (this->_detection)
-        this->_detection->saveParam();
-
-    if (this->_tracking)
-        this->_tracking->saveParam();
 
 }
 

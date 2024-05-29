@@ -13,17 +13,6 @@
 
 namespace py=pybind11;
 
-Utils::HUE hueList = {
-  {10, Color::RED}, 
-  {15.0, Color::ORANGE}, 
-  {40.0, Color::YELLOW}, 
-  {97.0, Color::GREEN}, 
-  {150.0, Color::CYAN}, 
-  {200.0, Color::BLUE}, 
-  {220.0, Color::PINK}
-};
-
-
 py::array run_seg(py::array_t<uint8_t>& img, py::array_t<int> hues, py::array_t<int> colors, int frametype = Utils::FrameType::Tracked) {
   Utils::HUE hueList = {};
   for (int i = 0; i < hues.size(); i++) {

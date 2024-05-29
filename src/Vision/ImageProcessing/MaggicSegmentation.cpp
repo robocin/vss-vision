@@ -83,7 +83,6 @@ MaggicSegmentation::MaggicSegmentation(Utils::HUE list)
   cv::cvtColor(colorPalette, colorPaletteYUV, cv::COLOR_BGR2YUV);
   cv::cvtColor(colorPalette, colorPaletteHSV, cv::COLOR_BGR2HSV_FULL);
 
-  this->loadDefaultHue();
   this->setHUETable();
   this->generateLUTFromHUE();
   
@@ -134,8 +133,6 @@ MaggicSegmentation::MaggicSegmentation(Utils::HUE list)
   this->_extremeSaturation = cv::Mat::zeros(1,1,CV_8UC3);
   this->_firstThreshold = cv::Mat::zeros(1,1,CV_8UC3);
 
-
-  this->_maggicSegmentationSessionFileName = "Config/Segmentation/MaggicSegmentation.txt";
 
   this->loadHueList(list);
 
@@ -205,27 +202,6 @@ void MaggicSegmentation::loadHueList(Utils::HUE list) {
   this->setHUETable(true);
   this->generateLUTFromHUE();
   this->useLoadedValues = true;
-}
-
-void MaggicSegmentation::saveSession() {
-  mut.lock();
-  std::string str;
-  std::ofstream fout;
-  fout.open(this->_maggicSegmentationSessionFileName);
-  // write all the number's pairs
-  if (fout.is_open()) {
-     fout << "Maggic\n";
-     fout << this->_minimumGrayThreshold << " " << this->_maximumGrayThreshold << "\n";
-     fout << this->getFilterGrayThresholdValue() << "\n";
-     for(size_t i=0;i<this->hueList.size();i++) {
-      fout << static_cast<int>(this->hueList[i].first) << " " << static_cast<int>(this->hueList[i].second) << "\n";
-     }
-     spdlog::get("Vision")->info("MaggicSegmentation:: saveSession: Successfully saved in '{}'.",this->_maggicSegmentationSessionFileName);
-  } else {
-     spdlog::get("Vision")->error("MaggicSegmentation:: saveSession: File access denied '{}'.",this->_maggicSegmentationSessionFileName);
-  }
-  fout.close();
-  mut.unlock();
 }
 
 void MaggicSegmentation::calibrate(cv::Mat &frame) {
@@ -1141,31 +1117,6 @@ void MaggicSegmentation::getSegmentationFrameFromLUT(cv::Mat& frame)
   this->_segmentationFrame.copyTo(frame);
 }
 
-
-void MaggicSegmentation::loadDefaultHue() {
-  const static char* defaultHueListFileName = "Config/Segmentation/DefaultMaggicSegmentation.txt";
-  FILE *f = fopen(defaultHueListFileName, "rt");
-  bool error = true;
-  if (f) {
-    error = (fscanf(f,"Maggic\n") == EOF);
-    error = (fscanf(f,"%*d %*d %*d") == EOF);
-    defaultHueList.clear();
-    while(true) {
-      int h, l;
-      if (fscanf(f,"%d %d", &h, &l) == EOF) break;
-      float hf = static_cast<float>(h/255.f);
-      hf = h;
-      defaultHueList.push_back(std::make_pair(hf,l));
-    }
-    hueList.assign(defaultHueList.begin(), defaultHueList.end());
-    fclose(f);
-    f = nullptr;
-  }
-  if (error) {
-    spdlog::get("Vision")->error("MaggicSegmentation:: loadDefaultHue: File access denied {}",defaultHueListFileName);
-  }
-}
-
 void MaggicSegmentation::doDetails() {
   if (!this->m_updateDetails) return;
   this->m_updateDetails = false;
@@ -1357,11 +1308,6 @@ void MaggicSegmentation::doDetails() {
     if (this->releasedLeft) {
         if (pivotForPaletteId && colorSelectionId != -1) {
           this->hueList[static_cast<size_t>(pivotForPaletteId-1)].second = colorSelectionId+1;
-          std::cout << "Selected color " << colorSelectionId+1 << " for " << pivotForPaletteId-1 << std::endl;
-          mut.unlock();
-          saveSession();
-          mut.lock();
-          std::cout << "Saved session values" << std::endl;
           pivotForPaletteId = 0;
           firstPress = cv::Point(-1,-1);
         }

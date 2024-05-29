@@ -18,20 +18,10 @@ void BlobDetection::run(std::vector<Entity> &entities, std::vector< std::vector<
     this->debugSrc = currentFrame;
 }
 
-void BlobDetection::init()
-{
-    initDefault();
-}
-
 cv::Mat BlobDetection::getDebugFrame()
 {
     cv::Mat frame = this->debugSrc;
     return frame;
-}
-
-void BlobDetection::saveParam()
-{
-    this->saveXML();
 }
 
 void BlobDetection::findBlobs(cv::Mat& debugFrame){

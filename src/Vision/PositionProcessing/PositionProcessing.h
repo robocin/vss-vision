@@ -30,9 +30,6 @@
 #define BALL_INDEX 6
 #define MIN_ID 176
 
-#define POSITION_PROCESSING_FILE  "Config/PositionProcessing.xml"
-#define WHERE_ARE_THOSE_FILE  "Config/PositionProcessingWhereAre.xml"
-#define KMEANS_FILE  "Config/PositionProcessingKMeans.xml"
 #define DEFAULT "Default"
 #define MINSIZE "minSize"
 #define MAXSIZE "maxSize"
@@ -154,22 +151,12 @@ public:
            int cols = DEFAULT_COLS) = 0;
 
   /**
-   * @brief    Initialize the algorithm from file
-   *
-   */     
-  virtual void init() = 0;
-
-  /**
    * @brief    Get a frame that helps to debug a function
    *
    * @param[in]  frame  frame
    */
   virtual void getDebugFrame(cv::Mat& frame) = 0;
 
-    /**
-   * @brief    Save all the paramenters into a xml file
-   */
-  virtual void saveParam() = 0;
   /**
    * @brief    Change a variable
    *
@@ -196,11 +183,6 @@ public:
   void setTeamColor(int teamColor);
 
 protected:
-
-  /**
-   * @brief    Saves a xml file with all common param for this interface class.
-   */
-  void saveXML();
 
   /**
    * @brief    Identifies the ball, and updates its position in entity.
@@ -292,11 +274,6 @@ protected:
    */
   void initBlob(Blob &blob);
 
-  /**
-   * @brief    Initialize the default param
-   */
-  void initDefault();
-
   // retorna a maxima distancia entre blobs para serem um robo
   int blobMaxDist();
 
@@ -317,7 +294,8 @@ protected:
   int _colorIndex[NUMBEROFCOLOR];
   enum enemy{Nothing,Primary,Secundary,Both};
   int _teamColor;
-  int _minSize, _maxSize, _minSizeBall, _maxSizeBall, _blobMaxDist, _teamId, _enemyTeam , _enemySearch, _showElement;
+  int _minSize = 18, _maxSize = 760, _minSizeBall = 52, _maxSizeBall = 733; 
+  int _blobMaxDist = 500, _teamId = 2, _enemyTeam = 3 , _enemySearch = 0, _showElement = 0;
   KalmanFilter _kalmanFilterRobots[2][MAX_ROBOT_ID];
   KalmanFilter _dirFilteRobots[2][MAX_ROBOT_ID];
   KalmanFilter _kalmanFilterBall[1][1];

@@ -168,10 +168,6 @@ public:
 
   void loadHueList(Utils::HUE list);
 
-  void saveSession();
-
-  void loadDefaultHue();
-
   void setVectorscopeEnabled(bool enabled);
 
   void setFilterEnabled(bool enabled);
@@ -207,8 +203,6 @@ private:
   NormalizationMethod normalization_method, selected_normalization_method;
   static const NormalizationMethod default_normalization_method;
   bool _LUTCacheEnable;
-
-  std::string _maggicSegmentationSessionFileName;
 
   uint _calibrationFrames, _learningThresholdFrames;
 
@@ -270,7 +264,15 @@ private:
 
   // vector of pair: <float hueValue, uchar colorLabel>
   Utils::HUE hueList;
-  Utils::HUE defaultHueList;
+  Utils::HUE defaultHueList = {
+    {10, Color::RED}, 
+    {15.0, Color::ORANGE}, 
+    {40.0, Color::YELLOW}, 
+    {97.0, Color::GREEN}, 
+    {150.0, Color::CYAN}, 
+    {200.0, Color::BLUE}, 
+    {220.0, Color::PINK}
+  };
 
 
   cv::Mat colorPalette,

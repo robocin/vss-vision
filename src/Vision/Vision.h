@@ -232,19 +232,6 @@ public:
    * @param value value of the new param
    */
   void setTrackParam(std::string var,int value);
-  /**
-   * @brief SetDetectionParamFromXml set detection param from a xml file
-   */
-  void setDetectionParamFromXml();
-
-  /**
-   * @brief SetTrackParamFromXml set track param from a xml file
-   */
-  void setTrackParamFromXml();
-  /**
-   * @brief savePositionParam save all param of PositionProcessing into xml file
-   */
-  void savePositionParam();
 
   /**
    * @brief    Gets the corrected debug frame.

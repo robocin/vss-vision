@@ -7,7 +7,6 @@
 #define FIELDWIDTH 170
 #define FIELDHEIGHT 130
 
-#define FIELDLIMITSPATH "Config/fieldLimits.json"
 class WarpCorrection : public ImageProcessing {
  public:
   /**
