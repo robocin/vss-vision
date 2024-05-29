@@ -12,10 +12,3 @@ sudo apt install libopencv-dev -y
 
 # Install OpenGL + FreeGLUT3
 sudo apt install freeglut3-dev -y
-
-# Install QT5
-sudo apt install qtbase5-dev -y
-
-# Intall Protobuf
-sudo apt install libprotobuf -y
-sudo apt install protobuf-compiler -y

@@ -2,7 +2,6 @@ FROM ubuntu:22.04
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
-    qtbase5-dev \
     build-essential \
     pkg-config \
     zip \
@@ -11,9 +10,22 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libsfml-dev \
     libopencv-dev \
     freeglut3-dev \
-    protobuf-compiler \
     libprotobuf-dev \ 
-    cmake
+    cmake \
+    python3 \
+    libpython3-dev \
+    python3-dev \
+    python3-pip \
+
+RUN cd /usr/local/src \
+    && wget https://github.com/pybind/pybind11/archive/refs/tags/v2.12.0.tar.gz \
+    && tar xvf v2.12.0.tar.gz \
+    && cd pybind11-2.12.0 \
+    && mkdir build \
+    && cd build \
+    && cmake .. \
+    && make \
+    && make install
 
 COPY . /opt/vss-vision
 

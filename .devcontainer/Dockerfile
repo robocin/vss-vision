@@ -15,4 +15,4 @@ RUN if [ "${REINSTALL_CMAKE_VERSION_FROM_SOURCE}" != "none" ]; then \
 
 # [Optional] Uncomment this section to install additional packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends qtbase5-dev libsfml-dev libopencv-dev freeglut3-dev protobuf-compiler libprotobuf-dev
+    && apt-get -y install --no-install-recommends libsfml-dev libopencv-dev freeglut3-dev
