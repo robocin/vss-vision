@@ -5,10 +5,10 @@ if [ $# -eq 0 ]
 then
 	# No camera id argument supplied
 	echo "running with no attached camera"
-	docker run --rm	 -v vss-vision-config:/opt/vss-vision/src/Config  -v /tmp/.X11-unix:/tmp/.X11-unix  -e DISPLAY=$DISPLAY  --network=host  vss-vision 
+	docker run --rm	-v /tmp/.X11-unix:/tmp/.X11-unix  -e DISPLAY=$DISPLAY  --network=host  vss-vision 
 else
 	echo "setting camera /dev/video$1"
 	# Camera id argument supplied
-	docker run --rm --device=/dev/video$1:/dev/video0 -v vss-vision-config:/opt/vss-vision/src/Config -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY --network=host vss-vision
+	docker run --rm --device=/dev/video$1:/dev/video0 -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY --network=host vss-vision
 fi
 xhost -
