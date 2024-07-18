@@ -1404,8 +1404,11 @@ void MaggicSegmentation::doDetails() {
     if (this->mouseDrag) {
         if (dragpivotId != -1) {
           //std::cout << "dragging " << dragpivotId << std::endl;
-          int theX = std::max(colorFrame.x+1,std::min(colorFrame.x + colorFrame.width-2, this->cursorPos.x));
-          cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,0),2);
+          int pivotX = std::max(colorFrame.x+1,std::min(colorFrame.x + colorFrame.width-2, this->cursorPos.x));
+          int hueX = pivotX - colorFrame.x-3;
+          float newHue = static_cast<float>(hueX)*255.0f/static_cast<float>(colorFrame.width);
+          cv::line(this->_detailsFrame,cv::Point(pivotX,colorFrame.y+1),cv::Point(pivotX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,0),2);
+          cv::putText(this->_detailsFrame,std::to_string(newHue),cv::Point(pivotX+2,colorFrame.y+20),cv::FONT_HERSHEY_SIMPLEX,0.5,cv::Scalar(255,255,255));
         }
         if (this->enableFilter && firstPress.x > -1) {
             static int mx = colorFrame.x,
@@ -1504,7 +1507,10 @@ void MaggicSegmentation::doDetails() {
       //std::cout << "hover" << std::endl;
       if (pivotId != -1 && this->dragpivotId == -1) {
         int theX = static_cast<int>(static_cast<float>(this->hueList[static_cast<size_t>(pivotId)].first*colorFrame.width)/255.0f + static_cast<float>(colorFrame.x) + 3);
-        cv::line(this->_detailsFrame,cv::Point(theX,colorFrame.y+1),cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,255),2);
+        cv::Point pos = cv::Point(theX,colorFrame.y+1);
+        int hue = this->hueList[static_cast<size_t>(pivotId)].first;
+        cv::line(this->_detailsFrame,pos,cv::Point(theX,colorFrame.y+colorFrame.height-2), cv::Scalar(0,255,255),2);
+        cv::putText(this->_detailsFrame,std::to_string(hue),cv::Point(theX+2,colorFrame.y+20),cv::FONT_HERSHEY_SIMPLEX,0.5,cv::Scalar(255,255,255));
       }
 
 
