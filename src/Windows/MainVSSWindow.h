@@ -6,6 +6,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QKeyEvent>
+#include <QInputDialog>
 #include <QMainWindow>
 #include <QMessageBox>
 #include "GameInfo/GameInfo.h"
@@ -19,6 +20,8 @@
 #include "maggicsegmentationdialog.h"
 #include "visionconfigdialog.h"
 #include "Network/Network.h"
+#include "Utils/RecordingSettingsDialog.h"
+
 
 #define SECONDARY_COLOR_FILE "Config/SecondaryColor.json"
 #define HALF_FILE "Config/Half.json"
@@ -41,6 +44,8 @@ class MainVSSWindow : public QMainWindow {
   void on_capturePushButton_clicked();
 
   void on_cutFieldPushButton_clicked();
+
+  void on_recordPushButton_clicked();
 
   void on_visionInitPushButton_clicked();
 
@@ -115,6 +120,7 @@ private:
   int m_half;
 
   cv::Mat m_currentFrame;
+  cv::Mat m_rawFrame;
   cv::Point m_limitPoints[4];
 
   QString m_videoFileName;
@@ -132,6 +138,7 @@ private:
   QLabel *m_visionTimer;
 
   std::mutex m_currentFrameLocker;
+  std::mutex m_rawFrameLocker;
 
   QJsonObject _mainWindowConfig;
 
