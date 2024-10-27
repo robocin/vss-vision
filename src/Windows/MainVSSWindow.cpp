@@ -445,6 +445,9 @@ void MainVSSWindow::startVideoRecording() {
       }
 
       QDir().mkdir("../recordings");
+      QFile("../recordings").setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+                                          QFile::ReadGroup | QFile::ExeGroup |
+                                          QFile::ReadOther | QFile::ExeOther);
       this->m_savedVideofileName = "../recordings/" + videoFileName + ".mp4";
 
       std::cout << "Saving video to: " << this->m_savedVideofileName.toStdString() << std::endl;
