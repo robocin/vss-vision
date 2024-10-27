@@ -176,6 +176,8 @@ void MainVSSWindow::update() {
     selectCorrectFrame();
     setCameraFrame();
     record();
+  }else{
+    this->m_videoRecordManager.release();   
   }
 
   double visionTime = Vision::singleton().getVisionRunTime();
@@ -443,14 +445,14 @@ void MainVSSWindow::startVideoRecording() {
       }
 
       QDir().mkdir("../recordings");
-      this->m_savedVideofileName = "../recordings/" + videoFileName + ".avi";
+      this->m_savedVideofileName = "../recordings/" + videoFileName + ".mp4";
 
       std::cout << "Saving video to: " << this->m_savedVideofileName.toStdString() << std::endl;
 
       if (!this->m_savedVideofileName.isEmpty()) {
           this->m_videoRecordManager.open(
               this->m_savedVideofileName.toStdString(),
-              cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), fps,
+              cv::VideoWriter::fourcc('H', '2', '6', '4'), fps,
               cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
       }
 

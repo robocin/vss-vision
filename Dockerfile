@@ -11,6 +11,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libsfml-dev \
     libopencv-dev \
     freeglut3-dev \
+    libx264-dev \
     protobuf-compiler \
     libprotobuf-dev \ 
     cmake

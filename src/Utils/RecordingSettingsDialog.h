@@ -21,8 +21,8 @@ public:
         formLayout->addRow("Título da gravação:", videoNameLineEdit);
 
         fpsSpinBox = new QSpinBox;
-        fpsSpinBox->setRange(1, 120);
-        fpsSpinBox->setValue(60); // Default value
+        fpsSpinBox->setRange(1, 30);
+        fpsSpinBox->setValue(30); // Default value
         formLayout->addRow("FPS:", fpsSpinBox);
 
         QHBoxLayout *buttonLayout = new QHBoxLayout;
