@@ -24,6 +24,7 @@ bin/
 
 #All logging files (including rotative)
 src/Log/*
+recordings/
 
 #Only executions logs
 #src/Log/vision/executions/*
