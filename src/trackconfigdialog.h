@@ -42,6 +42,20 @@ private slots:
    */
   void on_verticalSlider__MaxSize_valueChanged(int value);
 
+    /**
+   * @brief    update the display of minTeamSize
+   *
+   * @param[in]  value  The new value of minTeamSize
+   */
+  void on_verticalSlider__MinTeamSize_valueChanged(int value);
+
+  /**
+   * @brief    update the display of maxTeamSize
+   *
+   * @param[in]  value  The new value of maxTeamSize
+   */
+  void on_verticalSlider__MaxTeamSize_valueChanged(int value);
+
   /**
    * @brief    update the display of minSizeBall
    *

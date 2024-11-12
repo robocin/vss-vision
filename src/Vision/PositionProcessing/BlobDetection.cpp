@@ -99,7 +99,8 @@ void BlobDetection::findBlobs(cv::Mat& debugFrame) {
 
       if(r.parent == -1) {
          if(Utils::between(r.areaBlob, this->_minSize, this->_maxSize - this->_minSize) ||
-            (r.color == OrangeCOL && Utils::between(r.areaBlob, this->_minSizeBall, this->_maxSizeBall - this->_minSizeBall)) ) {
+            (r.color == OrangeCOL && Utils::between(r.areaBlob, this->_minSizeBall, this->_maxSizeBall - this->_minSizeBall)) ||
+            ((r.color == BlueCOL || r.color == YellowCOL) && Utils::between(r.areaBlob, this->_minTeamSize, this->_maxTeamSize - this->_minTeamSize)) ) {
 
           cor = this->_runs[i][j].color;
 

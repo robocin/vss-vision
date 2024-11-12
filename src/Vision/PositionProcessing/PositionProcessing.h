@@ -35,6 +35,8 @@
 #define MAXSIZE "maxSize"
 #define MINSIZEBALL "minSizeBall"
 #define MAXSIZEBALL "maxSizeBall"
+#define MINTEAMSIZE "minTeamSize"
+#define MAXTEAMSIZE "maxTeamSize"
 #define BLOBMAXDIST "blobMaxDist"
 #define MYTEAM "myTeam"
 #define ENEMYTEAM "enemyTeam"
@@ -315,7 +317,7 @@ protected:
   int _colorIndex[NUMBEROFCOLOR];
   enum enemy{Nothing,Primary,Secundary,Both};
   int _teamColor;
-  int _minSize, _maxSize, _minSizeBall, _maxSizeBall, _blobMaxDist, _teamId, _enemyTeam , _enemySearch, _showElement;
+  int _minSize, _maxSize, _minTeamSize, _maxTeamSize, _minSizeBall, _maxSizeBall, _blobMaxDist, _teamId, _enemyTeam , _enemySearch, _showElement;
   KalmanFilter _kalmanFilterRobots[2][MAX_ROBOT_ID];
   KalmanFilter _dirFilteRobots[2][MAX_ROBOT_ID];
   KalmanFilter _kalmanFilterBall[1][1];

@@ -390,6 +390,14 @@ void PositionProcessing::setUp(std::string var, int value)
   {
     this->_maxSizeBall = value;
   }
+  else if(var == MINTEAMSIZE)
+  {
+    this->_minTeamSize = value;
+  }
+  else if(var == MAXTEAMSIZE)
+  {
+    this->_maxTeamSize = value;
+  }
   else if(var == BLOBMAXDIST)
   {
     this->_blobMaxDist = value;

@@ -58,6 +58,19 @@ void TrackConfigDialog::on_verticalSlider__MaxSize_valueChanged(int value)
   this->setIntoPossitionProcessing(MAXSIZE,value);
 }
 
+void TrackConfigDialog::on_verticalSlider__MinTeamSize_valueChanged(int value)
+{
+  this->ui->label_MinTeamSize->setText(QString::number(value));
+  this->setIntoPossitionProcessing(MINTEAMSIZE,value);
+}
+
+void TrackConfigDialog::on_verticalSlider__MaxTeamSize_valueChanged(int value)
+{
+  this->ui->label_MaxTeamSize->setText(QString::number(value));
+  this->setIntoPossitionProcessing(MAXTEAMSIZE,value);
+}
+
+
 void TrackConfigDialog::on_verticalSlider__MinSizeBall_valueChanged(int value)
 {
   this->ui->label_MinBall->setText(QString::number(value));
@@ -85,6 +98,10 @@ void TrackConfigDialog::readXML()
   this->on_verticalSlider__MinSize_valueChanged((int)node[MINSIZE]);
   this->ui->verticalSlider__MaxSize->setValue((int)node[MAXSIZE]);
   this->on_verticalSlider__MaxSize_valueChanged((int)node[MAXSIZE]);
+  this->ui->verticalSlider__MaxTeamSize->setValue((int)node[MAXTEAMSIZE]);
+  this->on_verticalSlider__MaxTeamSize_valueChanged((int)node[MAXTEAMSIZE]);
+  this->ui->verticalSlider__MinTeamSize->setValue((int)node[MINTEAMSIZE]);
+  this->on_verticalSlider__MinTeamSize_valueChanged((int)node[MINTEAMSIZE]);
   this->ui->verticalSlider__MinSizeBall->setValue((int)node[MINSIZEBALL]);
   this->on_verticalSlider__MinSizeBall_valueChanged((int)node[MINSIZEBALL]);
   this->ui->verticalSlider__MaxSizeBall->setValue((int)node[MAXSIZEBALL]);
