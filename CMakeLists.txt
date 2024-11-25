@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.16)
 
 project(VSS-VISION)
 
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64")
+    set(CMAKE_OSX_ARCHITECTURES "arm64")
+endif()
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -9,6 +13,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/src")
+
 
 set(SOURCES
     src/main.cpp
@@ -126,5 +131,17 @@ target_link_libraries(${PROJECT_NAME} TBB::tbb)
 
 find_package(SFML REQUIRED COMPONENTS network system)
 target_link_libraries(${PROJECT_NAME} sfml-network sfml-system)
+
+find_package(nlohmann_json 3.2.0 REQUIRED)
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
+
+# Problems with arm64 needs to install absl
+find_package(absl REQUIRED)
+target_link_libraries(
+    ${PROJECT_NAME}
+    absl::log_internal_message
+    absl::log_internal_check_op
+    absl::status
+)
 
 target_link_libraries(${PROJECT_NAME} ${Protobuf_LIBRARIES})
