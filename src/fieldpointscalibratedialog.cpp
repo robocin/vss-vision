@@ -119,30 +119,32 @@ void FieldPointsCalibrateDialog::updateFrame() {
 }
 
 void FieldPointsCalibrateDialog::getPointsFromFile(std::string path) {
-  QFile file(QString::fromStdString(path));
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        std::cout << "failed to open file: " << path << std::endl;
+        exit(1);
+    }
 
-  if (!file.open((QIODevice::ReadOnly))) {
-    std::cout << "failed to open file : " << FIELDLIMITSPATH << std::endl;
-    exit(1);
-  }
+    std::string content((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
 
-  QByteArray jsonFile = file.readAll();
+    nlohmann::json pointsJson;
+    if (content.empty()) {
+      std::cerr << "The file is empty: " << path << std::endl;
+    }else pointsJson = nlohmann::json::parse(content);
+    file.close();
 
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
+    std::string pointString = "point";
 
-  QJsonObject pointsJson = loadDoc.object();
-  std::string pointString = "point";
+    for (int i = 1; i <= 4; i++) {
+        std::string tempKey = pointString + std::to_string(i);
+        auto& value = pointsJson[tempKey];
+        std::cout << "fieldPoint" << std::endl;
+        _limitPoints[i - 1].x = value["x"].get<int>();
+        _limitPoints[i - 1].y = value["y"].get<int>();
+    }
 
-  QJsonObject value;
-
-  for (int i = 1; i <= 4; i++) {
-    std::string tempKey = pointString + std::to_string(i);
-    value = pointsJson[tempKey.c_str()].toObject();
-    _limitPoints[i - 1].x = value["x"].toInt();
-    _limitPoints[i - 1].y = value["y"].toInt();
-  }
-
-  file.close();
+    file.close();
 }
 
 void FieldPointsCalibrateDialog::drawPoints() {
@@ -167,31 +169,26 @@ void FieldPointsCalibrateDialog::drawPoints() {
 }
 
 void FieldPointsCalibrateDialog::on_buttonBox_accepted() {
-  QFile file(QString::fromStdString(FIELDLIMITSPATH));
-
-  if (!file.open(
-          (QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
-    std::cout << "failed to open file : " << FIELDLIMITSPATH << std::endl;
-    exit(1);
+  std::ofstream file(FIELDLIMITSPATH, std::ios::out | std::ios::trunc);
+  if (!file.is_open()) {
+      std::cout << "failed to open file: " << FIELDLIMITSPATH << std::endl;
+      exit(1);
   }
 
   std::string pointString = "point";
 
-  QJsonObject value;
+  nlohmann::json value;
+
   for (int i = 1; i <= 4; i++) {
-    std::string tempKey = pointString + std::to_string(i);
-    QJsonObject pair;
-    pair.insert("x", _limitPoints[i - 1].x);
-    pair.insert("y", _limitPoints[i - 1].y);
-    value[tempKey.c_str()] = pair;
+      std::string tempKey = pointString + std::to_string(i);
+      nlohmann::json pair;
+      pair["x"] = _limitPoints[i - 1].x;
+      pair["y"] = _limitPoints[i - 1].y;
+      value[tempKey] = pair;
   }
 
-  QJsonDocument saveDoc(value);
 
-  QString temp(saveDoc.toJson(QJsonDocument::Compact));
-
-  file.write(saveDoc.toJson());
-
+  file << value.dump(4);
   file.close();
 }
 

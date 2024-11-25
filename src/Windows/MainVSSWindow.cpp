@@ -31,6 +31,8 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
     }
   }
 
+  // QTimer::singleShot(0, this, SLOT(showFullScreen()));
+
   rebuildRobotsScrollArea();
   connect(m_mainWindowFrameTimer, SIGNAL(timeout()), this, SLOT(update()));
   m_mainWindowFrameTimer->start(30);
@@ -57,12 +59,13 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
   std::vector<int> cameraListAux =
     CameraManager::singleton().returnCameraList();
 
+
   for (size_t i = 0; i < cameraListAux.size(); i++) {
     this->m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
   }
-
-  this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
-  CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
+  auto camId = this->_mainWindowConfig["camIdx"].get<std::string>();
+  this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(std::stoi(camId)));
+  CameraManager::singleton().setCameraIndex(std::stoi(camId));
 
   this->m_maggicSegmentationDialog = new MaggicSegmentationDialog();
   initColors();
@@ -71,24 +74,28 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
 }
 
 void MainVSSWindow::initColors() {
-  QFile file(SECONDARY_COLOR_FILE);
-
-  if (!file.open(QIODevice::ReadOnly)) {
-    std::cout << "Couldn't open file : " << SECONDARY_COLOR_FILE << std::endl;
-    exit(1);
+  auto path = std::string(std::string(SECONDARY_COLOR_FILE));
+  std::ifstream file(path); 
+  if (!file.is_open()) {
+      std::cout << "Couldn't open file : " << path << std::endl;
+      exit(1);
   }
+  std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-  QByteArray data = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(data));
-  m_secondaryColorJson = loadDoc.object();
-  int teamLabel = m_secondaryColorJson[TEAM_LABEL].toInt();
-  // printf("team Label %d\n", teamLabel);
+  if (content.empty()) {
+    std::cerr << "The file is empty: " << path << std::endl;
+  }else m_secondaryColorJson = nlohmann::json::parse(content);
+
+  file.close();
+
+  int teamLabel = m_secondaryColorJson[TEAM_LABEL].get<int>();
+
   if (teamLabel == 0) {
-    this->on_primaryColor_clicked(false);
-    Vision::singleton().setTeamColor(Color::BLUE);
+      this->on_primaryColor_clicked(false);
+      Vision::singleton().setTeamColor(Color::BLUE);
   } else {
-    this->on_primaryColor_clicked(true);
-    Vision::singleton().setTeamColor(Color::YELLOW);
+      this->on_primaryColor_clicked(true);
+      Vision::singleton().setTeamColor(Color::YELLOW);
   }
 
   this->m_ui->primaryColor->setChecked(teamLabel);
@@ -490,20 +497,31 @@ void MainVSSWindow::on_primaryColor_clicked(bool checked) {
 }
 
 void MainVSSWindow::saveColorFile() {
-  QFile file(QString::fromStdString(SECONDARY_COLOR_FILE));
-
-  if (!file.open(
-        (QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
-    std::cout << "failed to open file : " << SECONDARY_COLOR_FILE << std::endl;
-    exit(1);
+  auto path = std::string(SECONDARY_COLOR_FILE);
+ std::ifstream file(path);
+  if (!file.is_open()) {
+      std::cout << "failed to open file : " << path << std::endl;
+      exit(1);
   }
 
-  QByteArray jsonFile = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
-  m_secondaryColorJson = loadDoc.object();
+  std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+  if (content.empty()) {
+    std::cerr << "The file is empty: " << path << std::endl;
+  } else m_secondaryColorJson = nlohmann::json::parse(content);
+
+  file.close(); 
+
   m_secondaryColorJson[TEAM_LABEL] = m_ui->primaryColor->isChecked() ? 1 : 0;
-  QJsonDocument saveDoc(m_secondaryColorJson);
-  file.write(saveDoc.toJson());
+
+  std::ofstream outFile(path);
+  if (!outFile.is_open()) {
+      std::cout << "failed to open file for writing : " << path << std::endl;
+      exit(1);
+  }
+
+  outFile << m_secondaryColorJson.dump(4);
+  outFile.close();
 }
 
 bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
@@ -519,8 +537,8 @@ bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
         m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
       }
 
-      this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
-      CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
+      this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].get<int>()));
+      CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].get<int>());
 
 
       listSize = cameraListAux.size();
@@ -599,86 +617,104 @@ void MainVSSWindow::rebuildRobotsScrollArea() {
 }
 
 void MainVSSWindow::getPointsFromFile() {
-  QFile file(QString::fromStdString(FIELDLIMITSPATH));
-
-  if (!file.open((QIODevice::ReadOnly))) {
-    std::cout << "failed to open file : " << FIELDLIMITSPATH << std::endl;
-    exit(1);
+  auto path = std::string(FIELDLIMITSPATH);
+  std::ifstream file(path);
+  if (!file.is_open()) {
+      std::cout << "failed to open file : " << path << std::endl;
+      exit(1);
   }
 
-  QByteArray jsonFile = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
-  QJsonObject pointsJson = loadDoc.object();
-  std::string pointString = "point";
-  QJsonObject value;
+  std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-  for (int i = 1; i <= 4; i++) {
-    std::string tempKey = pointString + std::to_string(i);
-    value = pointsJson[tempKey.c_str()].toObject();
-    m_limitPoints[i - 1].x = value["x"].toInt();
-    m_limitPoints[i - 1].y = value["y"].toInt();
-  }
+  nlohmann::json pointsJson;
+  if (content.empty()) {
+    std::cerr << "The file is empty: " << path << std::endl;
+  } else pointsJson = nlohmann::json::parse(content);
 
   file.close();
+
+  std::string pointString = "point";
+
+  for (int i = 1; i <= 4; i++) {
+      std::string tempKey = pointString + std::to_string(i);
+      auto& value = pointsJson[tempKey];
+      m_limitPoints[i - 1].x = value["x"].get<int>();
+      m_limitPoints[i - 1].y = value["y"].get<int>();
+  }
 }
 
 void MainVSSWindow::savePointsToFile() {
-  QFile file(QString::fromStdString(FIELDLIMITSPATH));
-
-  if (!file.open(
-        (QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
-    std::cout << "failed to open file : " << FIELDLIMITSPATH << std::endl;
-    exit(1);
+  auto path = std::string(FIELDLIMITSPATH);
+ std::ofstream file(path);
+  if (!file.is_open()) {
+      std::cout << "failed to open file : " << path << std::endl;
+      exit(1);
   }
 
   std::string pointString = "point";
-  QJsonObject value;
+  nlohmann::json value;
 
   for (int i = 1; i <= 4; i++) {
-    std::string tempKey = pointString + std::to_string(i);
-    QJsonObject pair;
-    pair.insert("x", m_limitPoints[i - 1].x);
-    pair.insert("y", m_limitPoints[i - 1].y);
-    value[tempKey.c_str()] = pair;
+      std::string tempKey = pointString + std::to_string(i);
+      nlohmann::json pair;
+      pair["x"] = m_limitPoints[i - 1].x;
+      pair["y"] = m_limitPoints[i - 1].y;
+      value[tempKey] = pair;
   }
 
-  QJsonDocument saveDoc(value);
-  QString temp(saveDoc.toJson(QJsonDocument::Compact));
-  file.write(saveDoc.toJson());
+  file << value.dump(4);
   file.close();
 }
 
 void MainVSSWindow::getHalfFromFile() {
-  QFile file(QString::fromStdString(HALF_FILE));
-
-  if (!file.open((QIODevice::ReadOnly))) {
-    std::cout << "failed to open file : " << HALF_FILE << std::endl;
-    exit(1);
+  auto path = std::string(HALF_FILE);
+  std::ifstream file(path);
+  if (!file.is_open()) {
+      std::cout << "failed to open file : " << path << std::endl;
+      exit(1);
   }
 
-  QByteArray jsonFile = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
-  QJsonObject halfJson = loadDoc.object();
-  vss.setHalf(halfJson["half"].toInt());
+  std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+  nlohmann::json halfJson;
+  if (content.empty()) {
+    std::cerr << "The file is empty: " << path << std::endl;
+  } else halfJson = nlohmann::json::parse(content);
+
   file.close();
+
+  if (halfJson.contains("half"))
+    vss.setHalf(halfJson["half"].get<int>());
+  else vss.setHalf(0);
 }
 
 void MainVSSWindow::saveHalf() {
-  QFile file(QString::fromStdString(HALF_FILE));
-
-  if (!file.open(
-        (QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))) {
-    std::cout << "failed to open file : " << HALF_FILE << std::endl;
-    exit(1);
+  auto path = std::string(HALF_FILE);
+  std::ifstream file(path);
+  if (!file.is_open()) {
+      std::cout << "failed to open file : " << path << std::endl;
+      exit(1);
   }
 
-  QByteArray jsonFile = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
-  QJsonObject halfJson = loadDoc.object();
-  halfJson["half"] = vss.getHalf();
-  QJsonDocument saveDoc(halfJson);
-  file.write(saveDoc.toJson());
+  std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
+  nlohmann::json halfJson;
+  if (content.empty()) {
+    std::cerr << "The file is empty: " << path << std::endl;
+  } else halfJson = nlohmann::json::parse(content);
+  
   file.close();
+
+  halfJson["half"] = vss.getHalf();
+
+  std::ofstream outFile(HALF_FILE, std::ios::out | std::ios::trunc);
+  if (!outFile.is_open()) {
+      std::cout << "failed to open file for writing : " << HALF_FILE << std::endl;
+      exit(1);
+  }
+
+  outFile << halfJson.dump(4);
+  outFile.close();
 }
 
 void MainVSSWindow::mirrorLimitPoints() {
@@ -751,28 +787,33 @@ void MainVSSWindow::on_stopButton_clicked()
    Network::buttonsMessageStop();
 }
 
-void MainVSSWindow::readMainWindowConfig()
-{
-    QFile loadFile("./config.json");
-    if (!loadFile.open(QIODevice::ReadOnly)) {
-        std::cout <<  "Couldn't open config file ./config.json" << std::endl;
-        return ;
-      }
-   QByteArray savedData = loadFile.readAll();
-   QJsonDocument loadDoc(QJsonDocument::fromJson(savedData));
-   this->_mainWindowConfig = loadDoc.object();
+void MainVSSWindow::readMainWindowConfig() {
+  auto path = "./config.json";
+  std::ifstream loadFile(path);
+  if (!loadFile.is_open()) {
+      std::cout <<  "Couldn't open config file ./config.json" << std::endl;
+      return;
+  }
+  std::string content((std::istreambuf_iterator<char>(loadFile)), std::istreambuf_iterator<char>());
 
+  if (content.empty()) {
+    std::cerr << "The file is empty: " << path << std::endl;
+  }else this->_mainWindowConfig = nlohmann::json::parse(content);
+
+  std::cout << "Config file loaded: " << this->_mainWindowConfig << std::endl;
+  
+  loadFile.close();
 }
 
-void MainVSSWindow::saveMainWindowConfig()
-{
-    // Create save file
-    QFile saveFile("./config.json");
-    if (!saveFile.open(QIODevice::WriteOnly)) {
-     std::cout << "Couldn't open save file." << std::endl;
-     return ;
-    }
-    this->_mainWindowConfig["camIdx"] = this->m_ui->cameraIndexComboBox->currentText();
-    QJsonDocument saveDoc(this->_mainWindowConfig);
-    saveFile.write(saveDoc.toJson());
+void MainVSSWindow::saveMainWindowConfig() {
+  auto path = "./config.json";
+  std::ofstream saveFile(path);
+  if (!saveFile.is_open()) {
+      std::cout << "Couldn't open save file." << std::endl;
+      return;
+  }
+
+  this->_mainWindowConfig["camIdx"] = m_ui->cameraIndexComboBox->currentText().toStdString();
+  saveFile << this->_mainWindowConfig.dump(4);
+  saveFile.close();
 }

@@ -36,7 +36,7 @@ SegmentationConfigDialog::SegmentationConfigDialog(const bool videoFlag,
     this->_visibleColors[i] = true;
   }
 
-  this->readFromFile();
+  // this->readFromFile();
   this->attSliders();
   this->_click = false;
   this->initList();
@@ -61,59 +61,59 @@ SegmentationConfigDialog::~SegmentationConfigDialog() {
   delete ui;
 }
 
-void SegmentationConfigDialog::readFromFile() {
-  QFile file(QString::fromStdString(FileConstants::segmentationConfig));
+// void SegmentationConfigDialog::readFromFile() {
+//   QFile file(QString::fromStdString(FileConstants::segmentationConfig));
 
-  if (!file.open(QIODevice::ReadOnly)) {
-    std::cout << "failed to open file : " << FileConstants::segmentationConfig
-              << std::endl;
-    exit(1);
-  }
+//   if (!file.open(QIODevice::ReadOnly)) {
+//     std::cout << "failed to open file : " << FileConstants::segmentationConfig
+//               << std::endl;
+//     exit(1);
+//   }
 
-  QByteArray jsonFile = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
-  QJsonObject json = loadDoc.object();
-  this->_grayTrashHoldLevel = json[GRAY_SCALE].toInt();
-  QJsonObject value;
-  for (int i = 0; i < NUMBEROFCOLOR; i++) {
-    std::string key = this->_colorLabels[i];
-    value = json[key.c_str()].toObject();
-    this->setup(i, value[YMINLABEL].toInt(), value[UMINLABEL].toInt(),
-                value[VMINLABEL].toInt(), value[YMAXLABEL].toInt(),
-                value[UMAXLABEL].toInt(), value[VMAXLABEL].toInt());
-  }
-}
+//   QByteArray jsonFile = file.readAll();
+//   QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
+//   QJsonObject json = loadDoc.object();
+//   this->_grayTrashHoldLevel = json[GRAY_SCALE].toInt();
+//   QJsonObject value;
+//   for (int i = 0; i < NUMBEROFCOLOR; i++) {
+//     std::string key = this->_colorLabels[i];
+//     value = json[key.c_str()].toObject();
+//     this->setup(i, value[YMINLABEL].toInt(), value[UMINLABEL].toInt(),
+//                 value[VMINLABEL].toInt(), value[YMAXLABEL].toInt(),
+//                 value[UMAXLABEL].toInt(), value[VMAXLABEL].toInt());
+//   }
+// }
 
-void SegmentationConfigDialog::saveInFile() {
-  QFile file(QString::fromStdString(FileConstants::segmentationConfig));
+// void SegmentationConfigDialog::saveInFile() {
+//   QFile file(QString::fromStdString(FileConstants::segmentationConfig));
 
-  if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate |
-                 QIODevice::Text)) {
-    std::cout << "failed to open file : " << FileConstants::segmentationConfig
-              << std::endl;
-    exit(1);
-  }
+//   if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate |
+//                  QIODevice::Text)) {
+//     std::cout << "failed to open file : " << FileConstants::segmentationConfig
+//               << std::endl;
+//     exit(1);
+//   }
 
-  QByteArray jsonFile = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
-  QJsonObject json = loadDoc.object();
-  for (int i = 0; i < NUMBEROFCOLOR; i++) {
-    std::string label = this->_colorLabels[i];
-    QJsonObject parameter;
-    parameter.insert(YMAXLABEL, this->_calibrationParameters[i].max.y);
-    parameter.insert(UMAXLABEL, this->_calibrationParameters[i].max.u);
-    parameter.insert(VMAXLABEL, this->_calibrationParameters[i].max.v);
-    parameter.insert(YMINLABEL, this->_calibrationParameters[i].min.y);
-    parameter.insert(UMINLABEL, this->_calibrationParameters[i].min.u);
-    parameter.insert(VMINLABEL, this->_calibrationParameters[i].min.v);
-    json[label.c_str()] = parameter;
-  }
+//   QByteArray jsonFile = file.readAll();
+//   QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
+//   QJsonObject json = loadDoc.object();
+//   for (int i = 0; i < NUMBEROFCOLOR; i++) {
+//     std::string label = this->_colorLabels[i];
+//     QJsonObject parameter;
+//     parameter.insert(YMAXLABEL, this->_calibrationParameters[i].max.y);
+//     parameter.insert(UMAXLABEL, this->_calibrationParameters[i].max.u);
+//     parameter.insert(VMAXLABEL, this->_calibrationParameters[i].max.v);
+//     parameter.insert(YMINLABEL, this->_calibrationParameters[i].min.y);
+//     parameter.insert(UMINLABEL, this->_calibrationParameters[i].min.u);
+//     parameter.insert(VMINLABEL, this->_calibrationParameters[i].min.v);
+//     json[label.c_str()] = parameter;
+//   }
 
-  json[GRAY_SCALE] = this->_grayTrashHoldLevel;
-  QJsonDocument saveDoc(json);
-  file.write(saveDoc.toJson());
-  file.close();
-}
+//   json[GRAY_SCALE] = this->_grayTrashHoldLevel;
+//   QJsonDocument saveDoc(json);
+//   file.write(saveDoc.toJson());
+//   file.close();
+// }
 
 void SegmentationConfigDialog::setup(int color, int minY, int minU, int minV,
                                      int maxY, int maxU, int maxV) {
@@ -159,7 +159,7 @@ void SegmentationConfigDialog::attSliders() {
 }
 
 void SegmentationConfigDialog::on_ParametersListWidget_clicked() {
-  this->readFromFile();
+  // this->readFromFile();
   this->attSliders();
 }
 
@@ -309,7 +309,7 @@ void SegmentationConfigDialog::on_selectColorComboBox_currentIndexChanged(
 }
 
 void SegmentationConfigDialog::on_buttonBox_accepted() {
-  this->saveInFile();
+  // this->saveInFile();
   Vision::singleton().resetSegmentation();
   this->_updateFrameTimer->stop();
 }
@@ -370,7 +370,7 @@ void SegmentationConfigDialog::on_saveSegmentationPushButton_clicked() {
     if (newSegmentationFile.right(4).toStdString() != ".xml") {
       this->_newSegmentationStdFile.append(".xml");
     }
-    this->saveInFile();
+    // this->saveInFile();
   }
 
   this->initList();

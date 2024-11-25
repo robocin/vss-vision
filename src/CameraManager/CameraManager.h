@@ -3,13 +3,9 @@
 
 #include <Timer/Timer.h>
 #include <QFile>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 #include <QMutex>
 #include <QProcess>
-#include <QRegExp>
+// #include <QRegExp>
 #include <QString>
 #include <QThread>
 #include <QTime>
@@ -22,6 +18,8 @@
 #include <vector>
 #include <mutex>
 #include "spdlog/spdlog.h"
+#include <nlohmann/json.hpp>
+#include <fstream>
 
 #define FRAME_WIDTH_DEFAULT 640
 #define FRAME_HEIGHT_DEFAULT 480

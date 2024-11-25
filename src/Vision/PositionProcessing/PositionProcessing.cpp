@@ -38,7 +38,10 @@ void PositionProcessing::matchBlobs(cv::Mat& debugFrame){
   Players allPlayers;
   allPlayers.insert(allPlayers.end(),teamA.begin(),teamA.end());
   allPlayers.insert(allPlayers.end(),teamB.begin(),teamB.end());
-  sort(allPlayers.begin(),allPlayers.end());
+
+  std::sort(allPlayers.begin(), allPlayers.end(), [](Player a, Player b) {
+    return a.id() < b.id();
+  });
 
   Entity ball;
   findBall(ball,debugFrame);
@@ -318,7 +321,10 @@ void PositionProcessing::filterTeam(Regions &regions) {
         r_regions.push_back(r_t.second);
     }
     // Sort them by first blob id
-    std::sort(r_regions.begin(),r_regions.end());
+    std::sort(r_regions.begin(), r_regions.end(), [](Region a, Region b) {
+      if (a.blobs.size() == 0 || b.blobs.size() == 0) return false;
+      return a.blobs[0].id < b.blobs[0].id;
+    });
 
     // Update regions with filtered blobs
     regions.assign(r_regions.begin(),r_regions.end());

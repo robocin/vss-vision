@@ -1,10 +1,6 @@
 #ifndef MAINVSSWINDOW_H
 #define MAINVSSWINDOW_H
 
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 #include <QKeyEvent>
 #include <QInputDialog>
 #include <QMainWindow>
@@ -21,6 +17,8 @@
 #include "visionconfigdialog.h"
 #include "Network/Network.h"
 #include "Utils/RecordingSettingsDialog.h"
+#include <nlohmann/json.hpp>
+#include <fstream>
 
 
 #define SECONDARY_COLOR_FILE "Config/SecondaryColor.json"
@@ -134,13 +132,13 @@ private:
   CameraConfigurationDialog* m_cameraDialog;
   MaggicSegmentationDialog* m_maggicSegmentationDialog;
 
-  QJsonObject m_secondaryColorJson;
+  nlohmann::json m_secondaryColorJson;
   QLabel *m_visionTimer;
 
   std::mutex m_currentFrameLocker;
   std::mutex m_rawFrameLocker;
 
-  QJsonObject _mainWindowConfig;
+  nlohmann::json _mainWindowConfig;
 
 protected:
   void keyPressEvent(QKeyEvent *e);

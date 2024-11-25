@@ -3,11 +3,9 @@
 
 #include "ImageProcessing.h"
 #include "Vision/ColorSpace.h"
+#include <nlohmann/json.hpp>
+#include <fstream>
 
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 
 #define FIELDWIDTH 170
 #define FIELDHEIGHT 130

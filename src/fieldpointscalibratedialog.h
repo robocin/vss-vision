@@ -7,14 +7,13 @@
 #include <CameraManager/CameraManager.h>
 #include <Vision/ImageProcessing/WarpCorrection.h>
 #include <QDir>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 #include <QMouseEvent>
 #include <QTimer>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <nlohmann/json.hpp>
+#include <fstream>
+
 
 #define YELLOW_SCALAR cv::Scalar(0, 255, 255)
 #define BLUE_SCALAR cv::Scalar(255, 0, 0)

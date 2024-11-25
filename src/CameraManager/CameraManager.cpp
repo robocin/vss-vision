@@ -444,7 +444,7 @@ int CameraManager::searchInRegex(std::string line, QString regexString) {
   int numberToReturn = 0;
   QRegExp rx(regexString);
   QString str = QString::fromStdString(line);
-  QStringList list;
+  QList<QString> list;
   int pos = 0;
 
   while ((pos = rx.indexIn(str, pos)) != -1) {
@@ -494,7 +494,7 @@ std::vector<int> CameraManager::returnCameraList() {
     if (line.find("/dev/video") != std::string::npos) {
       QRegExp rx("/dev/video(\\d+)");
       QString str = QString::fromStdString(line);
-      QStringList list;
+      QList<QString> list;
       int pos = 0;
 
       while ((pos = rx.indexIn(str, pos)) != -1) {
@@ -533,62 +533,67 @@ void CameraManager::saveVideoUrl() {
 }
 
 void CameraManager::loadAndApplyFile(std::string path) {
-  QFile file(QString::fromStdString(path));
-
-  if (!file.open(QIODevice::ReadOnly)) {
-    std::cout << "couldn't open file " << path << std::endl;
-    exit(1);
+  std::ifstream file(path);
+  if (!file.is_open()) {
+      std::cout << "Couldn't open file " << path << std::endl;
+      exit(1);
   }
-  std::cout << path << std::endl;
-  QByteArray jsonFile = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
-  QJsonObject json = loadDoc.object();
-  this->setWhiteBalanceAuto(json[WHITE_BALANCE_TEMPERATURE_AUTO].toInt());
-  this->setExposureAuto(json[EXPOSURE_AUTO].toInt());
-  this->setFocusAuto(json[FOCUS_AUTO].toInt());
-  this->setWhiteBalance(json[WHITE_BALANCE_TEMPERATURE].toInt());
-  this->setBacklightComp(json[BACKLIGHT].toInt());
-  this->setGain(json[GAIN].toInt());
-  this->setBrightness(json[BRIGHTNESS].toInt());
-  this->setExposureAbsolute(json[EXPOSURE_ABSOLUTE].toInt());
-  this->setSaturation(json[SATURATION].toInt());
-  this->setExposureAutoPriority(json[EXPOSURE_AUTO_PRIORITY].toInt());
-  this->setContrast(json[CONTRAST].toInt());
-  std::cout << json[BRIGHTNESS].toInt() << std::endl;
+
+  std::string content((std::istreambuf_iterator<char>(file)),
+                    std::istreambuf_iterator<char>());
+
+  nlohmann::json json;
+  if (content.empty()) {
+    std::cerr << "The file is empty: " << path << std::endl;
+  }else json = nlohmann::json::parse(content);
+  
+  this->setWhiteBalanceAuto(json[WHITE_BALANCE_TEMPERATURE_AUTO].get<int>());
+  this->setExposureAuto(json[EXPOSURE_AUTO].get<int>());
+  this->setFocusAuto(json[FOCUS_AUTO].get<int>());
+  this->setWhiteBalance(json[WHITE_BALANCE_TEMPERATURE].get<int>());
+  this->setBacklightComp(json[BACKLIGHT].get<int>());
+  this->setGain(json[GAIN].get<int>());
+  this->setBrightness(json[BRIGHTNESS].get<int>());
+  this->setExposureAbsolute(json[EXPOSURE_ABSOLUTE].get<int>());
+  this->setSaturation(json[SATURATION].get<int>());
+  this->setExposureAutoPriority(json[EXPOSURE_AUTO_PRIORITY].get<int>());
+  this->setContrast(json[CONTRAST].get<int>());
+
+  std::cout << json[BRIGHTNESS].get<int>() << std::endl;
 
   file.close();
 }
 
 void CameraManager::saveFile(std::string path) {
-  QFile file(QString::fromStdString(path));
-
-  if (!file.open(QIODevice::ReadWrite | QIODevice::Truncate |
-                 QIODevice::Text)) {
-    std::cout << "failed to open " << path << std::endl;
-    exit(1);
+  std::ifstream fileIn(path);
+  if (!fileIn.is_open()) {
+      std::cout << "failed to open " << path << std::endl;
+      exit(1);
   }
 
-  QByteArray jsonFile = file.readAll();
-  QJsonDocument loadDoc(QJsonDocument::fromJson(jsonFile));
-  QJsonObject json = loadDoc.object();
-  json.insert(WHITE_BALANCE_TEMPERATURE,
-              this->_whiteBalanceTemperatureAuto.currentValue);
-  json.insert(EXPOSURE_AUTO, this->_exposureAuto.currentValue);
-  json.insert(FOCUS_AUTO, this->_focusAuto.currentValue);
-  json.insert(WHITE_BALANCE_TEMPERATURE,
-              this->_whiteBalanceTemperature.currentValue);
-  json.insert(BACKLIGHT, this->_backlight.currentValue);
-  json.insert(GAIN, this->_gain.currentValue);
-  json.insert(BRIGHTNESS, this->_brightness.currentValue);
-  json.insert(EXPOSURE_ABSOLUTE, this->_exposureAbsolute.currentValue);
-  json.insert(SATURATION, this->_saturation.currentValue);
-  json.insert(EXPOSURE_AUTO_PRIORITY, this->_exposureAutoPriority.currentValue);
-  json.insert(CONTRAST, this->_contrast.currentValue);
-  QJsonDocument saveDoc(json);
+  nlohmann::json json;
+  fileIn >> json;
+  fileIn.close();
 
-  file.write(saveDoc.toJson());
+  json[WHITE_BALANCE_TEMPERATURE] = this->_whiteBalanceTemperatureAuto.currentValue;
+  json[EXPOSURE_AUTO] = this->_exposureAuto.currentValue;
+  json[FOCUS_AUTO] = this->_focusAuto.currentValue;
+  json[WHITE_BALANCE_TEMPERATURE] = this->_whiteBalanceTemperature.currentValue;
+  json[BACKLIGHT] = this->_backlight.currentValue;
+  json[GAIN] = this->_gain.currentValue;
+  json[BRIGHTNESS] = this->_brightness.currentValue;
+  json[EXPOSURE_ABSOLUTE] = this->_exposureAbsolute.currentValue;
+  json[SATURATION] = this->_saturation.currentValue;
+  json[EXPOSURE_AUTO_PRIORITY] = this->_exposureAutoPriority.currentValue;
+  json[CONTRAST] = this->_contrast.currentValue;
 
-  file.close();
+  std::ofstream fileOut(path, std::ios::out | std::ios::trunc);
+  if (!fileOut.is_open()) {
+      std::cout << "failed to open " << path << " for writing" << std::endl;
+      exit(1);
+  }
+  fileOut << json.dump(4);
+  fileOut.close();
 }
 
 void CameraManager::set60fps(bool want60fps) {

@@ -20,6 +20,8 @@
 #define ZOOM_ADJUST_X_MIN 0
 #define ZOOM_ADJUST_Y 30
 
+#include <nlohmann/json.hpp>
+#include <fstream>
 
 enum fileTypes {
   DefaultFile,
@@ -144,8 +146,8 @@ private:
                         BROWNLABEL,
                         COLORSTRANGELABEL };
 
-  void readFromFile();
-  void saveInFile();
+  // void readFromFile();
+  // void saveInFile();
   void setup(int color,int minY,int minU,int minV,int maxY,int maxU,int maxV);
   void attSliders();
   void setFrameOnScreen();

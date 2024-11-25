@@ -7,65 +7,56 @@ WarpCorrection::~WarpCorrection() {}
 void WarpCorrection::init(std::map<std::string, int>) {}
 
 void WarpCorrection::initFromFile(std::string path, cv::Point2d* convert) {
-  QFile file(QString::fromStdString(path));
-
-  if (!file.open(QIODevice::ReadOnly)) {
-    std::cout << "Couldn't open file : " << path << std::endl;
-    exit(1);
+  std::ifstream file(path);
+  if (!file.is_open()) {
+      std::cout << "Couldn't open file: " << path << std::endl;
+      exit(1);
   }
 
-  QByteArray data = file.readAll();
+  std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
-  QJsonDocument loadDoc(QJsonDocument::fromJson(data));
-
-  QJsonObject pointsJson = loadDoc.object();
-
-  std::string pointString = "point";
-
-  QJsonObject value;
-
-  this->_pointsLocker.lock();
-
-  for (int i = 1; i <= 4; i++) {
-    std::string tempKey = pointString + std::to_string(i);
-    value = pointsJson[tempKey.c_str()].toObject();
-    this->_correctionPoints[i - 1].x = value["x"].toInt();
-    this->_correctionPoints[i - 1].y = value["y"].toInt();
-  }
-
+  nlohmann::json pointsJson;
+  if (content.empty()) {
+    std::cerr << "The file is empty: " << path << std::endl;
+  }else pointsJson = nlohmann::json::parse(content);
+  
   file.close();
 
-  std::vector<cv::Point> boxPoints;
+  std::string pointString = "point";
+  
+  _pointsLocker.lock();
+  for (int i = 1; i <= 4; i++) {
+      std::string tempKey = pointString + std::to_string(i);
+      auto& value = pointsJson[tempKey];
+      _correctionPoints[i - 1].x = value["x"].get<int>();
+      _correctionPoints[i - 1].y = value["y"].get<int>();
+  }
+  _pointsLocker.unlock();
 
+  std::vector<cv::Point> boxPoints;
   for (int i = 0; i < 4; i++) {
-    boxPoints.push_back(_correctionPoints[i]);
+      boxPoints.push_back(_correctionPoints[i]);
   }
 
   cv::RotatedRect box = cv::minAreaRect(cv::Mat(boxPoints));
 
-  convert->x = (170.0 / ((float)box.boundingRect().width));
-  convert->y = (130.0 / ((float)box.boundingRect().height));
+  convert->x = (170.0 / static_cast<float>(box.boundingRect().width));
+  convert->y = (130.0 / static_cast<float>(box.boundingRect().height));
 
   cv::Point2f dstPoints[4];
-
   dstPoints[0] = cv::Point(0, 0);
   dstPoints[1] = cv::Point(0, box.boundingRect().height - 1);
-  dstPoints[2] =
-      cv::Point(box.boundingRect().width - 1, box.boundingRect().height - 1);
+  dstPoints[2] = cv::Point(box.boundingRect().width - 1, box.boundingRect().height - 1);
   dstPoints[3] = cv::Point(box.boundingRect().width - 1, 0);
 
-  this->_mapsLocker.lock();
+  _mapsLocker.lock();
 
-  this->_warpPespectiveMatrix =
-      cv::getPerspectiveTransform(_correctionPoints, dstPoints);
+  _warpPespectiveMatrix = cv::getPerspectiveTransform(_correctionPoints, dstPoints);
 
-  this->_matrixSize =
-      cv::Size(box.boundingRect().width, box.boundingRect().height);
+  _matrixSize = cv::Size(box.boundingRect().width, box.boundingRect().height);
 
-  this->defineMaps();
-
-  this->_mapsLocker.unlock();
-  this->_pointsLocker.unlock();
+  defineMaps();
+  _mapsLocker.unlock();
 }
 
 void WarpCorrection::defineMaps() {
