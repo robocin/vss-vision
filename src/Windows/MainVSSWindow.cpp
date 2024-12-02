@@ -537,9 +537,9 @@ bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
         m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
       }
 
-      this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].get<int>()));
-      CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].get<int>());
-
+      auto camId = this->_mainWindowConfig["camIdx"].get<std::string>();
+      this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(std::stoi(camId)));
+      CameraManager::singleton().setCameraIndex(std::stoi(camId));
 
       listSize = cameraListAux.size();
     }
