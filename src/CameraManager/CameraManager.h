@@ -20,9 +20,11 @@
 #include "spdlog/spdlog.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <QRegularExpression>
 
-#define FRAME_WIDTH_DEFAULT 640
-#define FRAME_HEIGHT_DEFAULT 480
+
+#define FRAME_WIDTH_DEFAULT 1280
+#define FRAME_HEIGHT_DEFAULT 720
 #define FRAME_WIDTH_HD_DEFAULT 1280
 #define FRAME_HEIGHT_HD_DEFAULT 720
 #define NO_ERROR_FRAME 0

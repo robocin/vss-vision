@@ -67,6 +67,8 @@ bool CameraManager::init(int cameraIndex) {
   }
 
   this->_capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+  this->_capture.set(cv::CAP_PROP_FRAME_WIDTH,FRAME_WIDTH_DEFAULT);
+  this->_capture.set(cv::CAP_PROP_FRAME_HEIGHT,FRAME_HEIGHT_DEFAULT);
 
   if (this->_frameWidth !=
           static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_WIDTH)) ||
@@ -154,17 +156,17 @@ void CameraManager::updateFrame() {
       this->_frameWidth = frame.cols;
       this->_frameHeight = frame.rows;
   }
-  if (this->_frameWidth == 1280 && this->_frameHeight == 720 &&
-      frame.rows == 720 && frame.cols == 1280) {
-    cv::Rect cropRectangle(213, 0, 854, 720);
+  // if (this->_frameWidth == 1280 && this->_frameHeight == 720 &&
+  //     frame.rows == 720 && frame.cols == 1280) {
+  //   cv::Rect cropRectangle(213, 0, 854, 720);
 
-    // Crop the full image to that image contained by the rectangle
-    // cropRectangle
-    cv::Mat croppedRef(frame, cropRectangle);
-    croppedRef.copyTo(frame);
-    cv::resize(frame, frame,
-               cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
-  }
+  //   // Crop the full image to that image contained by the rectangle
+  //   // cropRectangle
+  //   cv::Mat croppedRef(frame, cropRectangle);
+  //   croppedRef.copyTo(frame);
+  //   cv::resize(frame, frame,
+  //              cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
+  // }
 
   this->_cameraFrameLocker.lock();
   this->_currentFrame = frame;
@@ -480,35 +482,36 @@ int CameraManager::getCaptureFPS() {
 }
 
 std::vector<int> CameraManager::returnCameraList() {
-  std::vector<int> t;
-  std::string v4l2_command = " v4l2-ctl --list-devices";
-  this->_v4l2_process.start(v4l2_command.c_str());
-  this->_v4l2_process.waitForFinished(-1);
-  QString stdout = this->_v4l2_process.readAllStandardOutput();
-  std::string cameraDevicesString = stdout.toLocal8Bit().constData();
-  std::istringstream iss(cameraDevicesString);
-  std::string line;
-  int numberToReturn = 0;
+    std::vector<int> t;
+    std::string ffmpeg_command = "ffmpeg -hide_banner -list_devices true -f avfoundation -i dummy";
+    this->_v4l2_process.start(ffmpeg_command.c_str());
+    this->_v4l2_process.waitForFinished(-1);
 
-  while (std::getline(iss, line)) {
-    if (line.find("/dev/video") != std::string::npos) {
-      QRegExp rx("/dev/video(\\d+)");
-      QString str = QString::fromStdString(line);
-      QList<QString> list;
-      int pos = 0;
+    QString stderr_output = this->_v4l2_process.readAllStandardError(); // ffmpeg outputs device info to stderr
+    std::string cameraDevicesString = stderr_output.toStdString();
 
-      while ((pos = rx.indexIn(str, pos)) != -1) {
-        list << rx.cap(1);
-        pos += rx.matchedLength();
-      }
+    std::istringstream iss(cameraDevicesString);
+    std::string line;
 
-      std::stringstream ss;
-      ss << list.at(0).toLocal8Bit().constData();
-      ss >> numberToReturn;
-      t.push_back(numberToReturn);
+    while (std::getline(iss, line)) {
+        if (line.find("[AVFoundation audio devices:]") != std::string::npos) {
+            return t;
+        }
+        if (line.find("[AVFoundation video devices:]") != std::string::npos) {
+            continue;
+        }
+
+        if (line.find("[AVFoundation indev @") != std::string::npos && line.find("] [") != std::string::npos) {
+            QRegularExpression rx(R"(.*\]\s\[(\d+)\]\s.+)");
+            QRegularExpressionMatch match = rx.match(QString::fromStdString(line));
+            if (match.hasMatch()) {
+                int index = match.captured(1).toInt();
+                t.push_back(static_cast<int>(index)); // Adiciona o índice ao vetor
+            }
+        }
     }
-  }
-  return t;
+
+    return t;
 }
 
 QString CameraManager::getLastVideoUrl() {
