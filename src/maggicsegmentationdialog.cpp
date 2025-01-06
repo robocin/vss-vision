@@ -68,7 +68,6 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   connect(this->_updateFrameTimer,SIGNAL(timeout()),this,SLOT(updateFrame()));
   this->_updateFrameTimer->start(16);
 
-  this->maggicSegmentation->setFilterGrayThresholdValues(FILTER_GRAY_THRESHOLD_DEFAULT_MINIMUM,FILTER_GRAY_THRESHOLD_DEFAULT_MAXIMUM);
   this->maggicSegmentation->setDebugSelection(MaggicVisionDebugSelection_ExtremeSaturation);
   this->maggicSegmentation->setLearningThresholdFrames(static_cast<uint>(ui->learnSpinBox->value()));
 

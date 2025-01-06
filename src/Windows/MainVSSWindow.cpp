@@ -1,5 +1,7 @@
 #include "MainVSSWindow.h"
 #include "ui_MainVSSWindow.h"
+#include <cmath>
+#include <iostream>
 
 MainVSSWindow::MainVSSWindow(QWidget *parent)
   : QMainWindow(parent),
@@ -140,6 +142,10 @@ void MainVSSWindow::selectCorrectFrame() {
   } else {
     throw std::runtime_error("Invalid visualization option");
   }
+
+  this->m_rawFrameLocker.lock();
+  CameraManager::singleton().getCurrentFrame(m_rawFrame);
+  this->m_rawFrameLocker.unlock();
 }
 
 void MainVSSWindow::setCameraFrame() {
@@ -169,6 +175,9 @@ void MainVSSWindow::update() {
   if (m_isCaptureOpen) {
     selectCorrectFrame();
     setCameraFrame();
+    record();
+  }else{
+    this->m_videoRecordManager.release();   
   }
 
   double visionTime = Vision::singleton().getVisionRunTime();
@@ -240,7 +249,6 @@ void MainVSSWindow::on_capturePushButton_clicked() {
 
     if (openSucceeded) {
       this->m_firstTimeOpeningCamera = true;
-      this->m_isRecording = false;
       m_ui->calibrateFieldPointspushButton->setEnabled(true);
       m_ui->cameraConfigPushButton->setEnabled(true);
       m_ui->visionInitPushButton->setEnabled(true);
@@ -248,10 +256,6 @@ void MainVSSWindow::on_capturePushButton_clicked() {
       Vision::singleton().resetCorrection();
       if (m_ui->cutFieldPushButton->isChecked()) {
         this->on_cutFieldPushButton_clicked();
-      }
-
-      if (m_ui->recordPushButton->isChecked()) {
-        this->startVideoRecording();
       }
 
       m_isCaptureOpen = true;
@@ -275,13 +279,18 @@ void MainVSSWindow::on_capturePushButton_clicked() {
   } else {
     this->m_mainWindowFrameTimer->stop();
     this->m_isCaptureOpen = false;
+    this->m_isRecording = false;
     this->clearFrame();
+
+    this->m_videoRecordManager.release();
+    
     m_ui->visionInitPushButton->setEnabled(false);
     m_ui->visionConfigurePushButton->setEnabled(false);
     m_ui->calibrateFieldPointspushButton->setEnabled(false);
     m_ui->cameraConfigPushButton->setEnabled(false);
     m_ui->halfPushButton->setEnabled(false);
     m_ui->startAllPushButton->setChecked(false);
+    m_ui->recordPushButton->setChecked(false);
 
     if (m_ui->visionInitPushButton->isChecked()) {
       m_ui->visionInitPushButton->setChecked(false);
@@ -291,6 +300,18 @@ void MainVSSWindow::on_capturePushButton_clicked() {
     }
     emit enableVisionThread(false);
     emit pauseCameraUpdate();
+  }
+}
+
+void MainVSSWindow::on_recordPushButton_clicked(){
+  if (this->m_ui->recordPushButton->isChecked() && m_ui->capturePushButton->isChecked()) {
+    this->m_ui->recordPushButton->setChecked(true);
+    this->m_isRecording = true;
+    this->startVideoRecording();
+  } else {
+    this->m_ui->recordPushButton->setChecked(false);
+    this->m_isRecording = false;
+    this->m_videoRecordManager.release();
   }
 }
 
@@ -403,23 +424,55 @@ void MainVSSWindow::on_maggicSegmentationButton_clicked() {
 }
 
 void MainVSSWindow::record() {
-  if (!this->m_savedVideofileName.isEmpty()) {
-    this->m_videoRecordManager.open(
-      this->m_savedVideofileName.toStdString() + ".avi",
-      cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
-      cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
-    Vision::singleton().recordDeepLog();
+  if (this->m_videoRecordManager.isOpened()) {
+    cv::Mat frame;
+    this->m_rawFrameLocker.lock();
+    this->m_rawFrame.copyTo(frame);
+    this->m_rawFrameLocker.unlock();
+    this->m_videoRecordManager.write(frame);  
   }
 }
 
 void MainVSSWindow::startVideoRecording() {
-  if (this->m_firstTimeOpeningCamera) {
-    this->m_savedVideofileName = QFileDialog::getSaveFileName(
-                                   this, tr("Save File"), "/", tr("Videos (*.avi)"));
-    Vision::singleton().setDeepLogFileName(
-      this->m_savedVideofileName.toStdString());
-    this->m_firstTimeOpeningCamera = false;
+  RecordingSettingsDialog settingsDialog;
+
+  if (settingsDialog.exec() == QDialog::Accepted) {
+      QString videoFileName = settingsDialog.videoNameLineEdit->text();
+      int fps = settingsDialog.fpsSpinBox->value();
+
+      if (videoFileName.isEmpty()) {
+          videoFileName = QDateTime::currentDateTime().toString("dd-MM-yyyy_hh-mm-ss");
+      }
+
+      QDir().mkdir("../recordings");
+      QFile("../recordings").setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+                                          QFile::ReadGroup | QFile::ExeGroup |
+                                          QFile::ReadOther | QFile::ExeOther);
+      this->m_savedVideofileName = "../recordings/" + videoFileName + ".mp4";
+
+      std::cout << "Saving video to: " << this->m_savedVideofileName.toStdString() << std::endl;
+
+      if (!this->m_savedVideofileName.isEmpty()) {
+          this->m_videoRecordManager.open(
+              this->m_savedVideofileName.toStdString(),
+              cv::VideoWriter::fourcc('H', '2', '6', '4'), fps,
+              cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
+      }
+
+      if (!this->m_videoRecordManager.isOpened()) {
+          std::cerr << "Error opening video file!" << std::endl;
+          return;
+      }
+
+      this->m_firstTimeOpeningCamera = false;
+  }else {
+    this->m_ui->recordPushButton->setChecked(false);
+    this->m_isRecording = false;
+    this->m_videoRecordManager.release();    
   }
+
+  record();
+
 }
 
 void MainVSSWindow::on_primaryColor_clicked(bool checked) {
