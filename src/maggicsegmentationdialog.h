@@ -98,6 +98,9 @@ private:
 
   bool eventFilter(QObject *f_object, QEvent *f_event);
 
+  int FRAME_WIDTH = 640;
+  int FRAME_HEIGHT = 480;
+
 public:
   QTimer *getUpdateFrameTimer();
 };

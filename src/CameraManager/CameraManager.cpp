@@ -2,8 +2,12 @@
 
 CameraManager::CameraManager() {
   this->_parametersString = "";
-  this->_frameHeight = FRAME_HEIGHT_DEFAULT;
-  this->_frameWidth = FRAME_WIDTH_DEFAULT;
+
+  const char *frameWidth = getenv("FRAME_WIDTH");
+  const char *frameHeight = getenv("FRAME_HEIGHT");
+  this->_frameHeight = atoi(frameHeight);
+  this->_frameWidth = atoi(frameWidth);
+  
   this->_is60fps = false;
   this->_isHD = false;
   this->_isNewFrameAvaliable = false;
@@ -38,8 +42,8 @@ CameraManager::~CameraManager() {
 
 bool CameraManager::init(int cameraIndex) {
   // try the HD settings for 60fps by default
-  this->_frameHeight = FRAME_HEIGHT_HD_DEFAULT;
-  this->_frameWidth = FRAME_WIDTH_HD_DEFAULT;
+  // this->_frameHeight = FRAME_HEIGHT_HD_DEFAULT;
+  // this->_frameWidth = FRAME_WIDTH_HD_DEFAULT;
   this->_is60fps = true;
 
   if (this->_capture.isOpened()) {
@@ -67,6 +71,8 @@ bool CameraManager::init(int cameraIndex) {
   }
 
   this->_capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+  this->_capture.set(cv::CAP_PROP_FRAME_WIDTH, this->_frameWidth);
+  this->_capture.set(cv::CAP_PROP_FRAME_HEIGHT, this->_frameHeight);
 
   if (this->_frameWidth !=
           static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_WIDTH)) ||
@@ -146,25 +152,14 @@ void CameraManager::updateFrame() {
 
   this->_currentFrameTimeStamp = QTime::currentTime();
 
-  // if (this->_is60fps) { // assuming it's 720p, always
-  if (this->_frameWidth == 1920 && this->_frameHeight == 1080 &&
-          frame.rows == 1080 && frame.cols == 1920) {
-      cv::resize(frame, frame,
-                 cv::Size(1280, 720), 0, 0);
-      this->_frameWidth = frame.cols;
-      this->_frameHeight = frame.rows;
-  }
-  if (this->_frameWidth == 1280 && this->_frameHeight == 720 &&
-      frame.rows == 720 && frame.cols == 1280) {
-    cv::Rect cropRectangle(213, 0, 854, 720);
-
-    // Crop the full image to that image contained by the rectangle
-    // cropRectangle
-    cv::Mat croppedRef(frame, cropRectangle);
-    croppedRef.copyTo(frame);
-    cv::resize(frame, frame,
-               cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
-  }
+  // if (this->_is60fps) { // assuming it's FRAME_HEIGHTp, always
+  // if (this->_frameWidth == 1920 && this->_frameHeight == 1080 &&
+  //         frame.rows == 1080 && frame.cols == 1920) {
+  //     cv::resize(frame, frame,
+  //                cv::Size(FRAME_WIDTH, FRAME_HEIGHT), 0, 0);
+  //     this->_frameWidth = frame.cols;
+  //     this->_frameHeight = frame.rows;
+  // }
 
   this->_cameraFrameLocker.lock();
   this->_currentFrame = frame;
@@ -593,12 +588,12 @@ void CameraManager::saveFile(std::string path) {
 
 void CameraManager::set60fps(bool want60fps) {
   if (want60fps) {
-    this->_frameHeight = FRAME_HEIGHT_HD_DEFAULT;
-    this->_frameWidth = FRAME_WIDTH_HD_DEFAULT;
+    this->_frameHeight = FRAME_HEIGHT;
+    this->_frameWidth = FRAME_WIDTH;
     this->_is60fps = true;
   } else {
-    this->_frameHeight = FRAME_HEIGHT_DEFAULT;
-    this->_frameWidth = FRAME_WIDTH_DEFAULT;
+    this->_frameHeight = FRAME_HEIGHT;
+    this->_frameWidth = FRAME_WIDTH;
     this->_is60fps = false;
   }
 }

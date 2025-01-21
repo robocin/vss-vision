@@ -9,6 +9,7 @@
 
 #include "PositionProcessing.h"
 #include "Entity/Entity.h"
+#include <stdlib.h>
 
 /**
  * @brief    Class for detection algorithm based on brutal force DFS.
@@ -72,6 +73,8 @@ private:
   int _clusterCount[CLUSTERSPERCOLOR];
 
   std::vector< std::vector< Run > > _runs;
+
+  int FRAME_WIDTH, FRAME_HEIGHT;
 };
 
 #endif

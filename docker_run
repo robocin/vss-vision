@@ -9,6 +9,7 @@ then
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 	-v $(pwd)/src/Config:/opt/vss-vision/src/Config \
 	-v $(pwd)/recordings:/opt/vss-vision/recordings \
+	-v $(pwd)/src/.env:/opt/vss-vision/src/.env \
 	-e DISPLAY=$DISPLAY \
 	--network=host \
 	vss-vision
@@ -20,6 +21,7 @@ else
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 	-v $(pwd)/src/Config:/opt/vss-vision/src/Config \
 	-v $(pwd)/recordings:/opt/vss-vision/recordings \
+	-v $(pwd)/src/.env:/opt/vss-vision/src/.env \
 	-e DISPLAY=$DISPLAY \
 	--network=host \
 	vss-vision

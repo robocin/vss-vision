@@ -5,6 +5,13 @@
 Vision::Vision()
 {
 //    this->_visionStatusLocker.lock();
+
+    const char *frameWidth = getenv("FRAME_WIDTH");
+    const char *frameHeight = getenv("FRAME_HEIGHT");
+
+    FRAME_WIDTH = atoi(frameWidth);
+    FRAME_HEIGHT = atoi(frameHeight);
+    
     this->_detection = new BlobDetection();
     this->_detection->init();
     this->_detection->setTeamColor(getTeamColor());
@@ -17,7 +24,7 @@ Vision::Vision()
     this->_isProcessingEnabled = false;
     std::vector<Entity> currentPositions (7, Entity());
     this->_robotPositions = currentPositions;
-    this->_currentFrame = cv::Mat::zeros(640,480,CV_8UC3);
+    this->_currentFrame = cv::Mat::zeros(FRAME_WIDTH,FRAME_HEIGHT,CV_8UC3);
     this->_lastPositions = std::vector<std::queue<std::pair<cv::Point2d,QTime>>>(7);
     this->_firstFrameDeepLog = true;
     this->_deepLogFile = nullptr;

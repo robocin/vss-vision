@@ -52,6 +52,13 @@ MaggicSegmentation::default_normalization_method =
 
 MaggicSegmentation::MaggicSegmentation()
 {
+  const char *frameWidth = getenv("FRAME_WIDTH");
+  const char *frameHeight = getenv("FRAME_HEIGHT");
+
+  FRAME_WIDTH = atoi(frameWidth);
+  FRAME_HEIGHT = atoi(frameHeight);
+
+  
   this->isLUTReady = false;
   this->_LUT = new uchar[LUT_SIZE/3];
   memset(this->_LUT,0,LUT_SIZE/3  *sizeof(uchar)); // clear _LUT
@@ -1109,7 +1116,7 @@ void MaggicSegmentation::getCalibrationFrames(uint &frames) {
 cv::Mat MaggicSegmentation::run(cv::Mat &frame)
 {
   //if (!paused) frame.copyTo(this->_imageBuffer);
-  if (!this->isLUTReady)return cv::Mat::zeros(480,640,CV_8U);
+  if (!this->isLUTReady)return cv::Mat::zeros(FRAME_HEIGHT,FRAME_WIDTH,CV_8U);
 
 #ifdef USE_CUDA
     APPLY_LUT_GPU(frame);
@@ -1310,7 +1317,7 @@ void MaggicSegmentation::doDetails() {
 
     mut.lock();
     if (this->_detailsFrame.empty()) {
-      this->_detailsFrame = cv::Mat::zeros(cv::Size(640,480),CV_8UC3);
+      this->_detailsFrame = cv::Mat::zeros(cv::Size(FRAME_WIDTH,FRAME_HEIGHT),CV_8UC3);
     }
 
     // erase old lastCursors

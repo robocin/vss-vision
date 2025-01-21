@@ -2,6 +2,7 @@
 #include "ui_MainVSSWindow.h"
 #include <cmath>
 #include <iostream>
+#include <stdlib.h>
 
 MainVSSWindow::MainVSSWindow(QWidget *parent)
   : QMainWindow(parent),
@@ -10,6 +11,12 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
     m_visionTimer(new QLabel()){
   m_ui->setupUi(this);
   this->readMainWindowConfig();
+
+  const char *frameWidth = getenv("FRAME_WIDTH");
+  const char *frameHeight = getenv("FRAME_HEIGHT");
+
+  FRAME_WIDTH = atoi(frameWidth);
+  FRAME_HEIGHT = atoi(frameHeight);
 
   setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
   qApp->installEventFilter(this);
@@ -125,7 +132,7 @@ void MainVSSWindow::selectCorrectFrame() {
       this->m_currentFrameLocker.unlock();
     }
   } else if (frameType == "Segmented") {
-      this->m_currentFrameLocker.lock();
+    this->m_currentFrameLocker.lock();
     Vision::singleton().getSegmentationFrame(m_currentFrame);
     this->m_currentFrameLocker.unlock();
   } else if (frameType == "Tracked") {
@@ -146,6 +153,10 @@ void MainVSSWindow::selectCorrectFrame() {
   this->m_rawFrameLocker.lock();
   CameraManager::singleton().getCurrentFrame(m_rawFrame);
   this->m_rawFrameLocker.unlock();
+
+  // this->m_segFrameLocker.lock();
+  // Vision::singleton().getSegmentationFrame(m_segFrame);
+  // this->m_segFrameLocker.unlock();
 }
 
 void MainVSSWindow::setCameraFrame() {
@@ -153,7 +164,7 @@ void MainVSSWindow::setCameraFrame() {
   cv::Mat cameraFrame;
     this->m_currentFrameLocker.lock();
   if (this->m_currentFrame.empty()) {
-    this->m_currentFrame = cv::Mat::zeros(480, 640, CV_8UC3);
+    this->m_currentFrame = cv::Mat::zeros(FRAME_HEIGHT, FRAME_WIDTH, CV_8UC3);
   }
 
   this->m_currentFrame.copyTo(cameraFrame);
@@ -177,7 +188,8 @@ void MainVSSWindow::update() {
     setCameraFrame();
     record();
   }else{
-    this->m_videoRecordManager.release();   
+    this->m_videoRecordManager.release();
+    // this->m_videoRecordManagerSegmented.release(); 
   }
 
   double visionTime = Vision::singleton().getVisionRunTime();
@@ -283,6 +295,7 @@ void MainVSSWindow::on_capturePushButton_clicked() {
     this->clearFrame();
 
     this->m_videoRecordManager.release();
+    // this->m_videoRecordManagerSegmented.release(); 
     
     m_ui->visionInitPushButton->setEnabled(false);
     m_ui->visionConfigurePushButton->setEnabled(false);
@@ -312,6 +325,7 @@ void MainVSSWindow::on_recordPushButton_clicked(){
     this->m_ui->recordPushButton->setChecked(false);
     this->m_isRecording = false;
     this->m_videoRecordManager.release();
+    // this->m_videoRecordManagerSegmented.release(); 
   }
 }
 
@@ -425,11 +439,16 @@ void MainVSSWindow::on_maggicSegmentationButton_clicked() {
 
 void MainVSSWindow::record() {
   if (this->m_videoRecordManager.isOpened()) {
-    cv::Mat frame;
+    cv::Mat frame, segFrame;
     this->m_rawFrameLocker.lock();
     this->m_rawFrame.copyTo(frame);
     this->m_rawFrameLocker.unlock();
-    this->m_videoRecordManager.write(frame);  
+    this->m_videoRecordManager.write(frame);
+
+    // this->m_segFrameLocker.lock();
+    // this->m_segFrame.copyTo(segFrame);
+    // this->m_segFrameLocker.unlock();
+    // this->m_videoRecordManagerSegmented.write(segFrame);  
   }
 }
 
@@ -449,17 +468,23 @@ void MainVSSWindow::startVideoRecording() {
                                           QFile::ReadGroup | QFile::ExeGroup |
                                           QFile::ReadOther | QFile::ExeOther);
       this->m_savedVideofileName = "../recordings/" + videoFileName + ".mp4";
+      // auto seg =  "../recordings/" + videoFileName + "_seg.mp4";
 
       std::cout << "Saving video to: " << this->m_savedVideofileName.toStdString() << std::endl;
 
       if (!this->m_savedVideofileName.isEmpty()) {
           this->m_videoRecordManager.open(
               this->m_savedVideofileName.toStdString(),
-              cv::VideoWriter::fourcc('H', '2', '6', '4'), fps,
-              cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
+              cv::VideoWriter::fourcc('m', 'p', '4', 'v'), fps,
+              cv::Size(FRAME_WIDTH, FRAME_HEIGHT));
+
+          // this->m_videoRecordManagerSegmented.open(
+          //     seg.toStdString(),
+          //     cv::VideoWriter::fourcc('m', 'p', '4', 'v'), fps,
+          //     cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT));
       }
 
-      if (!this->m_videoRecordManager.isOpened()) {
+      if (!this->m_videoRecordManager.isOpened() || !this->m_videoRecordManagerSegmented.isOpened()) {
           std::cerr << "Error opening video file!" << std::endl;
           return;
       }
@@ -468,7 +493,8 @@ void MainVSSWindow::startVideoRecording() {
   }else {
     this->m_ui->recordPushButton->setChecked(false);
     this->m_isRecording = false;
-    this->m_videoRecordManager.release();    
+    this->m_videoRecordManager.release();  
+    this->m_videoRecordManagerSegmented.release();    
   }
 
   record();

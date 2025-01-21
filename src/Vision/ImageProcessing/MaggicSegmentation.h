@@ -9,6 +9,8 @@
 #include <string>
 #include <map>
 #include <fstream>
+#include <stdlib.h>
+
 typedef unsigned char uchar;
 
 #define LUTSIZE 16777216
@@ -275,6 +277,7 @@ private:
   std::vector<std::pair<float, int>> hueList;
   std::vector<std::pair<float, int>> defaultHueList;
 
+  int FRAME_WIDTH, FRAME_HEIGHT;
 
   cv::Mat colorPalette,
       colorPaletteYUV,
