@@ -22,11 +22,8 @@
 #include <vector>
 #include <mutex>
 #include "spdlog/spdlog.h"
+#include <stdlib.h>
 
-#define FRAME_WIDTH_DEFAULT 640
-#define FRAME_HEIGHT_DEFAULT 480
-#define FRAME_WIDTH_HD_DEFAULT 1280
-#define FRAME_HEIGHT_HD_DEFAULT 720
 #define NO_ERROR_FRAME 0
 #define ERROR_FRAME_FROM_IMAGE 1
 #define ERROR_FRAME_FROM_VIDEO 2
@@ -443,6 +440,7 @@ class CameraManager {
   cv::Mat _currentFrame;
   int _frameWidth;
   int _frameHeight;
+  int FRAME_WIDTH, FRAME_HEIGHT;
   bool _is60fps;
   bool _isHD;
   int _cameraIndex;

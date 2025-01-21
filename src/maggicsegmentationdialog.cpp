@@ -2,6 +2,8 @@
 #include "ui_maggicsegmentationdialog.h"
 #include <QMouseEvent>
 #include <chrono>
+#include <stdlib.h>
+
 #ifndef Q_MOC_RUN
 #if defined(emit)
     #undef emit
@@ -58,6 +60,13 @@ MaggicSegmentationDialog::MaggicSegmentationDialog(QWidget *parent) :
   QDialog(parent),
   ui(new Ui::MaggicSegmentationDialog)
 {
+  const char *frameWidth = getenv("FRAME_WIDTH");
+  const char *frameHeight = getenv("FRAME_HEIGHT");
+
+  FRAME_WIDTH = atoi(frameWidth);
+  FRAME_HEIGHT = atoi(frameHeight);
+
+  
   this->_cameraMan = &this->_cameraMan->singleton();
   ui->setupUi(this);
 
@@ -157,7 +166,7 @@ void MaggicSegmentationDialog::updateFrame()
   }
 
   if (!this->_actualFrame.empty()) {
-    cv::resize(this->_actualFrame,this->_actualFrame,cv::Size(640,480),0,0);
+    cv::resize(this->_actualFrame,this->_actualFrame,cv::Size(FRAME_WIDTH,FRAME_HEIGHT),0,0);
 
     Timer timerFPS;
     timerFPS.start();
@@ -549,10 +558,10 @@ void MaggicSegmentationDialog::processAndSave() {
 void MaggicSegmentationDialog::autoResizeInputFrame(cv::Mat &frame) {
     if (frame.rows == 1080 && frame.cols == 1920) {
         cv::resize(frame, frame,
-                   cv::Size(1280, 720), 0, 0);
+                   cv::Size(FRAME_WIDTH, FRAME_HEIGHT), 0, 0);
     }
-//    if (frame.rows == 720 && frame.cols == 1280) {
-//      cv::Rect cropRectangle(213, 0, 854, 720);
+//    if (frame.rows == FRAME_HEIGHT && frame.cols == FRAME_WIDTH) {
+//      cv::Rect cropRectangle(213, 0, 854, FRAME_HEIGHT);
 
 //      // Crop the full image to that image contained by the rectangle
 //      // cropRectangle
