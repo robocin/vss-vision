@@ -17,16 +17,26 @@ CameraManager::CameraManager() {
 
   this->_distortionOption = NULO;
 
-  cv::FileStorage opencv_file(
-      "CameraManager/radialDistortion/camera_matrices.xml",
-      cv::FileStorage::READ);
-  if (!opencv_file.isOpened()) {
-    std::cerr << "erro ao abrir o arquivo de distorção da camera CameraManager/radialDistortion/camera_matrices.xml" << std::endl;
-    return;
+  cv::FileStorage opencv_file_std(
+          "CameraManager/radialDistortion/camera_matrices_STANDARD.xml",
+          cv::FileStorage::READ);
+  if (!opencv_file_std.isOpened()) {
+    std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices_STANDARD.xml" << std::endl;
   }
-  opencv_file["matrix_x"] >> this->_map_x;
-  opencv_file["matrix_y"] >> this->_map_y;
-  opencv_file.release();
+  opencv_file_std["matrix_x"] >> this->_map_x_std;
+  opencv_file_std["matrix_y"] >> this->_map_y_std;
+  opencv_file_std.release();
+
+  cv::FileStorage opencv_file_hd(
+          "CameraManager/radialDistortion/camera_matrices_K.xml",
+          cv::FileStorage::READ);
+  if (!opencv_file_hd.isOpened()) {
+    std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices_K.xml" << std::endl;
+  }
+  opencv_file_hd["matrix_x"] >> this->_map_y_hd;
+  opencv_file_hd["matrix_y"] >> this->_map_x_hd;
+  opencv_file_hd.release();
+
 }
 
 CameraManager& CameraManager::singleton() {
@@ -621,16 +631,13 @@ void CameraManager::getDistortionParameters() {
   switch (this->_distortionOption) {
     case NULO:
       break;
-    case ELP:
-      cv::FileStorage opencv_file(
-          "CameraManager/radialDistortion/camera_matrices.xml",
-          cv::FileStorage::READ);
-      if (!opencv_file.isOpened()) {
-        std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices.xml" << std::endl;
-      }
-      opencv_file["matrix_x"] >> this->_map_x;
-      opencv_file["matrix_y"] >> this->_map_y;
-      opencv_file.release();
+    case STANDARD:
+      this->_map_x = this->_map_x_std;
+      this->_map_y = this->_map_y_std;
+      break;
+    case HD:  
+      this->_map_x = this->_map_y_hd;
+      this->_map_y = this->_map_x_hd;
       break;
   }
 }

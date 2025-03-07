@@ -50,7 +50,7 @@
 
 enum CaptureType { disabled = -1, videoCapture = 0, usbCameraCapture = 1 };
 
-enum Distortions { NULO = 0, ELP = 1 };
+enum Distortions { NULO = 0, STANDARD = 1, HD = 2 };
 
 /**
  * { Structure to represent parameters min value, max value, default value and
@@ -458,6 +458,12 @@ class CameraManager {
   std::atomic<bool> _isNewFrameAvaliable;
 
   Distortions _distortionOption;
+  cv::Mat _map_x_std;
+  cv::Mat _map_y_std;
+
+  cv::Mat _map_x_hd;
+  cv::Mat _map_y_hd;
+
   cv::Mat _map_x;
   cv::Mat _map_y;
 };

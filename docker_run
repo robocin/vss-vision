@@ -10,6 +10,7 @@ then
 	-v $(pwd)/src/Config:/opt/vss-vision/src/Config \
 	-v $(pwd)/recordings:/opt/vss-vision/recordings \
 	-v $(pwd)/src/.env:/opt/vss-vision/src/.env \
+	-v $(pwd)/src/CameraManager/radialDistortion:/opt/vss-vision/src/CameraManager/radialDistortion \
 	-e DISPLAY=$DISPLAY \
 	--network=host \
 	vss-vision
@@ -22,6 +23,7 @@ else
 	-v $(pwd)/src/Config:/opt/vss-vision/src/Config \
 	-v $(pwd)/recordings:/opt/vss-vision/recordings \
 	-v $(pwd)/src/.env:/opt/vss-vision/src/.env \
+	-v $(pwd)/src/CameraManager/radialDistortion:/opt/vss-vision/src/CameraManager/radialDistortion \
 	-e DISPLAY=$DISPLAY \
 	--network=host \
 	vss-vision

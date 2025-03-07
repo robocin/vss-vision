@@ -74,7 +74,6 @@ MainVSSWindow::MainVSSWindow(QWidget *parent)
   this->m_maggicSegmentationDialog = new MaggicSegmentationDialog();
   initColors();
   Field::set3x3();
-  this->m_ui->DistortionComboBox->setCurrentText("ELP-USB");
 }
 
 void MainVSSWindow::initColors() {
@@ -249,6 +248,12 @@ void MainVSSWindow::resizeFrames() {
 void MainVSSWindow::on_capturePushButton_clicked() {
   if (m_ui->capturePushButton->isChecked()) {
     bool openSucceeded = false;
+    
+    m_ui->DistortionComboBox->clear();
+    m_ui->DistortionComboBox->addItem("NULL");
+    m_ui->DistortionComboBox->addItem("Standard");
+    m_ui->DistortionComboBox->addItem("HD");
+    m_ui->DistortionComboBox->setCurrentIndex(STANDARD);
 
     if (this->m_cameraCapture) {
       openSucceeded = CameraManager::singleton().init(
@@ -379,8 +384,14 @@ void MainVSSWindow::on_DistortionComboBox_currentIndexChanged(
     CameraManager::singleton().setDistortionOption(NULO);
   }
 
-  if (arg1 == "ELP-USB") {
-    CameraManager::singleton().setDistortionOption(ELP);
+  // 3.6mm Lens (480p)
+  if (arg1 == "STANDARD") {
+    CameraManager::singleton().setDistortionOption(STANDARD);
+  }
+
+  // 2.8mm Lens (720p)
+  if (arg1 == "HD") {
+    CameraManager::singleton().setDistortionOption(HD);
   }
 }
 
