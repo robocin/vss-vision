@@ -588,7 +588,7 @@ bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
 void MainVSSWindow::on_videoPathBrowsePushButton_clicked() {
   this->m_videoFileName =
     QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(),
-                                 tr("Videos (*.mp4 *.avi *.mpeg)"));
+                                 tr("Videos (*.mp4 *.avi *.mpeg *.mkv)"));
 
   if (!this->m_videoFileName.isEmpty() || this->m_cameraCapture == false) {
     this->m_ui->videoPathBrowsePushButton->setEnabled(true);
