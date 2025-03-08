@@ -1,6 +1,12 @@
 #include "WarpCorrection.h"
 
-WarpCorrection::WarpCorrection() {}
+WarpCorrection::WarpCorrection() {
+  const char *frameWidth = getenv("FRAME_WIDTH");
+  const char *frameHeight = getenv("FRAME_HEIGHT");
+
+  FRAME_WIDTH = atoi(frameWidth);
+  FRAME_HEIGHT = atoi(frameHeight);
+}
 
 WarpCorrection::~WarpCorrection() {}
 
@@ -143,7 +149,7 @@ void WarpCorrection::getDebugFrame(cv::Mat& frame) {
     this->_frameLocker.lock();
 
     if (this->_warpPespectiveFrame.empty()) {
-        this->_warpPespectiveFrame = cv::Mat::zeros(640, 480, CV_8UC3);
+        this->_warpPespectiveFrame = cv::Mat::zeros(FRAME_WIDTH, FRAME_HEIGHT, CV_8UC3);
     }
     this->_warpPespectiveFrame.copyTo(frame);
 

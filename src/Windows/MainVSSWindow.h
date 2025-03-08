@@ -86,6 +86,8 @@ private:
   Ui::MainVSSWindow* m_ui;
   QTimer* m_mainWindowFrameTimer;
   cv::VideoWriter m_videoRecordManager;
+  cv::VideoWriter m_videoRecordManagerSegmented;
+
 
   // Redimensiona os frames para o preenchimento certo
   void resizeCameraFrame();
@@ -119,6 +121,7 @@ private:
 
   cv::Mat m_currentFrame;
   cv::Mat m_rawFrame;
+  cv::Mat m_segFrame;
   cv::Point m_limitPoints[4];
 
   QString m_videoFileName;
@@ -137,8 +140,12 @@ private:
 
   std::mutex m_currentFrameLocker;
   std::mutex m_rawFrameLocker;
+  std::mutex m_segFrameLocker;
 
   nlohmann::json _mainWindowConfig;
+
+  int FRAME_WIDTH;
+  int FRAME_HEIGHT;
 
 protected:
   void keyPressEvent(QKeyEvent *e);

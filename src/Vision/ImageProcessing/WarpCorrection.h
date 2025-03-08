@@ -57,6 +57,8 @@ class WarpCorrection : public ImageProcessing {
    */
   void getDebugFrame(cv::Mat& frame);
 
+  int FRAME_WIDTH, FRAME_HEIGHT;
+
  private:
   void defineMaps();
 
