@@ -461,6 +461,7 @@ class CameraManager {
   cv::Mat _map_x_std;
   cv::Mat _map_y_std;
 
+  cv::Rect _roi;
   cv::Mat _map_x_hd;
   cv::Mat _map_y_hd;
 

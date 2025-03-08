@@ -28,11 +28,12 @@ CameraManager::CameraManager() {
   opencv_file_std.release();
 
   cv::FileStorage opencv_file_hd(
-          "CameraManager/radialDistortion/camera_matrices_K.xml",
+          "CameraManager/radialDistortion/camera_matrices_ROI.xml",
           cv::FileStorage::READ);
   if (!opencv_file_hd.isOpened()) {
-    std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices_K.xml" << std::endl;
+    std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices_ROI.xml" << std::endl;
   }
+  opencv_file_hd["ROI"] >> this->_roi;
   opencv_file_hd["matrix_x"] >> this->_map_y_hd;
   opencv_file_hd["matrix_y"] >> this->_map_x_hd;
   opencv_file_hd.release();
@@ -175,6 +176,8 @@ void CameraManager::updateFrame() {
   this->_currentFrame = frame;
   if (this->_distortionOption > NULO) {
     remap(frame, frame, this->_map_x, this->_map_y, cv::INTER_LINEAR);
+    frame = frame(this->_roi);
+    this->_currentFrame = frame;
   }
   this->_cameraFrameLocker.unlock();
 
