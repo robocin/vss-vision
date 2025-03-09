@@ -35,6 +35,7 @@
 
 //#include "Utils/Entity.h"
 #include "Utils/Utils.h"
+#include <stdlib.h>
 
 
 /**
@@ -346,6 +347,8 @@ public:
   void setRecordingVideo(bool value);
   void closeDeepLog();
   void recordDeepLog();
+
+  int FRAME_WIDTH, FRAME_HEIGHT;
 
 
   /**

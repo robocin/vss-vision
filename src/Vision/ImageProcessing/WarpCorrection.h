@@ -8,6 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <stdlib.h>
 
 #define FIELDWIDTH 170
 #define FIELDHEIGHT 130
@@ -58,6 +59,8 @@ class WarpCorrection : public ImageProcessing {
    * @return   The debug frame.
    */
   void getDebugFrame(cv::Mat& frame);
+
+  int FRAME_WIDTH, FRAME_HEIGHT;
 
  private:
   void defineMaps();

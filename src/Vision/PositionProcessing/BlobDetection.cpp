@@ -3,8 +3,14 @@
 
 BlobDetection::BlobDetection()
 {
+  const char *frameWidth = getenv("FRAME_WIDTH");
+    const char *frameHeight = getenv("FRAME_HEIGHT");
+
+  FRAME_WIDTH = atoi(frameWidth);
+  FRAME_HEIGHT = atoi(frameHeight);
+  
   memset(this->_colorIndex,-1,sizeof(this->_colorIndex));
-  this->debugSrc = cv::Mat::zeros(480,640,CV_8UC3);
+  this->debugSrc = cv::Mat::zeros(FRAME_HEIGHT,FRAME_WIDTH,CV_8UC3);
 }
 
 void BlobDetection::run(std::vector< std::vector<Run> > runs, int rows, int cols)

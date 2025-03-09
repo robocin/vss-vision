@@ -22,11 +22,8 @@
 #include <vector>
 #include <mutex>
 #include "spdlog/spdlog.h"
+#include <stdlib.h>
 
-#define FRAME_WIDTH_DEFAULT 640
-#define FRAME_HEIGHT_DEFAULT 480
-#define FRAME_WIDTH_HD_DEFAULT 1280
-#define FRAME_HEIGHT_HD_DEFAULT 720
 #define NO_ERROR_FRAME 0
 #define ERROR_FRAME_FROM_IMAGE 1
 #define ERROR_FRAME_FROM_VIDEO 2
@@ -53,7 +50,7 @@
 
 enum CaptureType { disabled = -1, videoCapture = 0, usbCameraCapture = 1 };
 
-enum Distortions { NULO = 0, ELP = 1 };
+enum Distortions { NULO = 0, STANDARD = 1, HD = 2 };
 
 /**
  * { Structure to represent parameters min value, max value, default value and
@@ -443,6 +440,7 @@ class CameraManager {
   cv::Mat _currentFrame;
   int _frameWidth;
   int _frameHeight;
+  int FRAME_WIDTH, FRAME_HEIGHT;
   bool _is60fps;
   bool _isHD;
   int _cameraIndex;
@@ -460,6 +458,13 @@ class CameraManager {
   std::atomic<bool> _isNewFrameAvaliable;
 
   Distortions _distortionOption;
+  cv::Mat _map_x_std;
+  cv::Mat _map_y_std;
+
+  cv::Rect _roi;
+  cv::Mat _map_x_hd;
+  cv::Mat _map_y_hd;
+
   cv::Mat _map_x;
   cv::Mat _map_y;
 };

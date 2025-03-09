@@ -2,8 +2,12 @@
 
 CameraManager::CameraManager() {
   this->_parametersString = "";
-  this->_frameHeight = FRAME_HEIGHT_DEFAULT;
-  this->_frameWidth = FRAME_WIDTH_DEFAULT;
+
+  const char *frameWidth = getenv("FRAME_WIDTH");
+  const char *frameHeight = getenv("FRAME_HEIGHT");
+  this->_frameHeight = atoi(frameHeight);
+  this->_frameWidth = atoi(frameWidth);
+  
   this->_is60fps = false;
   this->_isHD = false;
   this->_isNewFrameAvaliable = false;
@@ -13,16 +17,27 @@ CameraManager::CameraManager() {
 
   this->_distortionOption = NULO;
 
-  cv::FileStorage opencv_file(
-      "CameraManager/radialDistortion/camera_matrices.xml",
-      cv::FileStorage::READ);
-  if (!opencv_file.isOpened()) {
-    std::cerr << "erro ao abrir o arquivo de distorção da camera CameraManager/radialDistortion/camera_matrices.xml" << std::endl;
-    return;
+  cv::FileStorage opencv_file_std(
+          "CameraManager/radialDistortion/camera_matrices_STANDARD.xml",
+          cv::FileStorage::READ);
+  if (!opencv_file_std.isOpened()) {
+    std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices_STANDARD.xml" << std::endl;
   }
-  opencv_file["matrix_x"] >> this->_map_x;
-  opencv_file["matrix_y"] >> this->_map_y;
-  opencv_file.release();
+  opencv_file_std["matrix_x"] >> this->_map_x_std;
+  opencv_file_std["matrix_y"] >> this->_map_y_std;
+  opencv_file_std.release();
+
+  cv::FileStorage opencv_file_hd(
+          "CameraManager/radialDistortion/camera_matrices_ROI.xml",
+          cv::FileStorage::READ);
+  if (!opencv_file_hd.isOpened()) {
+    std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices_ROI.xml" << std::endl;
+  }
+  opencv_file_hd["ROI"] >> this->_roi;
+  opencv_file_hd["matrix_x"] >> this->_map_y_hd;
+  opencv_file_hd["matrix_y"] >> this->_map_x_hd;
+  opencv_file_hd.release();
+
 }
 
 CameraManager& CameraManager::singleton() {
@@ -38,8 +53,8 @@ CameraManager::~CameraManager() {
 
 bool CameraManager::init(int cameraIndex) {
   // try the HD settings for 60fps by default
-  this->_frameHeight = FRAME_HEIGHT_HD_DEFAULT;
-  this->_frameWidth = FRAME_WIDTH_HD_DEFAULT;
+  // this->_frameHeight = FRAME_HEIGHT_HD_DEFAULT;
+  // this->_frameWidth = FRAME_WIDTH_HD_DEFAULT;
   this->_is60fps = true;
 
   if (this->_capture.isOpened()) {
@@ -67,6 +82,8 @@ bool CameraManager::init(int cameraIndex) {
   }
 
   this->_capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+  this->_capture.set(cv::CAP_PROP_FRAME_WIDTH, this->_frameWidth);
+  this->_capture.set(cv::CAP_PROP_FRAME_HEIGHT, this->_frameHeight);
 
   if (this->_frameWidth !=
           static_cast<int>(this->_capture.get(cv::CAP_PROP_FRAME_WIDTH)) ||
@@ -146,30 +163,21 @@ void CameraManager::updateFrame() {
 
   this->_currentFrameTimeStamp = QTime::currentTime();
 
-  // if (this->_is60fps) { // assuming it's 720p, always
-  if (this->_frameWidth == 1920 && this->_frameHeight == 1080 &&
-          frame.rows == 1080 && frame.cols == 1920) {
-      cv::resize(frame, frame,
-                 cv::Size(1280, 720), 0, 0);
-      this->_frameWidth = frame.cols;
-      this->_frameHeight = frame.rows;
-  }
-  if (this->_frameWidth == 1280 && this->_frameHeight == 720 &&
-      frame.rows == 720 && frame.cols == 1280) {
-    cv::Rect cropRectangle(213, 0, 854, 720);
-
-    // Crop the full image to that image contained by the rectangle
-    // cropRectangle
-    cv::Mat croppedRef(frame, cropRectangle);
-    croppedRef.copyTo(frame);
-    cv::resize(frame, frame,
-               cv::Size(FRAME_WIDTH_DEFAULT, FRAME_HEIGHT_DEFAULT), 0, 0);
-  }
+  // if (this->_is60fps) { // assuming it's FRAME_HEIGHTp, always
+  // if (this->_frameWidth == 1920 && this->_frameHeight == 1080 &&
+  //         frame.rows == 1080 && frame.cols == 1920) {
+  //     cv::resize(frame, frame,
+  //                cv::Size(FRAME_WIDTH, FRAME_HEIGHT), 0, 0);
+  //     this->_frameWidth = frame.cols;
+  //     this->_frameHeight = frame.rows;
+  // }
 
   this->_cameraFrameLocker.lock();
   this->_currentFrame = frame;
   if (this->_distortionOption > NULO) {
     remap(frame, frame, this->_map_x, this->_map_y, cv::INTER_LINEAR);
+    frame = frame(this->_roi);
+    this->_currentFrame = frame;
   }
   this->_cameraFrameLocker.unlock();
 
@@ -593,12 +601,12 @@ void CameraManager::saveFile(std::string path) {
 
 void CameraManager::set60fps(bool want60fps) {
   if (want60fps) {
-    this->_frameHeight = FRAME_HEIGHT_HD_DEFAULT;
-    this->_frameWidth = FRAME_WIDTH_HD_DEFAULT;
+    this->_frameHeight = FRAME_HEIGHT;
+    this->_frameWidth = FRAME_WIDTH;
     this->_is60fps = true;
   } else {
-    this->_frameHeight = FRAME_HEIGHT_DEFAULT;
-    this->_frameWidth = FRAME_WIDTH_DEFAULT;
+    this->_frameHeight = FRAME_HEIGHT;
+    this->_frameWidth = FRAME_WIDTH;
     this->_is60fps = false;
   }
 }
@@ -626,16 +634,13 @@ void CameraManager::getDistortionParameters() {
   switch (this->_distortionOption) {
     case NULO:
       break;
-    case ELP:
-      cv::FileStorage opencv_file(
-          "CameraManager/radialDistortion/camera_matrices.xml",
-          cv::FileStorage::READ);
-      if (!opencv_file.isOpened()) {
-        std::cout << "erro ao abrir o arquivo CameraManager/radialDistortion/camera_matrices.xml" << std::endl;
-      }
-      opencv_file["matrix_x"] >> this->_map_x;
-      opencv_file["matrix_y"] >> this->_map_y;
-      opencv_file.release();
+    case STANDARD:
+      this->_map_x = this->_map_x_std;
+      this->_map_y = this->_map_y_std;
+      break;
+    case HD:  
+      this->_map_x = this->_map_y_hd;
+      this->_map_y = this->_map_x_hd;
       break;
   }
 }
