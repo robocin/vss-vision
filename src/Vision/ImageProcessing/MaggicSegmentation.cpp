@@ -217,6 +217,10 @@ String MaggicSegmentation::RGBHash2String(uint h) {
 void MaggicSegmentation::openLastSession() {
   mut.lock();
   //std::cout << "Opening last session on MaggicSegmentation" << std::endl;
+  
+  if (std::filesystem::exists("Config/Segmentation/filterMask.bmp")) {
+    this->_filterMask = cv::imread("Config/Segmentation/filterMask.bmp");
+  }
   std::string str;
   std::ifstream fin;
   int numa, numb;
@@ -269,6 +273,9 @@ void MaggicSegmentation::saveSession() {
      spdlog::get("Vision")->error("MaggicSegmentation:: saveSession: File access denied '{}'.",this->_maggicSegmentationSessionFileName);
   }
   fout.close();
+  if(!_filterMask.empty()) {
+    cv::imwrite("Config/Segmentation/filterMask.bmp", this->_filterMask);
+  }
   mut.unlock();
 }
 
