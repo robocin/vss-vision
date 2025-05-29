@@ -48,6 +48,7 @@ set(SOURCES
     src/trackconfigdialog.cpp
     src/Network/Network.cpp
     src/Network/visionServer/server.cpp
+    src/Utils/FilterUtils.cpp
 )
 
 set(HEADERS
@@ -91,6 +92,7 @@ set(HEADERS
     src/Windows/FileConstants.h
     src/Network/Network.h
     src/Network/visionServer/server.h
+    src/Utils/FilterUtils.h
 )
 
 set(RESOURCES

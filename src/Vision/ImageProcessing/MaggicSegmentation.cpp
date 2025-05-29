@@ -248,6 +248,25 @@ void MaggicSegmentation::openLastSession() {
   }
 
   fin.close();
+
+  // Load the filter rectangles from json
+  FilterUtils::loadFilterRectFromJson(this->filterRectangles, "Config/Segmentation/filterRect.json");
+  spdlog::get("Vision")->info("MaggicSegmentation:: openLastSession: Successfully loaded from Config/Segmentation/filterRect.json");
+
+  // Create the filter mask from the loaded rectangles
+  if (this->_filterMask.empty()) this->_filterMask = cv::Mat::zeros(256,256,CV_8U);
+  cv::rectangle(this->_filterMask,cv::Rect(0,0,255,255),cv::Scalar(0),-1,cv::LINE_4);
+
+  const cv::Rect colorFrame(30, 30, 512, 400); // Creating color frame for the filter mask
+  for (cv::Rect &r : this->filterRectangles) {
+      cv::Rect rt((r.x - colorFrame.x)*255/colorFrame.width,
+                  (r.y - colorFrame.y)*255/colorFrame.height,
+                  r.width*255/colorFrame.width,
+                  r.height*255/colorFrame.height);
+      cv::rectangle(this->_filterMask,rt,cv::Scalar(255),-1,cv::LINE_4);
+  }
+
+
   mut.unlock();
 }
 
@@ -269,6 +288,10 @@ void MaggicSegmentation::saveSession() {
      spdlog::get("Vision")->error("MaggicSegmentation:: saveSession: File access denied '{}'.",this->_maggicSegmentationSessionFileName);
   }
   fout.close();
+  if(!this->filterRectangles.empty()) {
+    FilterUtils::saveFilterRectToJson(this->filterRectangles, "Config/Segmentation/filterRect.json");
+    spdlog::get("Vision")->info("MaggicSegmentation:: saveSession: Successfully saved in Config/Segmentation/filterRect.json");
+  }
   mut.unlock();
 }
 
