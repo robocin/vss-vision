@@ -1,27 +1,63 @@
 #!/bin/bash
 
+BOLD='\033[1m'
+RED="\033[31m"
+BLUE="\033[34m"
+GREEN="\033[32m"
+NC='\033[0m'
+
 xhost +
+
+DEVICE_ARGS=""
+VIDEO_DEVICE_COUNT=0
+
+echo -e "\n${BOLD}${BLUE}----[DEVICES CONFIGURATION]----${NC}"
+echo -e "${BOLD}${BLUE}Verifying available video devices to send to Docker container...${NC}"
+
+for DEVICE_PATH in /dev/video*; do
+  if [ -e "$DEVICE_PATH" ]; then 
+    DEVICE_ARGS+="--device=$DEVICE_PATH:$DEVICE_PATH "
+    VIDEO_DEVICE_COUNT=$((VIDEO_DEVICE_COUNT + 1))
+  fi
+done
+
+if [ "$VIDEO_DEVICE_COUNT" -eq 0 ]; then
+  echo -e "${BOLD}${RED}No /dev/video* devices found. Running without attached cameras.${NC}"
+  DEVICE_ARGS=""
+else
+  echo -e "${BOLD}${BLUE}Found $VIDEO_DEVICE_COUNT devices. Mapping:${NC}"
+  echo -e "${BOLD}${GREEN}${DEVICE_ARGS}${NC}"
+fi
+
+echo -e "${BOLD}${BLUE}Finished verifying video devices.${NC}"
+
 if [ $# -eq 0 ]
 then
 	# No camera id argument supplied
-	echo "running with no attached camera"
+	echo -e "${BOLD}${BLUE}No camera id supplied, running with all available cameras.${NC}"
+	echo -e "${BOLD}${BLUE}Running Docker container...${NC}\n"
 	docker run --rm \
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
+	$DEVICE_ARGS \
 	-v $(pwd)/src/Config:/opt/vss-vision/src/Config \
 	-v $(pwd)/recordings:/opt/vss-vision/recordings \
+	-v $(pwd)/src/CameraManager/radialDistortion:/opt/vss-vision/src/CameraManager/radialDistortion \
 	-e DISPLAY=$DISPLAY \
 	--network=host \
 	vss-vision
 else
-	echo "setting camera /dev/video$1"
 	# Camera id argument supplied
+	echo -e "${BOLD}${BLUE}Running with camera id: $1${NC}"
+	echo -e "${BOLD}${BLUE}Running Docker container...${NC}\n"
 	docker run --rm \
 	--device=/dev/video$1:/dev/video0 \
 	-v /tmp/.X11-unix:/tmp/.X11-unix \
 	-v $(pwd)/src/Config:/opt/vss-vision/src/Config \
 	-v $(pwd)/recordings:/opt/vss-vision/recordings \
+	-v $(pwd)/src/CameraManager/radialDistortion:/opt/vss-vision/src/CameraManager/radialDistortion \
 	-e DISPLAY=$DISPLAY \
 	--network=host \
 	vss-vision
 fi
+
 xhost -
