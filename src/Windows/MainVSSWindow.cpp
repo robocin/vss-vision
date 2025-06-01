@@ -774,23 +774,3 @@ void MainVSSWindow::saveMainWindowConfig()
     QJsonDocument saveDoc(this->_mainWindowConfig);
     saveFile.write(saveDoc.toJson());
 }
-
-// void MainVSSWindow::on_refreshCameraDevices_clicked()
-// {
-//     static size_t listSize = 0;
-//     std::vector<int> cameraListAux =
-//         CameraManager::singleton().returnCameraList();
-
-//     if (listSize != cameraListAux.size()) {
-//         m_ui->cameraIndexComboBox->clear();
-
-//         for (size_t i = 0; i < cameraListAux.size(); i++) {
-//             m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
-//         }
-
-//         this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
-//         CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
-
-//         listSize = cameraListAux.size();
-//     }
-// }
