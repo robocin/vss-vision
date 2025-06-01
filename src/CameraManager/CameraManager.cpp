@@ -1,4 +1,5 @@
 #include "CameraManager.h"
+#include <opencv2/videoio.hpp>
 
 CameraManager::CameraManager() {
   this->_parametersString = "";
@@ -23,6 +24,8 @@ CameraManager::CameraManager() {
   opencv_file["matrix_x"] >> this->_map_x;
   opencv_file["matrix_y"] >> this->_map_y;
   opencv_file.release();
+
+  this->filterAvailableCameras();
 }
 
 CameraManager& CameraManager::singleton() {
@@ -120,23 +123,59 @@ bool CameraManager::init(std::string videoPath) {
   return true;
 }
 
-void CameraManager::updateFrame() {
+void CameraManager::filterAvailableCameras() {
+  cv::VideoCapture tempCapture;
   cv::Mat frame;
-  if (!this->_capture.isOpened()) {
+  std::cout << BOLD << BLUE << "-----------[CAMERA MANAGER - Init]-----------" << RESET << std::endl;
+  std::cout << BOLD << BLUE << "Verifying available cameras..." << RESET << std::endl;
+  this->_cameraList = this->returnCameraList();
+  if (this->_cameraList.size() == 0) {
+    std::cout << BOLD << RED << "No cameras available!" << RESET << std::endl;
+    this->_captureType = disabled;
+    this->_cameraIndex = -1;
+    return;
+  } else {
+    this->_captureType = usbCameraCapture;
+    for (int i = 0; i < this->_cameraList.size(); i++) {
+      tempCapture.open(this->_cameraList[i]);
+      bool status = this->checkCameraStatus(frame, tempCapture);
+      if (!status) {
+        std::cout << BOLD << RED << "Device " << this->_cameraList[i]
+                  << " is not available or cannot be opened." << RESET << std::endl;
+        this->_notAvailableCameraDevices.push_back(this->_cameraList[i]);
+      } else {
+        std::cout << BOLD << GREEN << "Device " << this->_cameraList[i]
+                << " is available and can be opened." << RESET << std::endl;
+      }
+      tempCapture.release();
+    }
+  }
+  std::cout << BOLD << BLUE << "-----------[CAMERA MANAGER - End]-----------" << RESET << std::endl;
+}
+
+bool CameraManager::checkCameraStatus(cv::Mat &frame, cv::VideoCapture &capture) {
+  if (!capture.isOpened()) {
     if (this->_errorInFrame == ERROR_FRAME_FROM_IMAGE) {
       std::cout << "Error while getting an image from the camera." << std::endl;
     } else if (this->_errorInFrame == ERROR_FRAME_FROM_VIDEO) {
       std::cout
-          << "Error while getting the video, check video path in MainWindow.cpp"
-          << std::endl;
+      << "Error while getting the video, check video path in MainWindow.cpp"
+      << std::endl;
     }
-
+    
     frame =
-        cv::Mat::zeros(this->_frameHeight, this->_frameWidth, CV_8UC3) * 255;
-
+    cv::Mat::zeros(this->_frameHeight, this->_frameWidth, CV_8UC3) * 255;
+    
+    return false;
   } else {
-    if (!this->_isFinished) this->_capture >> frame;
+    if (!this->_isFinished)
+      capture >> frame;
+    return true;
   }
+}
+void CameraManager::updateFrame() {
+  cv::Mat frame;
+  this->checkCameraStatus(frame, this->_capture);
 
   if ((frame.empty() || frame.cols < 1 || frame.rows < 1) &&
       this->_captureType == videoCapture) {
@@ -508,6 +547,15 @@ std::vector<int> CameraManager::returnCameraList() {
       t.push_back(numberToReturn);
     }
   }
+
+  // if the there is a camera present in the notAvailableCameraDevices vector, remove it from the camera list
+  for (int i = 0; i < this->_notAvailableCameraDevices.size(); i++) {
+    auto it = std::find(t.begin(), t.end(), this->_notAvailableCameraDevices[i]);
+    if (it != t.end()) {
+      t.erase(it);
+    }
+  }
+
   return t;
 }
 
