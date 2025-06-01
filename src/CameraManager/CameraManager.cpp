@@ -163,8 +163,7 @@ bool CameraManager::checkCameraStatus(cv::Mat &frame, cv::VideoCapture &capture)
       << std::endl;
     }
     
-    frame =
-    cv::Mat::zeros(this->_frameHeight, this->_frameWidth, CV_8UC3) * 255;
+    frame = cv::Mat::zeros(this->_frameHeight, this->_frameWidth, CV_8UC3) * 255;
     
     return false;
   } else {

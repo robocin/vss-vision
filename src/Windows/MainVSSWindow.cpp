@@ -234,73 +234,72 @@ void MainVSSWindow::resizeFrames() {
   resizeSimulationFrame();
 }
 
+
 void MainVSSWindow::on_capturePushButton_clicked() {
   if (m_ui->capturePushButton->isChecked()) {
-    bool openSucceeded = false;
-
-    if (this->m_cameraCapture) {
-      openSucceeded = CameraManager::singleton().init(
-                        this->m_ui->cameraIndexComboBox->currentText().toStdString()[0] -
-                        '0');
-    } else if (this->m_videoCapture) {
-      openSucceeded = CameraManager::singleton().init(
-                        this->m_videoFileName.toLocal8Bit().constData());
-    }
-
-    if (openSucceeded) {
-      this->m_firstTimeOpeningCamera = true;
-      m_ui->calibrateFieldPointspushButton->setEnabled(true);
-      m_ui->cameraConfigPushButton->setEnabled(true);
-      m_ui->visionInitPushButton->setEnabled(true);
-      m_ui->visionConfigurePushButton->setEnabled(true);
-      Vision::singleton().resetCorrection();
-      if (m_ui->cutFieldPushButton->isChecked()) {
-        this->on_cutFieldPushButton_clicked();
-      }
-
-      m_isCaptureOpen = true;
-
-      if (this->m_videoCapture) {
-        this->m_mainWindowFrameTimer->start(30);
-      } else if (this->m_cameraCapture) {
-        this->m_mainWindowFrameTimer->start(30);
-      }
-
-      emit startCameraUpdate();
-      emit enableVisionThread(true);
-    } else {
-      this->m_ui->capturePushButton->setChecked(false);
-      QMessageBox cameraAlert;
-      cameraAlert.setText("Problem trying to open the camera!");
-      cameraAlert.setInformativeText(
-        "Certify that your camera is attached to the computer.");
-      cameraAlert.exec();
-    }
-  } else {
-    this->m_mainWindowFrameTimer->stop();
-    this->m_isCaptureOpen = false;
-    this->m_isRecording = false;
-    this->clearFrame();
-
-    this->m_videoRecordManager.release();
-    
-    m_ui->visionInitPushButton->setEnabled(false);
-    m_ui->visionConfigurePushButton->setEnabled(false);
-    m_ui->calibrateFieldPointspushButton->setEnabled(false);
-    m_ui->cameraConfigPushButton->setEnabled(false);
-    m_ui->halfPushButton->setEnabled(false);
-    m_ui->startAllPushButton->setChecked(false);
-    m_ui->recordPushButton->setChecked(false);
-
-    if (m_ui->visionInitPushButton->isChecked()) {
-      m_ui->visionInitPushButton->setChecked(false);
-      m_ui->visualizationComboBox->clear();
-      m_ui->visualizationComboBox->addItem("Original");
-      m_ui->visualizationComboBox->setCurrentIndex(0);
-    }
-    emit enableVisionThread(false);
-    emit pauseCameraUpdate();
-  }
+     bool openSucceeded = false;
+     if (this->m_cameraCapture) {
+       int index = this->m_ui->cameraIndexComboBox->currentText().toInt();
+       openSucceeded = CameraManager::singleton().init(index);
+     } else if (this->m_videoCapture) {
+       openSucceeded = CameraManager::singleton().init(
+           this->m_videoFileName.toLocal8Bit().constData());
+     }
+  
+     if (openSucceeded) {
+       this->m_firstTimeOpeningCamera = true;
+       m_ui->calibrateFieldPointspushButton->setEnabled(true);
+       m_ui->cameraConfigPushButton->setEnabled(true);
+       m_ui->visionInitPushButton->setEnabled(true);
+       m_ui->visionConfigurePushButton->setEnabled(true);
+       Vision::singleton().resetCorrection();
+       if (m_ui->cutFieldPushButton->isChecked()) {
+         this->on_cutFieldPushButton_clicked();
+       }
+  
+       m_isCaptureOpen = true;
+  
+       if (this->m_videoCapture) {
+         this->m_mainWindowFrameTimer->start(30);
+       } else if (this->m_cameraCapture) {
+         this->m_mainWindowFrameTimer->start(30);
+       }
+  
+       emit startCameraUpdate();
+       emit enableVisionThread(true);
+     } else {
+       this->m_ui->capturePushButton->setChecked(false);
+       QMessageBox cameraAlert;
+       cameraAlert.setText("Problem trying to open the camera!");
+       cameraAlert.setInformativeText(
+           "Certify that your camera is attached to the computer.");
+       cameraAlert.exec();
+     }
+   } else {
+     this->m_mainWindowFrameTimer->stop();
+     this->m_isCaptureOpen = false;
+     this->m_isRecording = false;
+     this->clearFrame();
+  
+     this->m_videoRecordManager.release();
+  
+     m_ui->visionInitPushButton->setEnabled(false);
+     m_ui->visionConfigurePushButton->setEnabled(false);
+     m_ui->calibrateFieldPointspushButton->setEnabled(false);
+     m_ui->cameraConfigPushButton->setEnabled(false);
+     m_ui->halfPushButton->setEnabled(false);
+     m_ui->startAllPushButton->setChecked(false);
+     m_ui->recordPushButton->setChecked(false);
+  
+     if (m_ui->visionInitPushButton->isChecked()) {
+       m_ui->visionInitPushButton->setChecked(false);
+       m_ui->visualizationComboBox->clear();
+       m_ui->visualizationComboBox->addItem("Original");
+       m_ui->visualizationComboBox->setCurrentIndex(0);
+     }
+     emit enableVisionThread(false);
+     emit pauseCameraUpdate();
+   }
 }
 
 void MainVSSWindow::on_recordPushButton_clicked(){
@@ -521,7 +520,6 @@ bool MainVSSWindow::eventFilter(QObject *f_object, QEvent *f_event) {
 
       this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
       CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
-
 
       listSize = cameraListAux.size();
     }
@@ -776,3 +774,23 @@ void MainVSSWindow::saveMainWindowConfig()
     QJsonDocument saveDoc(this->_mainWindowConfig);
     saveFile.write(saveDoc.toJson());
 }
+
+// void MainVSSWindow::on_refreshCameraDevices_clicked()
+// {
+//     static size_t listSize = 0;
+//     std::vector<int> cameraListAux =
+//         CameraManager::singleton().returnCameraList();
+
+//     if (listSize != cameraListAux.size()) {
+//         m_ui->cameraIndexComboBox->clear();
+
+//         for (size_t i = 0; i < cameraListAux.size(); i++) {
+//             m_ui->cameraIndexComboBox->addItem(QString::number(cameraListAux[i]));
+//         }
+
+//         this->m_ui->cameraIndexComboBox->setCurrentText(QString::number(this->_mainWindowConfig["camIdx"].toString().toInt()));
+//         CameraManager::singleton().setCameraIndex(this->_mainWindowConfig["camIdx"].toString().toInt());
+
+//         listSize = cameraListAux.size();
+//     }
+// }
