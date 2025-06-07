@@ -18,11 +18,12 @@ void FilterUtils::saveFilterRectToJson(const std::vector<cv::Rect>& rects, const
         file.write(saveDoc.toJson(QJsonDocument::Indented));
         file.close();
     } else {
-        qWarning() << "Não foi possível abrir" << path << "para escrita!";
+        qWarning() << "Could not open" << path << "for writing!";
     }
 }
 
 void FilterUtils::loadFilterRectFromJson(std::vector<cv::Rect>& rects, const QString& path) {
+    rects.clear();
     QFile file(path);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QByteArray data = file.readAll();
