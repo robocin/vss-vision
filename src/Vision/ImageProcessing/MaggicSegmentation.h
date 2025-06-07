@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <fstream>
+#include "Utils/FilterUtils.h"
 typedef unsigned char uchar;
 
 #define LUTSIZE 16777216
