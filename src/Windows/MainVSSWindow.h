@@ -83,7 +83,7 @@ class MainVSSWindow : public QMainWindow {
 
   void saveMainWindowConfig();
 
-
+  
 private:
   Ui::MainVSSWindow* m_ui;
   QTimer* m_mainWindowFrameTimer;

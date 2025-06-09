@@ -78,6 +78,22 @@ class CameraManager {
    * @brief updates current frame in Camera Manipulation Class
    */
   void updateFrame();
+
+  /**
+   * @brief    Checks if the camera is available and returns the frame.
+   *
+   * @param    frame    The frame to be filled with the camera image.
+   * @param    capture  The VideoCapture object to use for getting the frame.
+   *
+   * @return   True if the camera is available, false otherwise.
+   */
+  bool checkCameraStatus(cv::Mat &frame, cv::VideoCapture &capture);
+  
+  /**
+   * @brief  Filters available cameras by checking if they can be opened.
+   * If no cameras are available, it sets the capture type to disabled.
+   */
+  void filterAvailableCameras();
   /**
    * @brief    { CameraManipulation Constructor }
    *
@@ -462,6 +478,13 @@ class CameraManager {
   Distortions _distortionOption;
   cv::Mat _map_x;
   cv::Mat _map_y;
+
+  std::vector<int> _notAvailableCameraDevices;
+  const std::string RESET = "\x1b[0m";
+  const std::string BOLD = "\x1b[1m";
+  const std::string RED = "\x1b[31m";
+  const std::string GREEN = "\x1b[32m";
+  const std::string BLUE = "\x1b[34m";
 };
 
 #endif
