@@ -37,6 +37,6 @@ void FilterUtils::loadFilterRectFromJson(std::vector<cv::Rect>& rects, const QSt
         }
         file.close();
     } else {
-        qWarning() << "Não foi possível abrir" << path << "para leitura!";
+        qWarning() << "Could not open" << path << "for writing!";
     }
 }
